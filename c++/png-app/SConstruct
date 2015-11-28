@@ -1,0 +1,64 @@
+import os.path
+
+env = Environment()
+
+# copied from: http://stackoverflow.com/questions/12518715/how-do-i-filter-an-scons-glob-result
+def filtered_glob(env, pattern, omit=[],
+  ondisk=True, source=False, strings=False):
+    return filter(
+      lambda f: os.path.basename(f.path) not in omit,
+      env.Glob(pattern))
+env.AddMethod(filtered_glob, "FilteredGlob");
+# example on howto use
+# all_src_files_except_main = env.FilteredGlob('source/*.cpp',
+#      ['main.cpp', 'mainDraw.cpp', 'test/test1.cpp'])
+
+drawing_src_files = Glob('source/drawing/*.cpp')
+util_src_files = Glob('source/util/*.cpp')
+png_src_util_files = Glob('source/png/*.cpp')
+
+png_src_files = [ 
+	util_src_files, 
+	png_src_util_files,
+	'source/main.cpp']
+draw_src_files = [ 
+	drawing_src_files, 
+	util_src_files, 
+	'source/mainDraw.cpp']
+test_src_files = [  
+	util_src_files, 
+	png_src_util_files,
+	'test/test1.cpp', 
+	'test/AssertUtil.cpp']
+
+# -lm recommened for timeofday in ms by
+# http://stackoverflow.com/questions/3756323/getting-the-current-time-in-milliseconds
+env.Append(CCFLAGS = ['-g', '-lm']) 
+env['CXXFLAGS'] = ['-std=c++11']
+
+env.Append(CPPPATH = [
+	'source',
+	'test',
+	'../external/gtest-1.7.0/include'
+	])
+gtestLib = File('../external/gtest-1.7.0/make/gtest_main.a')		
+env.Append(LIBS = [gtestLib, 'pthread','png', 'm'])
+ 
+env.Program(
+    target = 'png-app',
+    source = png_src_files,
+    )
+	
+env.Program(
+    target = 'draw-app',
+    source = draw_src_files,
+    )	
+	
+test = env.Program(
+    target = 'test-app',
+    source = test_src_files,
+    )	
+
+command = test[0].abspath
+var = env.Alias('tests', test, command)
+env.AlwaysBuild(var)

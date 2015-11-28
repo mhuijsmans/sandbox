@@ -1,0 +1,10 @@
+Import("env")
+
+opt=env.Clone(CPPPATH = [	
+	'$PACKAGE1',
+	'$PACKAGE2',
+	])
+myfiles = opt.Glob('*.cpp')
+myobjects = opt.Object(myfiles)
+
+Return('myobjects')

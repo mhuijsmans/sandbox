@@ -1,0 +1,15 @@
+env = Environment()
+
+src_files = Glob('*.cpp')
+env['CCFLAGS']=['-Wall','-g']
+env['CXXFLAGS']=['-std=c++11']    
+
+prg = env.Program(
+    target = 'main',
+    source = src_files,
+    )
+
+command = prg[0].abspath
+var = env.Alias('main', prg, command)
+# AlwaysBuild ensures that the test are run when the target is selected
+env.AlwaysBuild(var)

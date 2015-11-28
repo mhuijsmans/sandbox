@@ -1,0 +1,9 @@
+Import('env')
+
+opt = env.CreateClone('rsyslogconfig.source')
+
+# Give global function a unique function name
+def CopyDataRsyslogConfig(opt, rpmBuilder):
+	rpmBuilder.SetProductNameAndVersion('rsyslogconfig', '1.0')
+
+opt.BuildRpm('rsyslogconfig', 'rsyslogconfig.spec', CopyDataRpm1)

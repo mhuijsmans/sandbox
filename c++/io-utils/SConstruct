@@ -1,0 +1,13 @@
+env = Environment()
+
+env['FILES_TO_MATCH'] = '*.cpp'
+src_files = env.Glob('${FILES_TO_MATCH}')
+
+# -g for debugging
+env['CCFLAGS']=['-g', '-Wall','-c','-msse2','-funroll-loops']
+env['CXXFLAGS']=['-std=c++11']	
+ 
+env.Program(
+    target = 'main',
+    source = src_files,
+    )

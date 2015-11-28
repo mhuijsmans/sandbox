@@ -1,0 +1,15 @@
+Import("env")
+
+opt = env.CreateClone('comp3.source')
+# Build the command that generated code
+# The code generator will iterate over the list of
+# source file and call the command for each source file
+command = opt.SourceDir()+'/code_generator.sh'+' '+opt.GeneratedSourceDir()
+opt.BuildGeneratedStaticLibrary(
+  'comp3', 
+  command, 
+  [
+   'dummy_source_file1.my_suffix',
+   'dummy_source_file2.my_suffix'
+  ]
+)

@@ -1,0 +1,11 @@
+Import('env')
+
+opt = env.CreateClone('rpm1.source')
+
+# Give global function a unique function name
+def CopyDataRpm1(opt, rpmBuilder):
+	rpmBuilder.SetProductNameAndVersion('toybinprog', '1.0')
+	rpmBuilder.CopyFile(opt.SourceDir()+'/toybinprog.sh', '/usr/bin')
+	rpmBuilder.CopyFile(opt.SourceDir()+'/toybinprog.conf','/etc/toybinprog')
+
+opt.BuildRpm('rpm1', 'rpm1.spec', CopyDataRpm1)

@@ -1,0 +1,43 @@
+env = Environment()
+
+# Two application
+# to build main1
+# $ scons main1
+# to build main1 and main2
+# $ scons
+# or
+# $ scons main1 main2
+env.Program(target='main1', source='main1.cpp')
+env.Program(target='main2', source='main2.cpp')
+
+# BUT, I con not use for libs below.
+# $ scons foo
+env.StaticLibrary(target='foo', source='Foo.cpp')
+env.SharedLibrary(target='bar', source='Bar.cpp')
+env.Alias('foo','libfoo.a')
+env.Alias('libs',['libfoo.a', 'libbar.so'])
+
+# scons varables
+print "BUILD_TARGETS   is", map(str, BUILD_TARGETS)
+print "DEFAULT_TARGETS is", map(str, DEFAULT_TARGETS)
+
+# from exa,ple 
+# ref: http://stackoverflow.com/questions/3559742/implicit-list-of-all-build-targets-in-scons
+# Get a list of all Object targets
+def get_all_targets(env, node='.'):
+    def get_all_targets_iter(env, node):
+        if node.has_builder() and node.get_builder().get_name(env) in ('Object', 'SharedObject','StaticLibrary','SharedLibrary','Program'):
+            yield node
+        for kid in node.all_children():
+            for kid in get_all_targets(env, kid):
+                yield kid
+    node = env.arg2nodes(node, env.fs.Entry)[0]
+    return list(get_all_targets_iter(env, node))
+
+# next print returns: 
+# ALL_TARGETS is ['Bar.os', 'Foo.o', 'libbar.so', 'Bar.os', 'libfoo.a', 'Foo.o', 'main1', 'main1.o', 'main1.o', 'main2', 'main2.o', 'main2.o']
+# each object is a 
+print "ALL_TARGETS is", map(str, get_all_targets(env))    
+
+
+

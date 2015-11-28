@@ -1,0 +1,10 @@
+Import("env")
+
+opt = env.CreateClone('comp1.source')
+opt.DependsOnLibcurl()
+# static library
+# If static library is used, then testing works out of the box
+opt.BuildStaticLibrary('comp1', opt.Glob('*.cpp'))
+
+# dynamic library
+# opt.SharedLibrary('comp1', opt.Glob('*.cpp'))

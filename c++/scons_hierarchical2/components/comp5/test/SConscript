@@ -1,0 +1,3 @@
+Import("env")
+opt = env.CreateClone('comp5.test')
+opt.BuildTests('comp5_tests',	[	opt.Glob('*.cpp')	] )

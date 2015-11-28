@@ -1,0 +1,13 @@
+env = Environment()
+
+src_files = Glob('*.cpp')
+
+# -g for debugging
+env.Append(CCFLAGS = ['-g'])
+# libs to link against 
+# env.Append(LIBS = ['png', 'm'])
+ 
+env.Program(
+    target = 'main',
+    source = src_files,
+    )

@@ -1,0 +1,116 @@
+import os
+import platform
+import sys
+
+env = Environment(ENV = {'PATH' : os.environ['PATH']})
+if (sys.platform == 'win32') :
+    env = Environment(tools = ['mingw'], ENV = {'PATH' : os.environ['PATH']})
+
+#Format: soncs
+# scons [ options...  ] [ name=val...  ] [ project ]
+# Below examples of [ options...  ] and [ name=val...  ] are provided
+
+# c&p from: https://github.com/mongodb/mongo/blob/master/SConstruct
+def add_option( name, help, nargs=0, 
+                dest=None, default=None, type="string", choices=None, metavar=None, const=None ):
+
+    if dest is None:
+        dest = name
+
+    if type == 'choice' and not metavar:
+        metavar = '[' + '|'.join(choices) + ']'
+
+    AddOption( "--" + name , 
+               dest=dest,
+               type=type,
+               nargs=nargs,
+               action="store",
+               choices=choices,
+               default=default,
+               metavar=metavar,
+               const=const,
+               help=help )
+					  					  
+def get_option( name ):
+    return GetOption( name )
+
+def has_option( name ):
+    x = get_option( name )
+    if x is None:
+        return False
+    if x == False:
+        return False
+    if x == "":
+        return False
+    return True
+	
+# define the commandline option that are supported
+# scons --help will print:
+# Local Options:
+# --debug-build=DEBUG-BUILD   Debug build
+# It is unclear where DEBUG-BUILD comes from.
+add_option( "release-build" , "Release build")					  	
+add_option( "debug-build" , "Debug build")					  	
+add_option( "profile-build" , "Profile build")
+add_option( "gcov" , "Code coverage  info included")
+
+# argument (e.g. play=1) can be provided
+# http://www.scons.org/doc/1.1.0/HTML/scons-user/x2361.html
+def UsesPlay():
+    return int(ARGUMENTS.get('play', 0))  
+
+# option (--name) can be set
+# http://www.scons.org/doc/1.0.0/HTML/scons-user/c1965.html	
+def ReleaseBuild():
+    return has_option('release-build')
+	
+def DebugBuild():
+    return has_option('debug-build')	
+	
+def ProfileBuild():
+    return has_option('profile-build')	
+		
+def GcovBuild():
+    return has_option('gcov')		
+
+# todo: http://cboard.cprogramming.com/tech-board/111902-pgo-amazing.html
+# g++ -O3 -march=native -pg -fprofile-generate ...
+# //run my program's benchmark
+# g++ -O3 -march=native -fprofile-use ...	
+# Now program may run faster.
+	
+# Set compile & link options
+# See: http://linux.die.net/man/1/g++ for explanation on options
+# Additional optimisation flags: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html 
+env['CCFLAGS']=['-Wall','-c','-msse2','-funroll-loops']
+env['CXXFLAGS']=['-std=c++11']	
+if ReleaseBuild():
+	print "Release build"	
+	env.Append(CCFLAGS = ['-O3','-DNDEBUG'])
+elif ProfileBuild():	
+	print "Profile build"	
+	env.Append(CCFLAGS = ['-g','-O3','-DNDEBUG'])
+elif DebugBuild():
+	print "Debug build"		
+	env.Append(CCFLAGS = ['-g','-O0'])
+	if GcovBuild():
+		print "Gcov included"
+		env.Append(CCFLAGS = ['-fprofile-arcs', '-ftest-coverage'])
+		env.Append(LIBS = ['gcov'])
+else:	
+	print "Default (Debug ) build"	
+	env.Append(CCFLAGS = ['-g','-O0'])
+	
+# specified both source and target.
+env.Program('hello.cpp')
+
+# static library
+src_files = Glob('*.cpp')
+env.StaticLibrary('hello', src_files)
+
+# substitution
+env['APP_NAME'] = 'hello'
+# dynamic library
+env.SharedLibrary('${APP_NAME}', src_files)
+
+

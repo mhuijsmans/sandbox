@@ -1,0 +1,9 @@
+Import("env")
+
+opt = env.CreateClone('comp2.source')
+
+# static library
+opt.BuildStaticLibrary('comp2', opt.Glob('*.cpp'))
+
+# dynamic library
+# opt.SharedLibrary('comp2', opt.Glob('*.cpp'))

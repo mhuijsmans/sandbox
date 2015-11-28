@@ -1,0 +1,32 @@
+import os
+import platform
+import sys
+
+env = Environment(ENV = {'PATH' : os.environ['PATH']})
+if (sys.platform == 'win32') :
+    env = Environment(tools = ['mingw'], ENV = {'PATH' : os.environ['PATH']})	
+	
+#Define all the packages in the project
+env['APP_DIR'] = '#source'	
+env['GTEST_INCL_DIR'] = '#./..//external/gmock-1.7.0/gtest/include'		
+env['GMOCK_INCL_DIR'] = '#./../external/gmock-1.7.0/include'		
+env['GMOCK_LIB_DIR'] = '#./../external/gmock-1.7.0/make'		
+
+env['CCFLAGS']=['-Wall','-c']
+env['CXXFLAGS']=['-std=c++11']	
+env.Append(CCFLAGS = ['-g','-O0'])
+
+subpackages = ['source','test']	
+objects = []
+for package in subpackages:
+	pack_objects = env.SConscript(dirs=package, name='SConscript', exports='env', 
+		variant_dir='target'+os.sep+package, duplicate=0)
+	objects.append(pack_objects)
+	
+program=env.Program('myprog',objects)
+Default(program)
+
+command = program[0].abspath
+var = env.Alias('myprog', program, command)
+# AlwaysBuild ensures that the test are run when the target is selected
+env.AlwaysBuild(var)

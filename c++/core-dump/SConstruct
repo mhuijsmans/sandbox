@@ -1,0 +1,14 @@
+import os
+import platform
+import sys
+
+env = Environment(ENV = {'PATH' : os.environ['PATH']})
+if (sys.platform == 'win32') :
+    env = Environment(tools = ['mingw'], ENV = {'PATH' : os.environ['PATH']})
+
+env['CCFLAGS']=['-Wall','-c','-msse2','-funroll-loops']
+env['CXXFLAGS']=['-std=c++11']	
+env.Append(CCFLAGS = ['-g','-O0'])
+	
+# specified both source and target.
+env.Program('main.cpp')

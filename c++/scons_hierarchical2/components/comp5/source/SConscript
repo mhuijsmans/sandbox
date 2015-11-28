@@ -1,0 +1,5 @@
+Import("env")
+opt = env.CreateClone('comp5.source')
+opt.DependsOn('comp3')
+opt.BuildStaticLibrary('comp5', opt.Glob('*.cpp'))
+

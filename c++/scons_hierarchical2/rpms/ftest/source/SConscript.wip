@@ -1,0 +1,9 @@
+Import('env')
+
+opt = env.CreateClone('ftest.source')
+
+# Give global function an unique name
+def CopyDataRpmCreateUserGroup(opt, rpmBuilder):
+	rpmBuilder.SetProductNameAndVersion('ftest', '0.1')
+
+opt.BuildRpm('ftest', 'rpm.spec', CopyDataRpmCreateUserGroup)

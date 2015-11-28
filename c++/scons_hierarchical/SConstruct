@@ -1,0 +1,34 @@
+import os
+import platform
+import sys
+
+env = Environment(ENV = {'PATH' : os.environ['PATH']})
+if (sys.platform == 'win32') :
+    env = Environment(tools = ['mingw'], ENV = {'PATH' : os.environ['PATH']})	
+	
+#Define all the packages in the project
+env['PACKAGE1'] = '#package1'	
+env['PACKAGE2'] = '#package2'		
+
+env['CCFLAGS']=['-Wall','-c','-msse2','-funroll-loops']
+env['CXXFLAGS']=['-std=c++11']	
+env.Append(CCFLAGS = ['-g','-O0'])
+
+if 'package' in ARGUMENTS:
+	package = ARGUMENTS["package"]
+	print "### Building a single package: ", package
+	env.SConscript(dirs=package, name='SConscript', exports='env', 
+				variant_dir='target'+os.sep+package, duplicate=0)
+else:
+	print "### Building all packages"
+	subpackages = ['package1','package2','application']	
+	objects = []
+	for package in subpackages:
+		pack_objects = env.SConscript(dirs=package, name='SConscript', exports='env', 
+			variant_dir='target'+os.sep+package, duplicate=0)
+		objects.append(pack_objects)
+	
+	program=env.Program('myprog',objects)
+
+	Default(program)
+				

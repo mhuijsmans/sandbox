@@ -1,0 +1,37 @@
+env = Environment()
+
+src_files1 = ['main1.cpp']
+src_files2 = ['main2.cpp']
+src_files3 = ['main3.cpp']
+src_files4 = ['main4.cpp', 'EnvironmentVariablesFile.cpp', 'GetErrorMsg.cpp']
+src_files5 = ['main-fork-groupid.cpp']
+
+env.Append(CCFLAGS = ['-g'])
+env['CXXFLAGS'] = ['-std=c++11']
+ 
+env.Program(
+    target = 'main1',
+    source = src_files1,
+    )
+
+env.Program(
+    target = 'main2',
+    source = src_files2,
+    )
+	
+env.Program(
+    target = 'main3',
+    source = src_files3,
+    )
+
+env.Program(
+    target = 'main4',
+    source = src_files4,
+    )
+
+env.Program(
+    target = 'main-fork-groupid',
+    source = src_files5,
+    )	
+	
+	

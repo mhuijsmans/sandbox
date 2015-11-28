@@ -1,0 +1,36 @@
+# java: generated files
+*.class
+
+# java: package Files
+*.jar
+*.war
+*.ear
+
+# maven
+target
+dependency-reduced-pom.xml
+
+#  eclipse
+.metadata
+.project
+local.properties
+.settings/
+
+# eclipse CDT
+.cproject
+
+# eclipse JDT
+.classpath
+
+# C++ Compiled Object files
+*.o
+*.obj
+
+# c++ Precompiled Headers
+*.gch
+*.pch
+
+# C++ Compiled libraries
+*.so
+*.a
+*.out

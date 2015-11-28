@@ -1,0 +1,30 @@
+Import("env")
+import sys
+
+opt=env.Clone(CPPPATH = [
+	'${GTEST_INCL_DIR}',
+	'${GMOCK_INCL_DIR}',
+	'${APP_DIR}'
+	])
+
+#force static linking for test libs
+gmock = opt.File('${GMOCK_LIB_DIR}/gmock_main.a')
+if (sys.platform == 'win32') :
+    gmock = opt.File('${GMOCK_LIB_DIR}/gmock_main_win.a')
+	
+test_objects = [
+	'${APP_DIR}/Foo.cpp',
+	'${APP_DIR}/Bar.cpp',
+	]	
+
+# The tests are run against the stub implementation.
+test = opt.Program('test', [
+	Glob('*.cpp'), test_objects ],
+	LIBS=[
+		gmock,
+		'pthread'
+	])
+		
+test_alias = Alias('test', [test], test[0].path)
+AlwaysBuild(test_alias)
+Return([])

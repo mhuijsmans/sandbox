@@ -1,0 +1,13 @@
+Import('env')
+
+opt = env.CreateClone('linuxservicerpm.source')
+opt.DependsOn('linuxservice')
+
+# recommended file system hierarchy: http://www.pathname.com/fhs/
+# Give global function an unique name
+def CopyDataRpmLinuxService(opt, rpmBuilder):
+	rpmBuilder.SetProductNameAndVersion('linuxservice', '0.1')
+	rpmBuilder.CopyApplication('linuxservice', '/usr/bin/linuxservice')
+	rpmBuilder.CopyDynamicLibrariesReferencedByApplication('linuxservice', '/usr/lib/linuxservice')
+
+opt.BuildRpm('linuxservicerpm', 'linuxservice.spec', CopyDataRpmLinuxService)

@@ -1,0 +1,7 @@
+Import("env")
+
+myfiles = env.Glob('*.cpp')
+
+myobjects = env.Object(myfiles)
+
+Return('myobjects')

@@ -1,0 +1,12 @@
+Import('env')
+
+opt = env.CreateClone('rpmapp1.source')
+opt.DependsOn('app1')
+
+# Give global function an unique name
+# TODO: test if true.
+def CopyDataRpmApp1(opt, rpmBuilder):
+	rpmBuilder.SetProductNameAndVersion('app1', '0.1')
+	rpmBuilder.CopyApplication('app1', '/usr/bin/app1')
+
+opt.BuildRpm('rpmapp1', 'rpmapp1.spec', CopyDataRpmApp1)

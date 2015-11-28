@@ -1,0 +1,4 @@
+Import('env')
+opt = env.CreateClone('linuxservice.source')
+opt.DependsOnBoost()
+opt.BuildProgram('linuxservice', [opt.Glob('*.cpp')] )

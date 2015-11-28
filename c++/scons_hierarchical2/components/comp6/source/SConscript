@@ -1,0 +1,3 @@
+Import("env")
+opt = env.CreateClone('comp6.source')
+opt.BuildSharedLibrary('comp6', opt.Glob('*.cpp'))

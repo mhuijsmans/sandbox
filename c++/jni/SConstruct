@@ -1,0 +1,16 @@
+import os
+import sys
+from ConfigureJNI import ConfigureJNI
+
+if sys.platform == 'win32':
+    # MS Visual C++ is found from the registery, not the PATH
+    env = Environment()
+else:
+    # we need the path to find java
+    env = Environment(ENV = {'PATH' : os.environ['PATH']})
+
+if not ConfigureJNI(env):
+    print "Java Native Interface is required... Exiting"
+    Exit(0)
+
+SConscript('SConscript', exports = 'env')

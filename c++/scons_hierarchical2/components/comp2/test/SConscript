@@ -1,0 +1,8 @@
+Import("env")
+
+opt = env.CreateClone('comp2.test')
+# The tests are run against the sources of COMP2
+# GTest & COMP2 dependency is added automatically
+opt.BuildTests('comp2_tests', 
+	[	opt.Glob('*.cpp')	]
+)

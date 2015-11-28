@@ -1,0 +1,72 @@
+import os
+import platform
+import sys
+
+# get the build settings from the command line.
+# default to 'debug' if the user didn't specify
+build = ARGUMENTS.get('build', 'debug')
+#check requested build
+if not (build in ['debug', 'release', 'profile']):
+    print "Error: expected 'debug', 'release' or 'profile', found: " + build
+    Exit(1)
+
+# In Jenkins: scons <target> scmrevision=$SVN_REVISION_1
+# where $SVN_REVISION_1 is the svn revision of the 1st module.
+# build properties
+gcov = ARGUMENTS.get('gcov', '0')
+verbose = ARGUMENTS.get('verbose', '0')
+scmrevision = ARGUMENTS.get('scmrevision', '0')
+warningIsError = ARGUMENTS.get('warningiserror', '0')
+
+env = Environment(ENV = {'PATH' : os.environ['PATH']})
+if (sys.platform == 'win32') :
+    env = Environment(tools = ['mingw'], ENV = {'PATH' : os.environ['PATH']})
+
+# Set compile & link options
+# See: http://linux.die.net/man/1/g++ for explanation on options
+# Additional optimisation flags: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+env['CCFLAGS']=['-Wall','-c']
+if warningIsError == '1':
+    env.Append(CCFLAGS = ['-Werror'])
+env['CXXFLAGS']=['-std=c++11']
+
+# build / executions properties
+env['VERBOSE']=verbose
+
+# performance optimizations
+# ref: http://www.scons.org/wiki/GoFastButton
+env.Decider('MD5-timestamp')
+# next line gives problems with code generation in comp3
+#env.SetOption('max_drift', 5)
+
+# Add function & scons DSL (Domain Specific Language) to env
+env.SConscript(dirs='.', name='scons_scripts/scons_functions.py', exports='env', duplicate=0)
+env.SConscript(dirs='.', name='scons_scripts/scons_dsl_settings.py', exports='env', duplicate=0)
+env.SConscript(dirs='.', name='scons_scripts/scons_dsl.py', exports='env', duplicate=0)
+env.SConscript(dirs='.', name='scons_scripts/scons_dsl_visitors.py', exports='env', duplicate=0)
+env.SConscript(dirs='.', name='scons_scripts/scons_dsl_dependency_management.py', exports='env', duplicate=0)
+env.SConscript(dirs='.', name='scons_scripts/scons_dsl_external.py', exports='env', duplicate=0)
+env.SConscript(dirs='.', name='scons_scripts/scons_dsl_rpmbuilder.py', exports='env', duplicate=0)
+env.SConscript(dirs='.', name='scons_scripts/scons_dsl_codegenerator.py', exports='env', duplicate=0)
+env.SConscript(dirs='.', name='scons_scripts/scons_dsl_assembly.py', exports='env', duplicate=0)
+
+# Update settings
+env.Settings().SetBuildType(build)
+# type of build
+if env.Settings().IsReleaseBuild():
+	print "Release build"
+	env.Append(CCFLAGS = ['-O4','-DNDEBUG'])
+elif env.Settings().IsProfileBuild():
+	print "Profile build"
+	env.Append(CCFLAGS = ['-g','-O3','-DNDEBUG'])
+else:
+	print "Debug build"
+	env.Append(CCFLAGS = ['-g','-O0'])
+	if (gcov == '1'):
+		print "Gcov included"
+		env.Settings().SetUseGcov()
+
+# Now the real works start
+env.FindVisitBuildDirectories(['applications','components','test','rpms'])
+env.ResolveTransitiveDependencies()
+env.Assembly()

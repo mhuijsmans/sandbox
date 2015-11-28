@@ -1,0 +1,1 @@
+The project explores creating a class / coding template.

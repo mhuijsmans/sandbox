@@ -1,0 +1,38 @@
+env = Environment()
+
+env['GTEST_DIR'] = '#../external/gtest-1.7.0'	
+env['GTEST_INCL_DIR'] = '$GTEST_DIR/include'		
+env['GTEST_LIB_DIR'] = '$GTEST_DIR/make'
+
+env.Append(CPPPATH = [
+	'.',
+	'$GTEST_INCL_DIR',
+	])
+
+# -g for debugging
+env.Append(CCFLAGS = ['-g',
+	'-std=c++11'
+	])
+	
+
+# libs to link against 
+env.Append(LIBS = [
+	env.File('$GTEST_LIB_DIR/gtest_main.a'),
+	'pthread',
+	'httpserver'
+	])
+	
+env.Append(LIBPATH = [
+#	'$NETLIB_LIB_DIR'
+	])	
+	
+libhttpserver_service = env.Program(
+	'libhttpserver_service', 
+	[
+		env.Glob('service.cpp')
+	]
+)
+
+alias_libhttpserver_service = env.Alias('libhttpserver_service', [libhttpserver_service], libhttpserver_service[0].path) 
+
+

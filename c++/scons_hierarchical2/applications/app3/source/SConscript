@@ -1,0 +1,5 @@
+Import('env')
+opt = env.CreateClone('app3.source')
+# comp5 depends on comp3 (generated code)
+opt.DependsOn('comp5')
+opt.BuildProgram('app3', [opt.Glob('*.cpp')] )

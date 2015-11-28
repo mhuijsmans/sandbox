@@ -1,0 +1,105 @@
+env = Environment()
+
+env['GTEST_DIR'] = '#../external/gtest-1.7.0'	
+env['GTEST_INCL_DIR'] = '$GTEST_DIR/include'		
+env['GTEST_LIB_DIR'] = '$GTEST_DIR/make'
+
+env['BOOST_DIR'] = '#../external/boost_1_56_0'	
+env['BOOST_INCL_DIR'] = '$BOOST_DIR/boost'		
+env['BOOST_LIB_DIR'] = '$BOOST_DIR/lib/linux'
+env['BOOST_LINK_PATH'] = '../external/boost_1_56_0/lib/linux'
+
+#env['NETLIB_DIR'] = '#../external/cpp-netlib-0.11.0-final'
+env['NETLIB_DIR'] = '#../external/cpp-netlib-0.11.1RC2'
+env['NETLIB_INCL_DIR'] = '$NETLIB_DIR'
+env['NETLIB_SRC_DIR'] = '$NETLIB_DIR/libs'
+env['NETLIB_LIB_DIR'] = '#../external/cpp-netlib-build/libs/network/src'
+
+env.Append(CPPPATH = [
+	'.',
+	'$GTEST_INCL_DIR',
+	'$NETLIB_INCL_DIR',
+	])
+
+# -g for debugging
+env.Append(CCFLAGS = ['-g',
+	'-std=c++11'
+	])
+	
+env.Append(CCFLAGS = ['-DBOOST_NETWORK_ENABLE_HTTPS','-DBOOST_NETWORK_DEBUG'])	
+print("##### Compiling with BOOST_NETWORK_ENABLE_HTTPS ######")
+# Found: BOOST_NETWORK_DEBUG in source code cpp-netlib
+
+# libs to link against 
+env.Append(LIBS = [
+	env.File('$GTEST_LIB_DIR/gtest_main.a'),
+#	'cppnetlib-client-connections',
+#	'cppnetlib-server-parsers',
+#	'cppnetlib-uri',
+	'pthread',
+	'boost_thread',
+	'boost_system',
+	'ssl',
+	'libcrypto'
+	])
+env.Append(LINKFLAGS='-Wl,-rpath,$BOOST_LINK_PATH')	
+	
+env.Append(LIBPATH = [
+	'$BOOST_LIB_DIR',
+#	'$NETLIB_LIB_DIR'
+	])	
+	
+netlib_src_1 = env.Glob('$NETLIB_SRC_DIR/network/src/*.cpp')
+netlib_objects1 = [env.SharedObject(source=s) for s in netlib_src_1]	
+
+netlib_src_2 = env.Glob('$NETLIB_SRC_DIR/network/src/uri/*.cpp')
+netlib_objects2 = [env.SharedObject(source=s) for s in netlib_src_2]	
+
+tests = env.Program(
+	'tests', 
+	[
+		env.Glob('test*.cpp'),
+    netlib_objects1,
+    netlib_objects2		
+		# running with the libraries doesn't work (Segmentation fault (core dumped))
+		# unclear why. So including sources 
+	]
+)
+
+ssl_server = env.Program(
+	'ssl_server', 
+	[
+		env.Glob('ssl/ssl_server.cpp'),
+    netlib_objects1,
+    netlib_objects2
+	]
+)
+
+ssl_sync_server = env.Program(
+	'ssl_sync_server', 
+	[
+		env.Glob('ssl/ssl_sync_server.cpp'),
+    netlib_objects1,
+    netlib_objects2
+	]
+)
+
+client_wget = env.Program(
+	'client_wget', 
+	[
+#   __ because of a single _ generated an scons error. 
+		env.Glob('client__wget/*.cpp'),
+    netlib_objects1,
+    netlib_objects2
+	]
+)
+
+alias_tests = env.Alias('tests', [tests], tests[0].path)   
+
+alias_ssl_server = env.Alias('ssl_server', [ssl_server], ssl_server[0].path) 
+
+alias_ssl_sync_server = env.Alias('ssl_sync_server', [ssl_sync_server], ssl_sync_server[0].path) 
+
+alias_client_wget = env.Alias('client_wget', [client_wget], client_wget[0].path) 
+
+

@@ -1,0 +1,9 @@
+env = Environment()
+env.Append(CCFLAGS = ['-g','-O0'])
+env['CXXFLAGS']=['-std=c++11']	
+
+# Main application
+env.Program('main.cpp')
+
+
+

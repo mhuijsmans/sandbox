@@ -1,0 +1,9 @@
+# Main application
+Program('main.cpp', LIBS='hello', LIBPATH='.')
+
+# dynamic library
+all_src_files=Glob('*.cpp')
+SharedLibrary('hello', all_src_files)
+
+
+

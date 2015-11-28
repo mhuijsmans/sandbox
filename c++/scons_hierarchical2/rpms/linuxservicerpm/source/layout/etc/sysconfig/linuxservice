@@ -1,0 +1,8 @@
+# port run use
+PORT="8181"
+# dir
+DIR="."
+
+# This is the actual options string passed to linuxservice.
+# Change this at your own risk.
+LINUXSERVICE_OPTS="${PORT} ${DIR}"

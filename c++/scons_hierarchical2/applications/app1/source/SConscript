@@ -1,0 +1,9 @@
+Import('env')
+
+opt = env.CreateClone('app1.source')
+opt.DependsOn('comp1')
+opt.DependsOn('comp2')
+opt.BuildProgram(
+	'app1',
+	[	opt.Glob('*.cpp')	]
+	)

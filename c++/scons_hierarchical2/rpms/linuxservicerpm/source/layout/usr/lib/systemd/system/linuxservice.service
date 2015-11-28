@@ -1,0 +1,16 @@
+[Unit]
+Description=Linuxservice ploration
+# After=syslog.target
+
+[Service]
+TimeoutStartSec=0
+Type=forking
+EnvironmentFile=/etc/sysconfig/linuxservice
+# ExecStartPre= some command
+# next line contains an example on how to set library path pointing to own libraries included in rpm
+# Environment="LD_LIBRARY_PATH=/usr/local/lib64/linuxservice:$LD_LIBRARY_PATH"
+ExecStart=/usr/bin/linuxservice/linuxservice $LINUXSERVICE_OPTS
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

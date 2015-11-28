@@ -1,0 +1,50 @@
+env = Environment()
+
+env['BOOST'] = '#..//external/boost_1_56_0'
+env['IOUTILS'] = '#../io-utils'
+env['GTEST_DIR'] = '#../external/gtest-1.7.0'	
+env['GTEST_INCL_DIR'] = '${GTEST_DIR}/include'		
+env['GTEST_LIB_DIR'] = '${GTEST_DIR}/make'
+
+env.Append(CPPPATH = [
+	'.',
+	'${BOOST}',	
+	'${IOUTILS}',
+	'${GTEST_INCL_DIR}',
+	])
+
+# -g for debugging
+env.Append(CCFLAGS = ['-g',
+	'-std=c++11',
+	'-DBOOST_LOG_DYN_LINK'])
+
+# I do not why, but including the '..' in next line in LIBS directory, doesn't work.
+gtest = env.File('${GTEST_LIB_DIR}/gtest_main.a')
+# libs to link against 
+env.Append(LIBS = [
+	gtest,
+	'boost_log',
+	'boost_thread',
+	'boost_filesystem',
+	'boost_system',
+	'boost_regex',
+	'boost_chrono',
+	'boost_date_time',
+	# needed after I added logging to file
+	'boost_log_setup',
+	'pthread'
+	])
+	
+env.Append(LIBPATH = [
+	'${BOOST}/lib/linux'
+	])	
+
+src_files = Glob('*.cpp')
+external_files = [
+	'${IOUTILS}/IOUtils.cpp'
+	]
+ 
+env.Program(
+    target = 'main',
+    source = src_files + external_files,
+    )

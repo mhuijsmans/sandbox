@@ -1,0 +1,4 @@
+Import("env")
+opt = env.CreateClone('comp4.test')
+# COMP4 depends on COMP2
+opt.BuildTests('comp4_tests',	[	opt.Glob('*.cpp')	] )
