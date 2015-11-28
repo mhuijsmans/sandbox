@@ -1,0 +1,11 @@
+To list content of the rpm
+$ rpm -qlp filename.rpm 
+
+List all script of a rpm
+$ rpm -qp --scripts filename.rpm
+
+List script for an installed package
+$ rpm -q --scripts packageName 
+
+List all installed packages
+$ yum list installed

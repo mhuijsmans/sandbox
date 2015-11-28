@@ -1,0 +1,111 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mahu.proto.jnitest</groupId>
+	<artifactId>jnitest</artifactId>
+	<packaging>nar</packaging>
+	<version>0.1.0-SNAPSHOT</version>
+	<name>jnitest</name>
+	<url>http://maven.apache.org</url>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.mahu.proto.commons</groupId>
+			<artifactId>commons</artifactId>
+			<version>0.2.0-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.0-alpha2</version>
+		</dependency>
+		 -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.0</version>
+		</dependency>		
+	</dependencies>
+
+	<build>
+		<defaultGoal>integration-test</defaultGoal>
+		<plugins>
+			<plugin>
+				<groupId>com.github.maven-nar</groupId>
+				<artifactId>nar-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<libraries>
+						<library>
+							<type>jni</type>
+							<narSystemPackage>org.mahu.proto.jnitest.nativewrapper</narSystemPackage>
+						</library>
+					</libraries>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
+				<!-- normally with nar-maven-plugin you have configuration skipTests=true, 
+					but I want unit tests. -->
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<profiles>
+
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<!-- Tell the Nar-Maven-Plugin (integration test), which test to execute -->
+				<!-- parameters are listed her: http://mark.donszelmann.org/maven-nar-plugin/nar-integration-test-mojo.html#includes -->
+				<test>AllTests</test>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>unittest</id>
+			<properties>
+				<test>UnitTest</test>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>special</id>
+			<properties>
+				<test>SpecialCasesTest</test>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>segv</id>
+			<properties>
+				<test>SegvTest</test>
+			</properties>
+		</profile>		
+	</profiles>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>	
+
+</project>

@@ -1,0 +1,8 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://org.example/mh">
+
+  <xs:simpleType name="ColorType">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  
+</xs:schema>

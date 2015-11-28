@@ -1,0 +1,13 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://example.org/images" xmlns="http://example.org/images">
+	
+	<xs:include schemaLocation="data-types2.xsd" />
+	
+	<xs:element name="images2" type="ImageType2" />
+	<xs:complexType name="ImageType2">
+		<xs:sequence>
+			<xs:element name="pixel" type="PixelType2" />
+		</xs:sequence>
+	</xs:complexType>
+	
+</xs:schema>

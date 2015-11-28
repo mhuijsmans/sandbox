@@ -1,0 +1,71 @@
+// pre-install
+if [ -s "/etc/init.d/myapp" ]
+then
+    /etc/init.d/myapp stop
+    rm /etc/init.d/myapp
+fi
+
+
+// post-install
+
+#create soft link script to services directory
+ln -s /usr/myusr/app/bin/start.sh /etc/init.d/myapp
+chmod 555 /etc/init.d/myapp
+
+# add a new service (requires that jenkins.sysconfig) is added.
+# it also requires "undo" part in the pre-uninstall 
+/sbin/chkconfig --add jenkins
+
+// pre-uninstall
+#the argument being passed in indicates how many versions will exist
+#during an upgrade, this value will be 1, in which case we do not want to stop
+#the service since the new version will be running once this script is called
+#during an uninstall, the value will be 0, in which case we do want to stop 
+#the service and remove the /etc/init.d script.
+if [ "$1" = "0" ]
+then
+    if [ -s "/etc/init.d/myapp" ]
+    then
+        /etc/init.d/myapp stop
+        rm /etc/init.d/myapp
+    fi
+fi;
+
+if [ "$1" = 0 ] ; then
+    # if this is uninstallation as opposed to upgrade, delete the service
+    /sbin/service jenkins stop > /dev/null 2>&1
+    /sbin/chkconfig --del jenkins
+fi
+exit 0
+
+// post uninstall
+%postun
+if [ "$1" -ge 1 ]; then
+    /sbin/service jenkins condrestart > /dev/null 2>&1
+fi
+exit 0
+
+/////////////////
+REF: http://www.abhigupta.com/2010/06/how-to-auto-start-services-on-boot-in-centos-redhat/
+To auto start a new service:
+
+1) Find out the name of service’s script from /etc/init.d/ directory e.g. mysqld or httpd
+2) Add it to chkconfig
+   $ sudo /sbin/chkconfig --add mysqld
+3) Make sure it is in the chkconfig.
+   $ sudo /sbin/chkconfig --list mysqld
+4) Set it to autostart
+   $ sudo /sbin/chkconfig mysqld on
+
+To stop a service from auto starting on boot
+$ sudo /sbin/chkconfig mysqld off
+/////////////////
+Start / stopping java
+nohup java -jar myapplication.jar > log.txt 2> errors.txt < /dev/null &
+PID=$!
+echo $PID > pid.txt
+
+PID=$(cat pid.txt)
+kill $PID
+
+////////////////

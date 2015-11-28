@@ -1,0 +1,6 @@
+Embedded script code
+--------------------					
+					<preinstallScriptlet>
+						<!-- ${..} get substituted -->
+						<script>echo "installing now ${app.home} $1=" $1;whoami;pwd</script>
+					</preinstallScriptlet>

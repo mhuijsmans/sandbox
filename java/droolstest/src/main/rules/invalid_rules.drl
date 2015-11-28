@@ -1,0 +1,9 @@
+package org.mahu.proto.drools.rules
+ 
+rule "Invalid Rule"
+  
+ when
+ 	SomeUnknownObject( stringValue == "Creating Chaos")
+ then 
+	System.out.println( "SOS" ); 
+end

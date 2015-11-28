@@ -1,0 +1,20 @@
+# CPPPATH defined the include path for include ".."
+# (open) I think include <..> uses a different path
+env = Environment(CPPPATH='.')
+
+# dynamic library formal
+all_src_files_normal=Glob('normal/*.cpp')
+normalSharedLib=env.SharedLibrary('normal/cppnative', all_src_files_normal)
+env.Alias("install",env.Install("/repo_cpp/lib",normalSharedLib))
+
+# dynamic library stub
+all_src_files_stub=Glob('stub/*.cpp')
+stubSharedLib=env.SharedLibrary('stub/cppnative', all_src_files_stub)
+env.Alias("install",env.Install("/repo_cpp/stublib",stubSharedLib))
+
+# copy the public header files
+all_public_header_files=Glob('*.h')
+env.Alias("install",env.Install("/repo_cpp/inc",all_public_header_files))
+
+
+

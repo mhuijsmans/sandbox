@@ -1,0 +1,105 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mahu.rpm</groupId>
+	<artifactId>maven-rpm</artifactId>
+
+	<!-- vesion is the version of the downloaded maven 3 version -->
+	<version>3.2.1</version>
+	<name>maven-rpm</name>
+	<url>http://maven.apache.org</url>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>download-files</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<delete dir="${build.maven.dir.zip}" />
+								<delete dir="${build.maven.dir}" />
+								<mkdir dir="${build.maven.dir.zip}" />
+								<mkdir dir="${build.maven.dir}" />
+								<!-- download file -->
+								<get
+									src="http://mirror.olnevhost.net/pub/apache/maven/maven-3/${project.version}/binaries/${apache.maven}-bin.zip"
+									dest="${build.maven.dir.zip}" verbose="false" usetimestamp="false" />
+								<!-- unzip file -->
+								<unzip src="${build.maven.dir.zip}/${apache.maven}-bin.zip"
+									dest="${build.maven.dir}">
+								</unzip>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rpm-maven-plugin</artifactId>
+				<!-- used 2.0.1, but that didn't include the scriptFile -->
+				<version>2.1-alpha-3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>rpm</goal>
+						</goals>
+					</execution>
+				</executions>
+				<!-- Description of the Mojo parameters: http://mojo.codehaus.org/rpm-maven-plugin/rpm-mojo.html -->
+				<configuration>
+					<copyright>2014, The Company</copyright>
+					<!-- The package group for the package -->
+					<group>Pikes</group>
+					<name>maven</name>
+					<description>Maven RPM Package.</description>
+					<mappings>
+						<!-- I have not specified any default user:group, so installed as root -->
+						<mapping>
+							<!-- The source.location contains a directory, e.g. apache-maven-3.2.1/* -->
+							<directory>/opt</directory>
+							<sources>
+								<source>
+									<location>${build.maven.dir}</location>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>/etc/profile.d</directory>
+							<!-- This is an existing directory, so no reason to create it -->
+							<directoryIncluded>false</directoryIncluded>
+							<filemode>750</filemode>
+							<username>root</username>
+							<groupname>root</groupname>
+							<sources>
+								<source>
+									<location>src/main/scripts/maven.sh</location>
+									<destination>maven.sh</destination>
+								</source>
+							</sources>
+						</mapping>						
+					</mappings>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+		<!-- properties are "applied" to the pom.xml but not a included scriptFile -->
+		<app.name>apache-maven-3.2.1</app.name>
+		<app.home>/opt/${app.name}</app.home>
+		<!-- -->
+		<apache.maven>apache-maven-${project.version}</apache.maven>
+		<!-- directory when to put the zip file and the unzipped data -->
+		<build.maven.dir.zip>${project.build.directory}/maven-zip</build.maven.dir.zip>
+		<build.maven.dir>${project.build.directory}/maven</build.maven.dir>
+	</properties>
+</project>
+

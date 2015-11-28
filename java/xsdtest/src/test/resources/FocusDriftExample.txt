@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<FocusDriftList>
+<FocCorList>
+<Foc X="12" Y="38"/>
+<Foc X="58" Y="92"/>
+<Foc X="94" Y="2"/>
+</FocCorList>
+<FocCorList>
+<Foc X="3" Y="78"/>
+<Foc X="43" Y="1"/>
+<Foc X="76" Y="2"/>
+</FocCorList>
+<FocCorList>
+<Foc X="45" Y="87"/>
+<Foc X="76" Y="12"/>
+<Foc X="98" Y="44"/>
+</FocCorList>
+</FocusDriftList>

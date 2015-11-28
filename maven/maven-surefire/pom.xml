@@ -1,0 +1,307 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mahu.proto.maven-surefire</groupId>
+	<artifactId>mavensurefire</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0-SNAPSHOT</version>
+	<name>mavensurefire</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<defaultGoal>integration-test</defaultGoal>
+	</build>
+
+	<profiles>
+
+		<!-- 3 execution test steps. Note that the default-test (details later) 
+			is also executed -->
+		<profile>
+			<id>p1</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
+						<executions>
+							<!-- 1st test run: Unit1Test -->
+							<execution>
+								<id>unit1TtypeTest</id>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<!-- I would like to pass variable to the unit test. It fails. I 
+										have tried both environment variables and system properties. In java test 
+										I always get null. I have not tried mvn -X to get more details. -->
+									<environmentVariables>
+										<LIBRARY_TYPEOFTEST>unit</LIBRARY_TYPEOFTEST>
+									</environmentVariables>
+									<systemPropertyVariables>
+										<LIBRARY_TYPEOFTEST>unit</LIBRARY_TYPEOFTEST>
+									</systemPropertyVariables>
+									<includes>
+										<include>**/Unit1Test.java</include>
+									</includes>
+								</configuration>
+							</execution>
+							<!-- 2nd test run: Unit2Test -->
+							<execution>
+								<id>unit2TtypeTest</id>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/Unit2Test.java</include>
+									</includes>
+								</configuration>
+							</execution>
+							<!-- 3rd test run: Unit3Test -->
+							<execution>
+								<id>unit3TtypeTest</id>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/Unit3Test.java</include>
+									</includes>
+								</configuration>
+							</execution>
+
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- running certain test cases during phase: test and and other during 
+			phase integration-test -->
+		<profile>
+			<id>p2</id>
+			<build>
+				<plugins>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+						<executions>
+							<execution>
+								<id>test</id>
+								<phase>test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<skip>false</skip>
+									<includes>
+										<include>**/Unit2Test.java</include>
+									</includes>
+								</configuration>
+							</execution>
+							<execution>
+								<id>surefire-it</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<skip>false</skip>
+									<includes>
+										<include>**/Unit3Test.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- surefire has default-test that is executed, unless you override/disable 
+			it -->
+		<profile>
+			<id>p3</id>
+			<build>
+				<plugins>
+
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
+						<executions>
+							<!-- skip the default-test execution by surefire -->
+							<!-- in log: maven-surefire-plugin:2.12:test (default-test) @ my-project -->
+							<!-- ref: http://stackoverflow.com/questions/11935181/what-does-the-default-test-stand-for-in-the-maven-surefire-plugin -->
+							<execution>
+								<id>default-test</id>
+								<configuration>
+									<skip>true</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>unit3TtypeTest</id>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/Unit3Test.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- include -->
+		<!-- running a single test case ONLY work when I include the **/ -->
+		<!-- The single test, now becomes the default-test -->
+		<profile>
+			<id>p4</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
+						<configuration>
+							<includes>
+								<include>**/Unit3Test.java</include>
+							</includes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- exclude -->
+		<!-- running a single test case ONLY work as shown below. Using e.g. **/Unit3Test 
+			doesn't work. In case of no test found, all tests are executed -->
+		<profile>
+			<id>p5</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
+						<configuration>
+							<excludes>
+								<exclude>**/Unit3Test.java</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- running multiple integration-test's -->
+		<profile>
+			<id>p6</id>
+			<build>
+				<plugins>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+						<executions>
+							<execution>
+								<id>surefire-it1</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<skip>false</skip>
+									<includes>
+										<include>**/Unit3Test.java</include>
+									</includes>
+								</configuration>
+							</execution>
+							<execution>
+								<id>surefire-it2</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<skip>false</skip>
+									<includes>
+										<include>**/Unit2Test.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- include test suite -->
+		<profile>
+			<id>p7</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
+						<configuration>
+							<includes>
+								<include>**/AllTests1.java</include>
+							</includes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- exclude test suite. Doesn't really work, because all other test cases are executed-->
+		<profile>
+			<id>p8</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
+						<configuration>
+							<excludes>
+								<exclude>**/AllTests1.java</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+</project>

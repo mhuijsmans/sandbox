@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		<!-- <Syslog name="SysLogRFC5424" format="RFC5424" host="10.0.0.11" port="514" 
+			protocol="TCP" appName="MyAppLog4j2" includeMDC="false" facility="LOCAL0" 
+			enterpriseNumber="18060" newLine="true" messageId="Audit" id="App" charset="ISO-8859-1" 
+			/> <Async name="SysLogRFC5424_Async"> <AppenderRef ref="SysLogRFC5424" /> 
+			</Async> -->
+		<!-- requires a MonGodb driver; see pom.xml -->
+		<NoSql name="mongodb">
+			<MongoDb databaseName="syslog" collectionName="appl1Log"
+				server="10.0.0.13" username="loggingUser" password="abc123" />
+		</NoSql>
+		<!-- 
+		<Async name="mongodb_Async">
+			<AppenderRef ref="mongodb" />
+		</Async>
+		-->
+	</Appenders>
+
+	<Loggers>
+		<Logger name="org.mahu.proto.logging.other" level="debug">
+			<!-- Optional: You can include a AppenderRef here, but then this logger 
+				uses own and Root AppenderRef -->
+			<AppenderRef ref="mongodb" />
+		</Logger>
+		<Root level="error">
+			<AppenderRef ref="Console" />
+		</Root>
+	</Loggers>
+</Configuration>

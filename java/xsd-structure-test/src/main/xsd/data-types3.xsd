@@ -1,0 +1,9 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:mh="http://org.example/mh"
+  targetNamespace="http://org.example/mh">
+  
+  <xs:simpleType name="PixelType3">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  
+</xs:schema>

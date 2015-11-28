@@ -1,0 +1,76 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          maven-rpmtest
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# X-Interactive:     true
+# Short-Description: Start/stop maven-rpmtest server
+### END INIT INFO
+
+APP_NAME="maven-rpmtest"
+APP_HOME="/opt/$APP_NAME"
+JAVA_CLASSPATH="$APP_HOME/lib/*"
+JAVA_MAINCLASS="org.mahu.proto.mavenrpm.JettyApp"
+JAVA_USER_DIR="$APP_HOME"
+# /var/run seems to be the place for pid files
+PID_FILE="/var/run/$APP_NAME.pid"
+
+echo "APP_NAME       : $APP_NAME"
+echo "APP_HOME       : $APP_HOME"
+echo "JAVA_CLASSPATH : $JAVA_CLASSPATH"
+echo "JAVA_MAINCLASS : $JAVA_MAINCLASS"
+echo "JAVA_USER_DIR  : $JAVA_USER_DIR"
+echo "PID_FILE       : $PID_FILE"
+ 
+# note that to build a proper command for java on linux, that "" are essential.
+ 
+case $1 in
+    start)
+        echo "Starting $APP_NAME .."
+        if [ ! -f $PID_FILE ]; then
+            nohup java -cp "$JAVA_CLASSPATH" "$JAVA_MAINCLASS" "$JAVA_USER_DIR" 2>> /dev/null >> /dev/null &
+            echo $! > $PID_FILE
+            echo "$APP_NAME started ..."
+        else
+            echo "$APP_NAME is already running ..."
+        fi
+    ;;
+    stop)
+        if [ -f $PID_FILE ]; then
+            PID=$(cat $PID_FILE);
+            echo "Stopping $APP_NAME ..."
+            kill $PID;
+            echo "$APP_NAME stopped ..."
+            rm $PID_FILE
+        else
+            echo "$APP_NAME is not running ..."
+        fi
+    ;;
+    restart)
+        if [ -f $PID_FILE ]; then
+            PID=$(cat $PID_FILE);
+            echo "Stopping $APP_NAME ...";
+            kill $PID;
+            echo "$APP_NAME stopped ...";
+            rm $PID_FILE
+        fi
+ 
+        echo "Starting $APP_NAME ..."
+        nohup java -cp "$JAVA_CLASSPATH" "$JAVA_MAINCLASS" "$JAVA_USER_DIR" 2>> /dev/null >> /dev/null &
+        echo $! > $PID_FILE
+        echo "$APP_NAME started ..."        
+    ;;
+    console)
+        echo "Starting $APP_NAME .."
+        if [ ! -f $PID_FILE ]; then
+            java -cp "$JAVA_CLASSPATH" "$JAVA_MAINCLASS" "$JAVA_USER_DIR"
+            echo "$APP_NAME terminated"
+        else
+            echo "$APP_NAME is already running ..."
+        fi
+    ;;    
+esac
+
+exit 0

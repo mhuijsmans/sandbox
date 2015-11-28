@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:mh="http://org.example/mh" 
+	targetNamespace="http://org.example/mh"
+	elementFormDefault="qualified">
+	<!-- You can also add (unclear what parameter is): attributeFormDefault="qualified" -->
+
+	<xs:include schemaLocation="data-types3.xsd" />
+
+	<!-- Elements must contains the complex type in order to get the @XmlRootElement 
+		annotation -->
+	<xs:element name="ImageType3">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="pixel" type="mh:PixelType3" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

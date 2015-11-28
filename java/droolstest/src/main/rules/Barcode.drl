@@ -1,0 +1,79 @@
+package org.mahu.proto.drools.rules
+
+import org.mahu.proto.drools.model.Barcode
+import org.mahu.proto.drools.model.BarcodeType
+import org.mahu.proto.drools.model.TheName
+ 
+rule "Rule100"
+when
+ 	Barcode(value == "100")
+then 
+	System.out.println( "rule1" ); 
+end
+
+rule "Rule101"
+when	
+ 	barcode : Barcode()
+ 	eval(barcode.getValue().startsWith("101"))
+then 
+	System.out.println( "rule2" ); 
+end
+
+rule "Rule102"
+when	
+ 	barcode : Barcode()
+ 	eval(barcode.getValue().startsWith("102"))
+ 	eval(barcode.getType().equals(BarcodeType._1D))
+then 
+	System.out.println( "rule3" ); 
+end
+
+rule "Rule103"
+when	
+ 	barcode : Barcode()
+ 	eval(barcode.getValue().startsWith("103"))
+then 
+	insert(new Barcode("100", BarcodeType._1D));
+end
+
+rule "Rule104"
+when	
+ 	barcode : Barcode()
+ 	names : TheName()
+ 	eval(barcode.getValue().startsWith("104"))
+then 
+	names.add("104name");
+end
+
+rule "Rule105"
+when	
+ 	Barcode( startsWidth("105") )
+then 
+	System.out.println( "rule5" );
+end
+
+rule "Rule106"
+when	
+ 	barcode : Barcode( startsWidth("106") )
+then 
+	// changing value is not detected by Drools 
+	barcode.setValue("100");
+end
+
+rule "Rule107"
+when	
+ 	barcode : Barcode( startsWidth("107") )
+then 
+	// changing value is not detected by Drools 
+	barcode.setValue("100");
+	update(barcode)
+end
+
+rule "Rule108"
+when	
+ 	barcode : Barcode( startsWidth("108") )
+then 
+	// changing value is not detected by Drools 
+	barcode.setValue("107");
+	update(barcode)
+end

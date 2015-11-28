@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.philips.com/css">
+  <process id="process3" name="Scan slide" isExecutable="true">
+    <endEvent id="endevent1" name="End"></endEvent>
+    <serviceTask id="servicetask1" name="ExceptionInAsyncTask" activiti:class="org.mahu.proto.restappext.task.ExceptionInAsyncTask"></serviceTask>
+    <startEvent id="startevent2" name="Start"></startEvent>
+    <sequenceFlow id="flow31" sourceRef="startevent2" targetRef="servicetask1"></sequenceFlow>
+    <sequenceFlow id="flow32" sourceRef="servicetask1" targetRef="endevent1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_process3">
+    <bpmndi:BPMNPlane bpmnElement="process3" id="BPMNPlane_process3">
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="310.0" y="214.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask1" id="BPMNShape_servicetask1">
+        <omgdc:Bounds height="55.0" width="139.0" x="132.0" y="204.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent2" id="BPMNShape_startevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="60.0" y="214.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow31" id="BPMNEdge_flow31">
+        <omgdi:waypoint x="95.0" y="231.0"></omgdi:waypoint>
+        <omgdi:waypoint x="132.0" y="231.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow32" id="BPMNEdge_flow32">
+        <omgdi:waypoint x="271.0" y="231.0"></omgdi:waypoint>
+        <omgdi:waypoint x="310.0" y="231.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

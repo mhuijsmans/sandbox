@@ -1,0 +1,25 @@
+<assembly>
+	<id>assembly3</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<!-- this doesn;t work (yet) -->
+	<moduleSets>
+		<moduleSet>
+			<includes>
+				<include>org.mahu.proto.maven:module2</include>
+				<include>org.mahu.proto.maven:module3</include>
+			</includes>
+			<binaries>
+				<attachmentClassifier>jar-with-dependencies</attachmentClassifier>
+				<outputDirectory>lib</outputDirectory>
+				<outputFileNameMapping>${module.artifactId}-${module.version}-${module.classifier}.${module.extension}
+				</outputFileNameMapping>
+			</binaries>
+		</moduleSet>
+	</moduleSets>
+
+</assembly>

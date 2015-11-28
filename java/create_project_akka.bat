@@ -1,0 +1,1 @@
+mvn archetype:generate -DgroupId=org.mahu.proto.akka -DartifactId=akkatest -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false

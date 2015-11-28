@@ -1,0 +1,174 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mahu.proto.mavenrpm</groupId>
+	<artifactId>maven-rpmtest</artifactId>
+	<packaging>jar</packaging>
+	<version>0.1.0</version>
+
+	<name>maven-rpmtest</name>
+	<url>http://maven.apache.org</url>
+
+	<dependencies>
+		<!-- Jetty and it's dependencies are copied by one of the mappings -->
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>9.1.5.v20140505</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rpm-maven-plugin</artifactId>
+				<!-- used 2.0.1, but that didn't include the scriptFile -->
+				<version>2.1-alpha-3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>rpm</goal>
+						</goals>
+					</execution>
+				</executions>
+				<!-- Description of the Mojo parameters: http://mojo.codehaus.org/rpm-maven-plugin/rpm-mojo.html -->
+				<configuration>
+					<copyright>2014, The Company</copyright>
+					<!-- The package group for the package -->
+					<group>Pikes</group>
+					<!-- name rpm: <name>-<maven project.version>-<release>.noarch.rpm -->
+					<name>${app.name}</name>
+					<release>${build.number}</release>
+					<description>Maven test project: RPM Package.</description>
+					<!-- Target architecture of the RPM -->
+					<!-- <needarch>noarch</needarch> -->
+					<!-- The default user:group during yum install is root:root. This feels 
+						like a major security risk. -->
+					<!-- I have not checked what syntax is for user:group, but maven-rpmtest 
+						is ok -->
+					<!-- The default user name for files when installed. Only applicable 
+						to a Mapping if filemode, username, AND groupname are NOT populated. -->
+					<!-- NOTE: The user:group has to be created in the pre-install step 
+						!!! -->
+					<defaultUsername>${app.name}</defaultUsername>
+					<!-- The default group name for files when installed. Only applicable 
+						to a Mapping if filemode, username, AND groupname are NOT populated -->
+					<defaultGroupname>${app.name}</defaultGroupname>
+					<!-- mapping parameters are described here: http://mojo.codehaus.org/rpm-maven-plugin/map-params.html -->
+					<mappings>
+						<!-- This mapping ensure that also ${app.home} has the proper user:group 
+							properties -->
+						<mapping>
+							<directory>${app.home}</directory>
+						</mapping>
+						<mapping>
+							<directory>${app.home}/lib/</directory>
+							<!-- Very compact way of declaring that we want all dependencies – 
+								the dependency tag – and our primary build artifact – the artifact tag – 
+								to be deployed to the lib directory of our application. -->
+							<dependency />
+							<artifact />
+						</mapping>
+						<mapping>
+							<directory>${app.home}/conf</directory>
+							<!-- The configuration tag, which translates in to the %config RPM 
+								macro, which means that changes to the file are preserved when updating or 
+								removing RPM -->
+							<configuration>true</configuration>
+							<sources>
+								<source>
+									<!-- Take the app.properties file and deploy it as a sample file 
+										in the conf directory. -->
+									<location>${project.build.outputDirectory}/app.properties</location>
+									<destination>app.sample.properties</destination>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>${app.home}/logs</directory>
+							<configuration>true</configuration>
+							<!-- I have tried to set a file mode but that can permission denied 
+								for cat of the logfile. Unclear why. -->
+							<!-- <filemode>666</filemode> -->
+							<sources>
+								<source>
+									<location>src/main/resources/log.txt</location>
+									<destination>rpm-log.txt</destination>
+								</source>
+							</sources>
+						</mapping>
+						<!-- Create an empty logs directory for our application. This is done 
+							by declaring a mapping with no sources. -->
+						<mapping>
+							<directory>${app.home}/testdir</directory>
+						</mapping>
+						<!-- Add a init.d so that the app is started (present) as a service -->
+						<mapping>
+							<directory>/etc/init.d</directory>
+							<!-- This is an existing directory, so no reason to create it -->
+							<directoryIncluded>false</directoryIncluded>
+							<!-- 750 means -->
+							<!-- owner: rwx -->
+							<!-- other: nothing (3 dashes gives xml complaint) -->
+							<filemode>750</filemode>
+							<username>root</username>
+							<groupname>root</groupname>
+							<sources>
+								<source>
+									<location>src/main/scripts/maven-rpmtest</location>
+									<destination>${app.name}</destination>
+								</source>
+							</sources>
+						</mapping>
+					</mappings>
+					<!-- scripts to be executed in different phases of RPM life cycle -->
+					<preinstallScriptlet>
+						<scriptFile>src/main/scripts/preinstall.sh</scriptFile>
+						<fileEncoding>utf-8</fileEncoding>
+					</preinstallScriptlet>
+					<postinstallScriptlet>
+						<scriptFile>src/main/scripts/postinstall.sh</scriptFile>
+						<fileEncoding>utf-8</fileEncoding>
+					</postinstallScriptlet>
+					<preremoveScriptlet>
+						<scriptFile>src/main/scripts/preuninstall.sh</scriptFile>
+						<fileEncoding>utf-8</fileEncoding>
+					</preremoveScriptlet>
+					<postremoveScriptlet>
+						<scriptFile>src/main/scripts/postuninstall.sh</scriptFile>
+						<fileEncoding>utf-8</fileEncoding>
+					</postremoveScriptlet>
+					<!-- The list of requirements for this package. -->
+					<requires>
+						<require>/bin/sh</require>
+						<require>/usr/sbin/groupadd</require>
+						<require>/usr/sbin/useradd</require>
+						<require>/usr/sbin/groupdel</require>
+						<require>/usr/sbin/userdel</require>
+						<require>/sbin/service</require>
+						<require>/sbin/chkconfig</require>
+						<require>jre &gt;= 1.5</require>
+					</requires>
+					<!-- a change log file -->
+					<!-- changelogFile>src/changes.txt</changelogFile> -->
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+		<!-- properties are "applied" to the pom.xml but not a included scriptFile -->
+		<app.name>${project.artifactId}</app.name>
+		<!-- build number can be set by called, e.g. -Dbuild.number=..... -->
+		<build.number>1</build.number>
+		<app.home>/opt/${app.name}</app.home>
+	</properties>
+</project>

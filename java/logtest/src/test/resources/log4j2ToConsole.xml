@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Console name="Console1" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="[1] %d{HH:mm:ss    } [%t] %-5level %logger{10} - %msg%n" />
+		</Console>
+		<Console name="Console2" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="[2] %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		<Console name="Console3" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="[3] %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+	</Appenders>
+
+	<Loggers>
+		<Logger name="DedicatedLogger" level="DEBUG">
+			<!-- The logger name is used as key for the LogManager -->
+			<!-- This logger uses own appender and Root AppenderRef -->
+			<AppenderRef ref="Console3" />
+		</Logger>
+		<Logger name="org.mahu.proto.logging.helper" level="DEBUG">
+			<!-- This logger uses own appender and Root AppenderRef -->
+			<AppenderRef ref="Console2" />
+		</Logger>
+		<Logger name="org.mahu.proto.logging.anotherhelper" level="INFO"/>
+		<Root level="ERROR">
+			<AppenderRef ref="Console1" />
+		</Root>
+	</Loggers>
+</Configuration>

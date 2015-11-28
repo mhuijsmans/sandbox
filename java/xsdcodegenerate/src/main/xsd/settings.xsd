@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:simpleType name="DoubleTypeS">
+		<xs:restriction base="xs:double">
+			<xs:minInclusive value="0" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="IntTypeS">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="0" />
+			<xs:maxInclusive value="1000" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="StringTypeS">
+		<xs:restriction base="xs:string">
+		</xs:restriction>
+	</xs:simpleType>	
+
+	<!-- ================================================== -->
+
+	<xs:element  name="AppSettings" >
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="DoorSettings" type="DoorSettings" />
+				<xs:element name="RoofSettings" type="RoofSettings" />
+				<xs:element name="TileSettings" type="TileSettings" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="DoorSettings">
+		<xs:sequence>
+			<xs:element name="Length" type="IntTypeS" />
+			<xs:element name="SensitivityLength" type="DoubleTypeS" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RoofSettings">
+		<xs:sequence>
+			<xs:element name="Length" type="IntTypeS" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="TileSettings">
+		<xs:sequence>
+			<xs:element name="Length" type="IntTypeS" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Width" type="DoubleTypeS" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Property" type="StringTypeS" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="TileVendor" type="TileVendor" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="TileVendor">
+		<xs:sequence>
+			<xs:element name="Name" type="IntTypeS" />
+		</xs:sequence>
+	</xs:complexType>	
+
+</xs:schema>

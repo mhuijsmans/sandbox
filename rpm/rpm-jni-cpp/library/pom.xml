@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.mahu.rpm.rpm-jni-cpp</groupId>
+		<artifactId>main-module</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>library</artifactId>
+	<packaging>nar</packaging>
+	<name>library</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.mahu.rpm.rpm-jni-cpp</groupId>
+			<artifactId>library-api</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<defaultGoal>integration-test</defaultGoal>
+
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
+				<executions>
+					<!-- Unit test: all java -->
+					<execution>
+						<id>unit-test</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<!-- I would like to pass variable to the unit test. It fails. I have 
+								tried both environment variables and system properties. In java test I always 
+								get null. I have not tried mvn -X to get more details. -->
+							<environmentVariables>
+								<LIBRARY_TYPEOFTEST>unit</LIBRARY_TYPEOFTEST>
+								<LIBRARY_BUILDDIR>${project.build.directory}</LIBRARY_BUILDDIR>
+							</environmentVariables>
+							<includes>
+								<include>JniLibraryUnitTest.java</include>
+							</includes>
+						</configuration>
+					</execution>
+					<!-- stub library testing -->
+					<execution>
+						<id>stubLibraryTests</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>JniLibraryTest.java</include>
+							</includes>
+						</configuration>
+					</execution>
+					<!-- real library testing -->
+					<execution>
+						<id>realLibraryTests</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>JniLibraryTest.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+				<!-- <configuration> <skipTests>true</skipTests> </configuration> -->
+			</plugin>
+
+			<plugin>
+				<groupId>com.github.maven-nar</groupId>
+				<artifactId>nar-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<libraries>
+						<library>
+							<type>jni</type>
+							<narSystemPackage>org.mahu.rpm.rpm_jni</narSystemPackage>
+						</library>
+					</libraries>
+					<!-- Add here paths for header files -->
+					<cpp>
+						<includePaths>
+							<includePath>/repo_cpp/inc</includePath>
+						</includePaths>
+					</cpp>
+					<!-- Dynamic libraries that are needed during linking (buiilding dynamic 
+						library) -->
+					<linker>
+						<libs>
+							<lib>
+								<name>cppnative</name>
+								<type>shared</type>
+								<directory>/repo_cpp/lib</directory>
+							</lib>
+						</libs>
+					</linker>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+</project>

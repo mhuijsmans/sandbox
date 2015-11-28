@@ -1,0 +1,25 @@
+<assembly>
+	<id>assembly4</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>true</includeBaseDirectory>
+	<baseDirectory>baseDirName-${version}</baseDirectory>
+	
+	<!-- Fileset here work on my work project -->
+	<fileSets>
+		<fileSet>
+			<directory>src/main/scripts</directory>
+			<outputDirectory>/bin</outputDirectory>
+			<fileMode>755</fileMode>
+		</fileSet>
+	</fileSets>
+	
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>/jars</outputDirectory>
+			 <useProjectArtifact>false</useProjectArtifact>
+			<scope>runtime</scope>
+		</dependencySet>
+	</dependencySets>
+</assembly>

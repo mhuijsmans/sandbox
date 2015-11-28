@@ -1,0 +1,2 @@
+Run java on remote machine (including background aspects).
+http://stackoverflow.com/questions/22204520/bash-execute-java-program-on-multiple-remote-machines?rq=1 

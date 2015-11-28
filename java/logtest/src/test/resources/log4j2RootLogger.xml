@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<!-- I experienced that the name Console is already "in use" -->
+		<Console name="Console1" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="# %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+	</Appenders>
+
+	<Loggers>
+		<Logger name="org.mahu.proto.logging.helper" level="DEBUG"
+			additivity="false"> <!--  additivity=false, means to not use rootLogger -->
+			<!-- This logger uses own appender and Root AppenderRef -->
+			<AppenderRef ref="Console1" />
+		</Logger>
+	</Loggers>
+</Configuration>

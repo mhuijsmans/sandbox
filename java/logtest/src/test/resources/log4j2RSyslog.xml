@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Syslog name="SysLogRFC5424" format="RFC5424" host="192.168.1.105"
+			port="514" protocol="TCP" appName="MyAppLog4j2" includeMDC="false"
+			facility="LOCAL0" enterpriseNumber="18060" newLine="true" messageId="Audit"
+			id="App" charset="ISO-8859-1" />
+		<Async name="SysLogRFC5424_Async">
+			<AppenderRef ref="SysLogRFC5424" />
+		</Async>
+	</Appenders>
+
+	<Loggers>
+		<Logger name="rsyslog" level="DEBUG">
+			<!-- This logger uses own appender and RootLogger -->
+			<AppenderRef ref="SysLogRFC5424" />
+		</Logger>
+	</Loggers>
+</Configuration>

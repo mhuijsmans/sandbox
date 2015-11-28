@@ -1,0 +1,19 @@
+<assembly>
+	<id>assembly1</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+
+	<includeBaseDirectory>false</includeBaseDirectory>
+	
+	<!-- Include for all dependent modules, the output jar + dependencies in lib -->
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>/lib</outputDirectory>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<scope>runtime</scope>
+		</dependencySet>
+	</dependencySets>
+	
+</assembly>

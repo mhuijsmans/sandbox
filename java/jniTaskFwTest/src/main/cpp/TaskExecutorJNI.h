@@ -1,0 +1,2 @@
+#ifndef TaskExecutorJNI_H_#define TaskExecutorJNI_H_#include <jni.h>void initCpp(JNIEnv *env, jobject javaTaskExecutorRef);
+void executeCpp(JNIEnv *env, jobject javaTaskExecutorRef);void disposeCpp(JNIEnv *env, jobject javaTaskExecutorRef);#endif

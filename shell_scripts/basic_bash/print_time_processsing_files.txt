@@ -1,0 +1,23 @@
+print_time_processsing_files.sh processes different files with sizes listed below.
+Times are shown below.
+
+-rw-rw-r--. 1 martien martien  148341008 Jun 30 21:52 log2.tar.gz
+-rw-rw-r--. 1 martien martien 1013451318 Jun 30 21:21 log2.xml
+-rw-rw-r--. 1 martien martien  148340973 Jun 30 21:44 log2.zip
+-rw-rw-rw-. 1 martien martien    1706147 Jun 30 21:18 XFSlog_20130724.xml
+
+[martien@localhost logtest]$ ./test_process_files.sh
+06-30-14:22:35:03.692111509
+Cat&grep of log2.xml, number of matches
+594
+06-30-14:22:35:12.680231135
+Cat&grep of log2.zip, number of matches
+594
+06-30-14:22:35:20.982103147
+Cat&grep of log2.tar.gz, number of matches
+log2.xml
+594
+06-30-14:22:35:31.148413879
+Cat&grep of XFSlog_20130724.xml, number of matches
+1
+06-30-14:22:35:31.195424399

@@ -1,0 +1,1 @@
+mvn archetype:generate -DgroupId=org.mahu.proto.service -DartifactId=serviceapp -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false

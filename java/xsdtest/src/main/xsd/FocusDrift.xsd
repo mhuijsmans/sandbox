@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="FocusDriftList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="FocCorList" maxOccurs="unbounded"
+					minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Foc" maxOccurs="unbounded"
+								minOccurs="0">
+								<xs:complexType>
+									<xs:attribute type="xs:nonNegativeInteger" name="X"
+										use="required" />
+									<xs:attribute type="xs:nonNegativeInteger" name="Y"
+										use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

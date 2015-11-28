@@ -1,0 +1,16 @@
+import os
+import sys
+Import('env')
+
+cpppath = ['.', './java-datatypes', './logging']
+cpppath.extend(env['CPPPATH'])
+
+opt = env.Clone()
+opt.Append(CPPPATH = cpppath)
+
+# dynamic library
+src_files = Glob('./*.cpp')
+src_files.extend( Glob('./java-datatypes/*.cpp') )
+src_files.extend( Glob('./logging/*.cpp') )
+
+opt.SharedLibrary('taskexecutor', src_files)

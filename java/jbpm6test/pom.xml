@@ -1,0 +1,140 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mahu.proto.jbpm6</groupId>
+	<artifactId>jbpm6test</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+	<name>jbpm6test</name>
+	<url>http://maven.apache.org</url>
+
+	<!-- Info for toop-level pom -->
+	<!-- ref: http://docs.jboss.org/jbpm/v6.0.1/userguide/jBPMIntegration.html#d0e14359 -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<drools.version>6.0.1.Final</drools.version>
+		<jbpm.version>6.0.1.Final</jbpm.version>
+		<hibernate.version>4.2.0.Final</hibernate.version>
+		<hibernate.core.version>4.2.0.Final</hibernate.core.version>
+		<slf4j.version>1.6.4</slf4j.version>
+		<jboss.javaee.version>1.0.0.Final</jboss.javaee.version>
+		<logback.version>1.0.9</logback.version>
+		<h2.version>1.3.161</h2.version>
+		<btm.version>2.1.4</btm.version>
+		<junit.version>4.11</junit.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- define drools BOM -->
+			<dependency>
+				<groupId>org.drools</groupId>
+				<artifactId>drools-bom</artifactId>
+				<type>pom</type>
+				<version>${drools.version}</version>
+				<scope>import</scope>
+			</dependency>
+			<!-- define drools BOM -->
+			<dependency>
+				<groupId>org.jbpm</groupId>
+				<artifactId>jbpm-bom</artifactId>
+				<type>pom</type>
+				<version>${jbpm.version}</version>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<!-- Needed for working with KIE API -->
+		<dependency>
+			<groupId>org.jbpm</groupId>
+			<artifactId>jbpm-flow</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jbpm</groupId>
+			<artifactId>jbpm-flow-builder</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jbpm</groupId>
+			<artifactId>jbpm-bpmn2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jbpm</groupId>
+			<artifactId>jbpm-persistence-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jbpm</groupId>
+			<artifactId>jbpm-human-task-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jbpm</groupId>
+			<artifactId>jbpm-runtime-manager</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+
+		<!-- test dependencies -->
+		<!-- 
+		<dependency>
+			<groupId>org.jbpm</groupId>
+			<artifactId>jbpm-shared-services</artifactId>
+			<scope>test</scope>
+		</dependency>
+		 -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.core.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${h2.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.btm</groupId>
+			<artifactId>btm</artifactId>
+			<version>${btm.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+
+	<repositories>
+		<repository>
+			<id>jboss-public-repository-group</id>
+			<name>JBoss Public Repository Group</name>
+			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+
+</project>

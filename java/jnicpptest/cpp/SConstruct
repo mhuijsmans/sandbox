@@ -1,0 +1,8 @@
+import os
+import sys
+
+env = Environment()
+
+SConscript('SConscript', exports = 'env')
+
+

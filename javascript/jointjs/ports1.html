@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<!-- this file is c&p from: http://www.jointjs.com/tutorial/ports -->
+
+<!--
+<link rel="stylesheet" href="joint.css" />
+<script src="joint.js"></script>
+-->
+
+<link rel="stylesheet" type="text/css" href="http://www.jointjs.com/downloads/joint.css"></link>
+<script type="text/javascript" src="http://www.jointjs.com/downloads/joint.js" ></script>
+<script type="text/javascript" src="http://jointjs.com/downloads/joint.shapes.devs.min.js" ></script>
+
+</head>
+
+<body>
+
+<!-- next line needs to precede the javascript as it refers to it -->
+<div id="paper-create"> </div>
+
+<script type="text/javascript">
+
+var graph = new joint.dia.Graph;
+var paper = new joint.dia.Paper({
+    el: $('#paper-create'),
+    width: 650,
+    height: 200,
+    gridSize: 1,
+    model: graph
+});
+
+var m1 = new joint.shapes.devs.Model({
+    position: { x: 50, y: 50 },
+    size: { width: 90, height: 90 },
+    inPorts: ['in1','in2'],
+    outPorts: ['out1', 'out2'],
+    attrs: {
+        '.label': { text: 'Model', 'ref-x': .4, 'ref-y': .2 },
+        rect: { fill: '#2ECC71' },
+        '.inPorts circle': { fill: '#16A085' },
+        '.outPorts circle': { fill: '#E74C3C' }
+    }
+});
+
+graph.addCell(m1);
+
+var m2 = m1.clone();
+m2.translate(300, 0);
+graph.addCell(m2);
+
+var m3 = m1.clone().translate(500, 0).attr('.label/text', 'Model3').addTo(graph);
+
+var link = new joint.shapes.devs.Link({
+     source: {
+       id: m1.id,
+       port: 'out1'
+     },
+     target: {
+       id: m2.id,
+       port: 'in1'
+     }
+   });
+  // Assume graph has the srcModel and dstModel with in and out ports.
+  graph.addCell(link)
+
+</script>
+
+</body>
+</html>

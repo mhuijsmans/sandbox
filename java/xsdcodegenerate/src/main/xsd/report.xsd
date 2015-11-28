@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+
+	<xs:simpleType name="DoubleTypeR">
+		<xs:restriction base="xs:double">
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="IntTypeR">
+		<xs:restriction base="xs:int">
+		</xs:restriction>
+	</xs:simpleType>
+
+	<!-- ================================================== -->
+
+	<xs:element name="AppReport">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Results" type="Results" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="Results">
+		<xs:sequence>
+			<xs:element name="CarResult" type="CarResult"
+				minOccurs="0" maxOccurs="1" />
+			<xs:element name="BoatResult" type="BoatResult"
+				minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CarResult">
+		<xs:sequence>
+			<xs:element name="Position" type="Position" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Position">
+		<xs:sequence>
+			<xs:element name="Start" type="IntTypeR" />
+			<xs:element name="Size" type="IntTypeR" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="BoatResult">
+		<xs:sequence>
+			<xs:element name="Harbour" type="CoordinatesR"
+				minOccurs="0" maxOccurs="1" />
+			<xs:element name="Position" type="CoordinatesR"
+				minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CoordinatesR">
+		<xs:sequence>
+			<xs:element name="CoordinateLT" type="CoordinateR" />
+			<xs:element name="CoordinateRT" type="CoordinateR" />
+			<xs:element name="CoordinateLB" type="CoordinateR" />
+			<xs:element name="CoordinateRB" type="CoordinateR" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CoordinateR">
+		<xs:sequence>
+			<xs:element name="X" type="IntTypeR" />
+			<xs:element name="Y" type="IntTypeR" />
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>

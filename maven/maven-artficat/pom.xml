@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.mahu.proto.maven</groupId>
+	<artifactId>maven-artifact</artifactId>
+	<packaging>jar</packaging>
+	<version>0.1.0-SNAPSHOT</version>
+	<name>Exploring Maven final name</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<my.version>4.0.8.8</my.version>
+	</properties>
+
+	<build>
+		<finalName>myFinalName</finalName>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>generate-javadocs</id>
+						<goals>
+							<!-- default goal -->
+							<goal>javadoc</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.5.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<!-- install:install-file is mostly used to install an externally 
+								created artifact into the local repository, along with its POM. In that case 
+								the project information can be taken from an optionally specified pomFile, 
+								but can also be given using command line parameters. -->
+							<goal>install-file</goal>
+						</goals>
+						<phase>install</phase>
+						<configuration>
+							<file>${project.build.directory}/${project.build.finalName}.${project.packaging}</file>
+							<generatePom>false</generatePom>
+							<pomFile>pom.xml</pomFile>
+							<version>${my.version}</version>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>

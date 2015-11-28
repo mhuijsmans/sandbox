@@ -1,0 +1,16 @@
+List groups
+$ cat /etc/group
+
+Add a group
+$ sudo groupadd <anem>
+
+Delete a group
+$ sudo groupdel <name>
+
+List groups of logged-in user
+$ groups
+
+list groups that user1 is member of
+$ groups user1
+
+http://www.centos.org/docs/5/html/Deployment_Guide-en-US/s1-users-tools.html

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>Canvas:</p>
+<canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+<script>
+
+// class Point
+
+function Point(x,y) {
+  this.x = x;
+  this.y = y;
+}
+
+// name method and variable can not be the same.
+Point.prototype.GetX = function() {
+  return this.x;
+}
+
+Point.prototype.GetY = function() {
+  return this.y;
+}
+
+// class Matrix
+
+function MatrixRotate(point, degreeClockwise) {
+  this.x = point.GetX();
+  this.y = point.GetY();
+  this.degreeClockwise = degreeClockwise;
+}
+
+// class methods
+// Transform a point around a predefined point with given angle
+MatrixRotate.prototype.Transform = function(point) {
+  var centerX = this.x;
+  var centerY = this.y;
+  var x = point.GetX();
+  var y = point.GetY();
+  // degrees to radians
+  var radians = (this.degreeClockwise * Math.PI ) / 180;
+  var newX = centerX + (x-centerX)*Math.cos(radians) + (y-centerY)*Math.sin(radians);
+  var newY = centerY - (x-centerX)*Math.sin(radians) + (y-centerY)*Math.cos(radians);
+  return new Point(newX, newY);
+}
+
+function MatrixLinaer(point) {
+  this.x = point.GetX();
+  this.y = point.GetY();
+}
+
+MatrixLinaer.prototype.Transform = function(point) {
+  var x = point.GetX();
+  var y = point.GetY();
+  var newX = x + this.x;
+  var newY = y + this.y;
+  return new Point(newX, newY);
+}
+
+function drawLine(x1, y1, x2, y2) {
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.stroke();
+}
+
+// no overloading, function name has to be unique
+function drawLine1(point1, point2) {
+  drawLine(point1.GetX(), point1.GetY(), point2.GetX(), point2.GetY());
+}
+
+function drawRect(p1,p2,p3,p4) {
+    drawLine1(p1, p2);
+    drawLine1(p2, p3);
+    drawLine1(p3, p4);
+    drawLine1(p4, p1);
+}
+
+function drawRectTransformed(m, p1,p2,p3,p4) {
+    var p5 = m.Transform(p1);
+    var p6 = m.Transform(p2);
+    var p7 = m.Transform(p3);
+    var p8 = m.Transform(p4);
+    drawRect(p5, p6, p7, p8);
+}
+
+window.onload = function() {
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+
+    console.log('Testing console');
+
+    ctx.fillStyle="yellow";
+    ctx.fillRect(100,100,80,80);
+
+    var p1 = new Point(100,100);
+    var p2 = new Point(200,100);
+    var p3 = new Point(200,200);
+    var p4 = new Point(100,200);
+    var center = new Point(150,150);
+
+    ctx.fillStyle="black";
+    ctx.fillRect(center.GetX(), center.GetY(),1 , 1);
+
+    drawRect(p1, p2, p3, p4);
+
+    // lineair rotation
+    var m = new MatrixLinaer(new Point(250,50));
+    drawRectTransformed(m, p1, p2, p3, p4);
+
+    // rotation around center of rectangle
+    var m = new MatrixRotate(center, 45);
+    drawRectTransformed(m, p1, p2, p3, p4);
+
+    // rotation around center of rectangle
+    var m = new MatrixRotate(p1, 90+45);
+    drawRectTransformed(m, p1, p2, p3, p4);
+
+        // rotation around center of rectangle
+    var m = new MatrixRotate(p3, -45);
+    drawRectTransformed(m, p1, p2, p3, p4);
+
+}
+
+</script>
+
+</body>
+</html>

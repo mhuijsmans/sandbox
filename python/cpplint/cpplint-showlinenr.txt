@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+#
+# Copyright (c) 2009 Google Inc. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#    * Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#    * Redistributions in binary form must reproduce the above
+# copyright notice, this list of conditions and the following disclaimer
+# in the documentation and/or other materials provided with the
+# distribution.
+#    * Neither the name of Google Inc. nor the names of its
+# contributors may be used to endorse or promote products derived from
+# this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+......................................................
+
+# Change enables that output wriiten to console in Eclipse is recognized
+# as hyperlink to line in file. The idea is to use the same format as the
+# the g++ compiler.
+def MAHU_GetFileName(filename):
+  return filename[len(os.path.dirname(os.path.realpath(sys.argv[0]))):]
+
+def Error(filename, linenum, category, confidence, message):
+  """Logs the fact we've found a lint error.
+
+  We log where the error was found, and also our confidence in the error,
+  that is, how certain we are this is a legitimate style regression, and
+  not a misidentification or a use that's sometimes justified.
+
+  False positives can be suppressed by the use of
+  "cpplint(category)"  comments on the offending line.  These are
+  parsed into _error_suppressions.
+
+  Args:
+    filename: The name of the file containing the error.
+    linenum: The number of the line containing the error.
+    category: A string used to describe the "category" this bug
+      falls under: "whitespace", say, or "runtime".  Categories
+      may have a hierarchy separated by slashes: "whitespace/indent".
+    confidence: A number from 1-5 representing a confidence score for
+      the error, with 5 meaning that we are certain of the problem,
+      and 1 meaning that it could be a legitimate construct.
+    message: The error message.
+  """
+  if _ShouldPrintError(category, confidence, linenum):
+    _cpplint_state.IncrementErrorCount(category)
+    if _cpplint_state.output_format == 'vs7':
+      sys.stderr.write('%s(%s):  %s  [%s] [%d]\n' % (
+          filename, linenum, message, category, confidence))
+    elif _cpplint_state.output_format == 'eclipse':
+      sys.stderr.write('(%s:%s): warning: %s  [%s] [%d]\n' % (
+          filename, linenum, message, category, confidence))
+    else:
+      filename = MAHU_GetFileName(filename)
+      msg = '%s:%s:  %s  [%s] [%d]\n' % (filename, linenum, message, category, confidence)
+      sys.stderr.write(msg)
+
+........................................................

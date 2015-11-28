@@ -1,0 +1,7 @@
+* [sat May 16 2014] Martien Huijsmans
+The format of entries in the %changelog section should be
+* [dow mon dd yyyy] [packager [email address]] [RPM version]-list of changes
+For more details see:
+http://www.techrepublic.com/article/making-rpms-part-4-finishing-the-spec-file/#.
+
+ 

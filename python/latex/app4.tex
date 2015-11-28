@@ -1,0 +1,114 @@
+\chapter{About references}\label{app:refs}
+Your report will be put together in your own style, mostly using your
+own words. Much of it will be standard material that you've read and
+digested, but you may have a fresh example, application or calculation
+that you've done yourself.
+\par
+You must make clear what's not your own work by referring suitably
+to your sources --- books or articles or web-pages, etc. Not to do so
+can count as plagiarism, which is cheating.
+\par
+This appendix aims to amplify the advice given in the
+Library's guide \cite{BR}, which you should read.
+%----------------------------------------
+\section{Organisation}
+Follow the style of this template --- that is, put an orderly list of
+your sources (\Quote{The Bibliography}) at the end of the main text,
+and refer to (\Quote{cite}) items on the list by suitable codes placed
+appropriately in the report's text.
+\par
+For your bibliography the golden rule is that each listed item must give
+enough detail to allow readers to follow it up themselves and find the
+precise part of the book, article, web-site or whatever without
+ambiguity or delay.
+\par
+For instance it's no use saying just \Quote{The Times newspaper} unless
+you also give the date and page, or just \Quote{Wikipedia} unless you
+give the complete URL of the specific page, \dots\ and so on.
+\par
+It's always better to give slightly too much information --- e.g. you
+might include the ISBN of a book too. A good level of information is
+exemplified here and recommended in the Library guide \cite{BR}.
+\par
+If you need to cite different parts of e.g. a book for different things,
+then list it (say AB) in the bibliography and give the different
+citations as [AB,~page~32] and [AB,~Sec.~4.7] and so on. The \LaTeX\
+\verb+\cite+ command allows for this (look it up!).
+\par
+Now you see why a bibliography list is better than lots of footnotes
+--- it neatly allows such multiple citations. Too many footnotes make a
+mess.
+\begin{itemize}\item This bibliography uses short letter-code
+keys in alphabetical order. It's one of several standard possibilities
+\cite{BR} and is often preferred for economy and because the letter
+codes\footnote{Note the punctuation of \lq letter-code' and \lq letter
+codes' here.} can be chosen to be helpful mnemonics. Numerical codes,
+for instance, can't.
+\item Long lines (with URLs usually \cite{IM,PS}) may need to be split.
+The \LaTeX\ hack used here to manage such line-breaks may not appeal to
+everyone.\end{itemize}
+%---------------------------------
+\section{Doing it}
+What things need a reference? The answer is --- anything you didn't work
+out or invent yourself, but took from someone or somewhere else. You may
+do that, so long as you say so \textit{and also make it clear you
+understand it}. Don't copy blindly! Here are some
+examples.\begin{itemize}
+\item \Quote{the following explanation is taken from [LH]} --- if you've
+copied word-for-word from the article by Laurel \& Hardy, which you
+list as item LH in the bibliography. Direct quotation should be used
+sparingly, and the text emphasised --- perhaps by use of the
+\texttt{quotation} environment in \LaTeX.\par
+Don't be tempted to copy from a book, or \texttt{ctrl-C/ctrl-V} from the
+web, \textit{without} clearly admitting it. It's easy to detect, and
+it's suicide.
+\item \Quote{the following proof is in many textbooks, \eg
+[LH,~page~16]} --- if it is, and you can't think of a different proof,
+except perhaps for notation.
+\item \Quote{the material in this section is based on Sec.~2.6 of [CL]
+and Chap.~3 of [SH]} --- if you've combined into your own words the
+account by Cagney \& Lacey with that by Starsky \& Hutch.
+ \item \Quote{the following proof is adapted from Chap.~4 of [SJ]} ---
+if (say) you've filled in the gaps in Smith \& Jones' proof, or perhaps
+changed it from the case of general $n$ to your case $n=2$.
+\item \Quote{these calculations were done with \textsl{Matlab} [MAT]
+using the m-file listed in App.~\ref{app:programs}} --- where the
+reference MAT is to the \textsl{MathWorks} website.
+\item \Quote{these calculations were done with the TISEAN package [TIS]}
+--- if you've downloaded this specialised package from a web-page whose
+URL (and author's name, if available) is item TIS in the bibliography.
+\item \Quote{the graph is taken from Morecambe \& Wise [MW, page 16]}
+--- if you've scanned the figure from their book. Similarly, if you've
+downloaded a \texttt{.jpg} file from a web-site, then give in the
+bibliography the URL and author (if known). Such citations could go
+either in the figure caption or in the associated text.
+\item \Quote{the data are taken from [XY]} --- where XY gives the
+source of the numbers you've analysed. This might be a journal or
+an online databank, \etc. Generally the numbers themselves should be
+left out
+--- a summary table or a graph or two (plotted with \textsl{R} or
+\textsl{Matlab} or \textsl{Maple}) is often enough. Occasionally raw
+data might be supplied separately --- e.g. on a CDrom.
+\end{itemize}
+Often your supervisor or someone else gives you something --- such
+as a set of data, or a useful \textsl{Maple} worksheet, or help with a
+proof --- when the appropriate form of bibliography item is
+\Quote{Dr~I~Newton, private communication, April 2007}. Similarly for
+printed course material --- \Quote{Dr~I~Newton, lecture notes
+for module MATH5033, Durham University, Epiphany Term 2007.}
+\par
+Generally, don't refer to things you haven't read. Textbooks may well
+cite the Serbian-language journal where the result you want was
+originally published. But you are not in the business of ascribing
+credit for discovery. In \textit{your} report \textit{you} must cite the
+book where \textit{you} actually got it from and not give any possibly
+false impression that you fluently read technical Serbian.
+\par
+Likewise, you may want to quote from Euclid or Archimedes.
+But cite the place where you found the English words with something like
+\Quote{Archimedes said, \lq Eureka!\rq\ (as quoted by [AB])}.
+\par
+Summarising --- tell the truth (where you got it from), the whole truth
+(give full details), and nothing but the truth (you don't read Serbian).
+\par
+Finally, if in doubt --- ask your supervisor.

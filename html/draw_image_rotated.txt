@@ -1,0 +1,2 @@
+This link shows howto draw an image rotated
+http://creativejs.com/2012/01/day-10-drawing-rotated-images-into-canvas/

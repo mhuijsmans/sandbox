@@ -1,0 +1,71 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mahu.proto.embeddedtomcat</groupId>
+	<artifactId>embeddedtomcat</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0-SNAPSHOT</version>
+	<name>embeddedtomcat</name>
+	<url>http://maven.apache.org</url>
+
+	<dependencies>
+
+		<!-- next dependency is the layer between the tomcat container and REST -->
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+
+		<!-- required by Tomcat (for logging) -->
+		<!-- Also available: tomcat-embed-logging-log4j -->
+		<!-- Unclear howto use it. -->
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-logging-juli</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+
+		<!-- required by Tomcat (because jsp) -->
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper </artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<!-- === Tomcat === -->
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
+
+	<properties>
+		<tomcat.version>8.0.15</tomcat.version>
+		<jersey.version>2.7</jersey.version>
+	</properties>
+
+</project>

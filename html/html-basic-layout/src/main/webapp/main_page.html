@@ -1,0 +1,105 @@
+<html>
+<head>
+<link rel="stylesheet" href="stylesheet/basic_page_layout.css" />
+<script src='js/jquery-2.1.0.min.js'></script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>Demo ServiceApplication</title>
+</head>
+<body onload="main();">
+
+	<div class="container">
+
+		<header>
+			<img src="image/hili.gif" alt="hili" />
+			<h1>Service Console</h1>
+		</header>
+
+		<nav>
+			<ul>
+				<li><a href="javascript:void(0)" onclick="onHome()">Home</a></li>
+				<li><a href="javascript:void(0)" onclick="onRestCall()">Start action</a></li>
+				<li><a href="javascript:void(0)" onclick="onHelp()">Help</a></li>
+			</ul>
+		</nav>
+
+		<article>
+			<div id="article_content">
+				<p>Main Content</p>
+			</div>
+		</article>
+
+		<footer>
+			<p>&copy; 2014 Pathologist. All rights reserved by science.</p>
+		</footer>
+
+	</div>
+
+	<script type="text/javascript">
+		function main() {
+			// called on loading of body 
+			onHome();
+		}
+		
+		function onHome() {
+	        setContent('home_subpage.html');
+		}
+		
+		function onRestCall() {
+			updateRestCallPage('GET','restcall/action/info');
+		}
+		
+		function onRestStartButton() {
+			updateRestCallPage('POST','restcall/action/start');
+		}
+					
+		
+		function onHelp() {
+			setContent('help_subpage.html');
+		}	
+				
+		function updateRestCallPage(method, path) {
+	        $.ajax({
+	            type: method,
+	            dataType: 'xml',
+	            url: path,
+	            success: function(xml) {
+  					var state = $(xml).find('state').text();
+  					console.log ( 'state: ', state);
+  					if (state == "idle")
+  						setContent('restcall_idle_subpage.html');
+  					else
+  						setContent('restcall_busy_subpage.html');
+	            }
+	        });
+		}		
+			
+		function setContent(page) {
+	        $.ajax({
+	            type: 'GET',
+	            url: page,
+	            success: function(content) {
+	               $('#article_content').html(content);  // replace
+	            }
+	        });
+		}
+		
+		// Other code, not used (yet)
+		function onOption1() {
+			// Append, appends html
+			$("#article_content").append('<p>Appending text1</p>');
+		}
+		function onOption2() {
+			// this doesn't work: $("#main_content").html("<p>Replacing with html text</p>");
+			// .empty()) works
+			//$("#main_content").empty();
+			$("#article_content").contents().remove();
+			$("#article_content").html('<p>Appending text2</p>');
+		}
+		function onOption3() {
+			$("#article_content").empty();
+		}			
+	</script>
+	
+</body>
+</html>

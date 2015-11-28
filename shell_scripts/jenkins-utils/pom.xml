@@ -1,0 +1,76 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mahu.jenkins</groupId>
+	<artifactId>jenkins-utils</artifactId>
+	<packaging>jar</packaging>
+	<version>0.1.0</version>
+
+	<name>jenkins-utils</name>
+	<url>http://maven.apache.org</url>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rpm-maven-plugin</artifactId>
+				<!-- used 2.0.1, but that didn't include the scriptFile -->
+				<version>2.1-alpha-3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>rpm</goal>
+						</goals>
+					</execution>
+				</executions>
+				<!-- Description of the Mojo parameters: http://mojo.codehaus.org/rpm-maven-plugin/rpm-mojo.html -->
+				<configuration>
+					<copyright>2014, The Company</copyright>
+					<!-- The package group for the package -->
+					<group>Pikes</group>
+					<description>Maven test project: RPM Package.</description>
+					<mappings>
+						<!-- I have not specified any default user:group, so installed as root -->
+						<mapping>
+							<directory>${app.home}</directory>
+							<filemode>754</filemode>
+						</mapping>
+						<!-- I have not specified any default user:group, so installed as root -->
+						<mapping>
+							<directory>${app.home}</directory>
+							<filemode>754</filemode>
+							<sources>
+								<source>
+									<location>src/main/scripts/copy-rpm-to-local-yumserver.sh</location>
+									<destination>copy-rpm-to-local-yumserver.sh</destination>
+								</source>
+								<source>
+									<location>src/main/scripts/createrepo-local-yumserver.sh</location>
+									<destination>createrepo-local-yumserver.sh</destination>
+								</source>
+								<source>
+									<location>src/main/scripts/find-rpms-and-copy-to-local-yumserver.sh</location>
+									<destination>find-rpms-and-copy-to-local-yumserver.sh</destination>
+								</source>
+								<source>
+									<location>src/main/scripts/createrepo-local-yumserver-and-yum-update.sh</location>
+									<destination>createrepo-local-yumserver-and-yum-update.sh</destination>
+								</source>								
+								<source>
+									<location>src/main/scripts/settings.sh</location>
+									<destination>settings.sh</destination>
+								</source>
+							</sources>
+						</mapping>
+					</mappings>					
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+		<!-- properties are "applied" to the pom.xml but not a included scriptFile -->
+		<app.name>${project.artifactId}</app.name>
+		<app.home>/opt/${app.name}</app.home>
+	</properties>
+</project>

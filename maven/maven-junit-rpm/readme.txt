@@ -1,0 +1,1 @@
+The project project build a RPM that executes JUNIT test cases after installation.

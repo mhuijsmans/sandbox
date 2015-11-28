@@ -1,0 +1,22 @@
+import os
+import sys
+Import('env')
+
+maven_target_dir = "../../../target"
+scons_target_dir = maven_target_dir+"/scons"
+scons_shared_lib = scons_target_dir+"/dummy"
+javah_inc_dir    = maven_target_dir+"/nar/javah-include"
+jni_h_inc_dir1   = "/usr/lib/jvm/java-1.7.0-openjdk/include"
+jni_h_inc_dir2   = "/usr/lib/jvm/java-1.7.0-openjdk/include/linux"
+
+# I need to tell where the generated header file is.
+# This header file will only exist AFTER mvn has run
+cpp_path = [javah_inc_dir, jni_h_inc_dir1, jni_h_inc_dir2]
+#cpp_path.extend(env['JNI_CPPPATH']) 
+env['CPPPATH'] = cpp_path
+
+# build artefacts shall be stored in target directory 
+env.VariantDir(scons_target_dir, '.', duplicate=0)
+# dynamic library
+src_files = Glob('*.c')
+env.SharedLibrary(scons_shared_lib, src_files)

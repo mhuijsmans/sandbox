@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<button onclick="updateProgress()">Update Progress</button>
+
+<!-- ref: http://www.w3schools.com/bootstrap/bootstrap_progressbars.asp -->
+<div class="container">
+  <h2>Colored Progress Bars</h2>
+  <p>The contextual classes colors the progress bars:</p>
+  <div class="progress">
+    <div id="myProgress" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%">
+      40% Complete (success)
+    </div>
+   <div class="progress-bar progress-bar-info" role="progressbar" style="width:10%">info</div>
+  </div>
+</div>
+
+<script>
+
+function updateProgress() {
+    var xml = "<HrTileProgress>20</HrTileProgress>";
+    var data = $(xml).text();
+    var c = document.getElementById("myProgress");
+    c.innerHTML  = data + "% complete";
+    c.setAttribute("aria-valuenow", data);
+    c.setAttribute("style", "width:"+data+"%");
+    <!-- change xml value to test next line -->
+    if (data.value != 100) {
+       alert('not 100%')
+    } else {
+      alert('100%')
+    }
+}
+
+<!-- See http://stackoverflow.com/questions/9540957/jquery-ajax-loop-to-refresh-jqueryui-progressbar for GetProgress() -->
+<!-- This func_tion is not called in this example. But call it once to create a progressbar that get updated by the server. -->
+<!-- Call can be setTimeout(GetProgress(), 2000); or GetProgress(); -->
+
+function GetProgress() {
+    $.ajax({
+        url: "query.aspx/GetProgress",
+        success: function (msg) {
+            var data = $.parseJSON(msg.d);
+            $("#pbrQuery").progressbar("value", data.value);
+            if (data.value == 100) {
+                isDone = true;
+            } else {
+                setTimeout(GetProgress(), 2000);
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>

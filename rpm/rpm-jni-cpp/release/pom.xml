@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.mahu.rpm.rpm-jni-cpp</groupId>
+		<artifactId>main-module</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>release</artifactId>
+	<name>release</name>
+	<!-- packaging jar is needed, otherwise build will fail. reason unclear. -->
+	<packaging>jar</packaging>
+	<url>http://maven.apache.org</url>
+
+	<dependencies>
+		<!-- This ensures that the App jar and library jar are included. -->
+		<dependency>
+			<groupId>org.mahu.rpm.rpm-jni-cpp</groupId>
+			<artifactId>app</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+		<!-- This dependency includes the nar file with the so into the RPM -->
+		<!--  The classifier may change, e.g. i386-Linux-gpp-jni for 32 bit linux -->
+		<dependency>
+			<groupId>org.mahu.rpm.rpm-jni-cpp</groupId>
+			<artifactId>library</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+			<type>nar</type>
+			<classifier>amd64-Linux-gpp-jni</classifier>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rpm-maven-plugin</artifactId>
+				<!-- used 2.0.1, but that didn't include the scriptFile -->
+				<version>2.1-alpha-3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>rpm</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<copyright>2014, The Company</copyright>
+					<!-- The package group for the package -->
+					<group>Pikes</group>
+					<!-- name rpm: <name>-<maven project.version>-<release>.noarch.rpm -->
+					<name>${app.name}</name>
+					<version>1</version>
+					<release>${build.number}</release>
+					<description>Maven RPM-JNI-CPP project</description>
+					<defaultUsername>${app.name}</defaultUsername>
+					<defaultGroupname>${app.name}</defaultGroupname>
+					<!-- mapping parameters are described here: http://mojo.codehaus.org/rpm-maven-plugin/map-params.html -->
+					<mappings>
+						<!-- This mapping ensure that also ${app.home} has the proper user:group 
+							properties -->
+						<mapping>
+							<directory>${app.home}</directory>
+						</mapping>
+						<mapping>
+							<directory>${app.home}/lib/</directory>
+							<dependency />
+						</mapping>
+						<mapping>
+							<directory>${app.home}</directory>
+							<directoryIncluded>false</directoryIncluded>
+							<!-- 750 means -->
+							<!-- owner: rwx -->
+							<!-- other: nothing (3 dashes gives xml complaint) -->
+							<filemode>750</filemode>
+							<username>root</username>
+							<groupname>root</groupname>
+							<sources>
+								<source>
+									<location>src/main/scripts/run_app.sh</location>
+									<destination>run_app.sh</destination>
+								</source>
+							</sources>
+						</mapping>						
+					</mappings>
+					<postinstallScriptlet>
+						<scriptFile>src/main/scripts/postinstall.sh</scriptFile>
+						<fileEncoding>utf-8</fileEncoding>
+					</postinstallScriptlet>
+					<preremoveScriptlet>
+						<scriptFile>src/main/scripts/preuninstall.sh</scriptFile>
+						<fileEncoding>utf-8</fileEncoding>
+					</preremoveScriptlet>					
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+		<app.name>app_with_jni_cpp</app.name>
+		<!-- build number can be set by called, e.g. -Dbuild.number=..... -->
+		<build.number>1</build.number>
+		<app.home>/opt/${app.name}</app.home>
+	</properties>
+
+</project>

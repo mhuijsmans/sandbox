@@ -1,0 +1,10 @@
+import os
+import sys
+Import('env')
+
+# dynamic library
+src_files = Glob('*.cpp')
+lbigobjects = env.SharedLibrary('bigobject', src_files)
+
+# next line doesn't work and scons is quiet. grrr
+#env.Install('../../../target', lbigobjects)
