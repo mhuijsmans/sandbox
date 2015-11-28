@@ -1,0 +1,19 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent"
+	android:layout_width="fill_parent"
+	android:orientation="vertical">
+	<ImageView
+		android:id="@+id/gridapp_image"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"/>
+	<TextView
+		android:id="@+id/gridapp_text"
+		android:gravity="center_horizontal"
+		android:text="text"
+		android:visibility="visible"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_weight="1"
+		/>		
+</LinearLayout>
