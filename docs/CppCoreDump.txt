@@ -1,0 +1,46 @@
+Enable core dump
+================
+
+1) Ensure that system will create core dump for software not installed as package (via YUM/DNF)
+-----------------------------------------------------------------------------------------------
+Edit the file /etc/abrt/abrt-action-save-package-data.conf to change the line
+ProcessUnpackaged = no
+to
+ProcessUnpackaged = yes
+This now allows applications not installed via the package manager to create core dumps.
+
+2) Set site core dump
+---------------------
+> ulimit -c unlimited
+Check current setting:
+> ulimit -a
+
+Format core dump filename
+=========================
+
+Check contents of:
+/proc/sys/kernel/core_pattern
+
+ABRT configuration files
+========================
+
+/etc/abrt/abrt.conf — allows you to modify the behavior of the abrtd service.
+/etc/abrt/abrt-action-save-package-data.conf — allows you to modify the behavior of the abrt-action-save-package-data program.
+/etc/abrt/plugins/CCpp.conf - allows you to modify the behavior of ABRT's core catching hook
+
+Location core dump
+==================
+Default:
+/var/tmp/abrt
+Other directory can have been specified in /etc/abrt/abrt.conf
+
+List crashes
+============
+GUI application: $ gnome-abrt
+Note: doesn't refresh / no-refresh
+
+command line tool: $ abrt-cli list
+
+=========================================================================================
+
+<eod>
