@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="console" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- For conversion patterns, see: https://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html -->
+			<param name="ConversionPattern"
+				value="%d{ISO8601} %-4r [%t] (%F:%M:%L) %-5p %c %x - %m%n" />
+		</layout>
+		<!-- This filter controls selects messages, here only level INFO is send 
+			to the console -->
+		<!-- <filter class="org.apache.log4j.varia.LevelRangeFilter"> <param name="levelMin" 
+			value="INFO" /> <param name="levelMax" value="INFO" /> </filter> -->
+	</appender>
+
+	<appender name="rollingFile" class="org.apache.log4j.RollingFileAppender">
+		<!-- The active file to log to -->
+		<param name="file" value="target/log4j/example.log" />
+		<param name="append" value="true" />
+		<param name="encoding" value="UTF-8" />
+		<param name="MaxFileSize" value="100KB" />
+		<!-- Keep one backup file -->
+		<param name="MaxBackupIndex" value="1" />
+		<!-- Formatting of the output -->
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- Note that % and %M are expensive methods -->
+			<param name="ConversionPattern"
+				value="%d{ISO8601} %-4r [%t] (%F:%M:%L) %-5p %c %x - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="syslog" class="org.apache.log4j.net.SyslogAppender">
+		<param name="Facility" value="LOCAL0" />
+		<param name="SyslogHost" value="10.0.0.11" />
+		<param name="Threshold" value="DEBUG" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- Note that % and %M are expensive methods -->
+			<param name="ConversionPattern"
+				value="%d{ISO8601} %-4r [%t] (%F:%M:%L) %-5p %c %x - %m%n" />
+		</layout>
+	</appender>
+
+	<!-- Logging level for a specific package. This must precede <root> because 
+		otherwise you get an weird error message -->
+	<logger name="org.mahu.proto.logging.other">
+		<level value="debug" />
+		<appender-ref ref="syslog" />
+	</logger>
+
+	<!-- Default logging level globally -->
+	<root>
+		<!-- value: all|debug|info|warn|error|fatal|off|null -->
+		<priority value="info" />
+		<!-- There can be be one or more appended references -->
+		<appender-ref ref="console" />
+		<appender-ref ref="rollingFile" />
+	</root>
+
+</log4j:configuration>

@@ -1,0 +1,1 @@
+java -cp target/classes  org.mahu.proto.logging.JavaLoggingApp -Djava.util.logging.config.file=./logging_try.properties

@@ -1,0 +1,37 @@
+==============================================================================
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:mh="http://org.example/mh" 
+	targetNamespace="http://org.example/mh">
+
+	<xs:element name="ImageType1">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="pixel" type="mh:PixelType" /> 
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+  <xs:simpleType name="PixelType">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>	
+
+</xs:schema>
+
+>>>>>>>>>> results in:
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:ImageType1 xmlns:ns2="http://org.example/mh">
+    <pixel>pixel</pixel>
+</ns2:ImageType1>
+
+>>>>> Questions
+- why is there no <ns2:pixel>
+- where does ns2 come from?
+
+This feels linked:
+- http://hwellmann.blogspot.nl/2011/03/jaxb-marshalling-with-custom-namespace.html
+
+==============================================================================
