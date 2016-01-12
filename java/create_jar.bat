@@ -1,1 +1,1 @@
-mvn archetype:generate -DarchetypeGroupId=org.apache.maven.archetypes -DgroupId=org.nahe.proto.test1 -DartifactId=test1  -DinteractiveMode=false
+mvn archetype:generate -DarchetypeGroupId=org.apache.maven.archetypes -DgroupId=org.nahu.proto.lifecycle -DartifactId=lifecycle  -DinteractiveMode=false
