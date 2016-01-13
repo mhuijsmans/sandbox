@@ -7,7 +7,7 @@ import java.util.concurrent.RejectedExecutionException;
 import org.mahu.proto.lifecycle.IRequestProxyList;
 
 public class RequestProxyList implements IRequestProxyList {
-    
+
     public final static String REJECT_REQUEST_REASON = "No ready to execute requests";
 
     private boolean isRequestAllowed = false;
@@ -48,7 +48,13 @@ public class RequestProxyList implements IRequestProxyList {
     public void rejectExecutionRequests() {
         synchronized (requests) {
             isRequestAllowed = false;
-        }  
+        }
+    }
+
+    public int size() {
+        synchronized (requests) {
+            return requests.size();
+        }
     }
 
 }

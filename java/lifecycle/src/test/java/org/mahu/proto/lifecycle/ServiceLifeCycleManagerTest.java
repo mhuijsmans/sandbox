@@ -22,7 +22,7 @@ import org.mahu.proto.lifecycle.example2.ModuleBindings2;
 import org.mahu.proto.lifecycle.example2.RequestService;
 import org.mahu.proto.lifecycle.impl.AbstractServiceModule;
 import org.mahu.proto.lifecycle.impl.ApiBroker;
-import org.mahu.proto.lifecycle.impl.RequestProxyService;
+import org.mahu.proto.lifecycle.impl.RequestProxyDispatchService;
 import org.mahu.proto.lifecycle.impl.ServiceLifeCycleManager;
 
 public class ServiceLifeCycleManagerTest {
@@ -54,7 +54,7 @@ public class ServiceLifeCycleManagerTest {
 
         assertEquals(3, EventLog.size());
         assertEquals(new LogEntry(Event.start, EventBusService.class), EventLog.get(0));
-        assertEquals(new LogEntry(Event.start, RequestProxyService.class), EventLog.get(1));
+        assertEquals(new LogEntry(Event.start, RequestProxyDispatchService.class), EventLog.get(1));
         assertEquals(new LogEntry(Event.start, RequestService.class), EventLog.get(2));
     }
 
@@ -66,10 +66,10 @@ public class ServiceLifeCycleManagerTest {
 
         assertEquals(6, EventLog.size());
         assertEquals(new LogEntry(Event.start, EventBusService.class), EventLog.get(0));
-        assertEquals(new LogEntry(Event.start, RequestProxyService.class), EventLog.get(1));
+        assertEquals(new LogEntry(Event.start, RequestProxyDispatchService.class), EventLog.get(1));
         assertEquals(new LogEntry(Event.start, RequestService.class), EventLog.get(2));
         assertEquals(new LogEntry(Event.stop, RequestService.class), EventLog.get(3));
-        assertEquals(new LogEntry(Event.stop, RequestProxyService.class), EventLog.get(4));
+        assertEquals(new LogEntry(Event.stop, RequestProxyDispatchService.class), EventLog.get(4));
         assertEquals(new LogEntry(Event.stop, EventBusService.class), EventLog.get(5));
     }
 
@@ -81,10 +81,10 @@ public class ServiceLifeCycleManagerTest {
 
         assertEquals(6, EventLog.size());
         assertEquals(new LogEntry(Event.start, EventBusService.class), EventLog.get(0));
-        assertEquals(new LogEntry(Event.start, RequestProxyService.class), EventLog.get(1));
+        assertEquals(new LogEntry(Event.start, RequestProxyDispatchService.class), EventLog.get(1));
         assertEquals(new LogEntry(Event.start, RequestService.class), EventLog.get(2));
         assertEquals(new LogEntry(Event.abort, RequestService.class), EventLog.get(3));
-        assertEquals(new LogEntry(Event.abort, RequestProxyService.class), EventLog.get(4));
+        assertEquals(new LogEntry(Event.abort, RequestProxyDispatchService.class), EventLog.get(4));
         assertEquals(new LogEntry(Event.abort, EventBusService.class), EventLog.get(5));
     }
 

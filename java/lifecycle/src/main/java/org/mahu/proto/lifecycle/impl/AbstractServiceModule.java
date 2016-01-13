@@ -27,7 +27,6 @@ public abstract class AbstractServiceModule extends AbstractModule {
     }
 
     protected void bindServiceListener() {
-
         bind(ObjectRegistry.class).toInstance(objectRegistry);
         bind(IRequestProxyList.class).to(RequestProxyList.class).in(Scopes.SINGLETON);        
 

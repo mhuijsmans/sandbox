@@ -15,6 +15,7 @@ import org.junit.runners.Suite;
   ModuleBindings2Test.class,
   ObjectRegistryTest.class,
   PublicServiceKeyTest.class,
+  RequestProxyDispatchServiceTest.class,
   ServiceLifeCycleManagerTest.class
 })
 public class AllTests {

@@ -8,23 +8,29 @@ import org.mahu.proto.lifecycle.example2.IEventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
-public class RequestProxyService implements ILifeCycleService {
+public class RequestProxyDispatchService implements ILifeCycleService {
+    
+    public static String SERVICE_UNAVAILABLE = "Requested service temporarily not available";
 
+    boolean isRunning;
     final IEventBus eventBus;
 
     @Inject
-    public RequestProxyService(final IEventBus eventBus) {
+    public RequestProxyDispatchService(final IEventBus eventBus) {
         this.eventBus = eventBus;
+        isRunning = false;
     }
 
     @Override
     public void start() {
+        isRunning = true;
         EventLog.log(Event.start, this);
         eventBus.register(this);
     }
 
     @Override
     public boolean stop() {
+        isRunning = false;
         EventLog.log(Event.stop, this);
         eventBus.unregister(this);
         return true;
@@ -32,13 +38,18 @@ public class RequestProxyService implements ILifeCycleService {
 
     @Override
     public void abort() {
+        isRunning = false;
         EventLog.log(Event.abort, this);
         eventBus.unregister(this);
     }
 
     @Subscribe
     public void process(RequestProxyEvent event) {
-        event.execute();
+        if (isRunning) {
+            event.execute();
+        } else {
+            throw new RuntimeException(SERVICE_UNAVAILABLE);
+        }
     }
 
 }
