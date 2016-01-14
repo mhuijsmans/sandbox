@@ -1,15 +1,21 @@
 package org.mahu.proto.lifecycle.impl;
 
+//@formatter:off
 /**
  * This class contains a wait2() method that wait according to the JDK
- * recommended wait pattern. This pattern takes into account that thread can wake
- * up spontaneous.
+ * recommended wait pattern. This pattern takes into account that thread can
+ * wake up spontaneous.
  * 
- * The non-waiting class can (after using synchonized) use ready() or abort() 
+ * The non-waiting class can (after using synchronized) use ready() or abort() to
+ * signal the new state to the waiting class.
  * 
- * The calling class shall use the appropriate synchronization when using the
- * methods in this class.
+ * This class is used in a multi-threaded situation. 
+ * - one thread has calls wait2(..)
+ * - a second thread calls ready()
+ * - a third thread calls abort();
+ * All calling thread shall call the methods in this class within a synchronized block.
  */
+//@formatter:on
 public class ReadyAbortLock {
 
     private boolean isReady = false;
@@ -40,6 +46,7 @@ public class ReadyAbortLock {
 
     public void ready() {
         isReady = true;
+        notify();
     }
 
     public boolean isReady() {
@@ -50,9 +57,9 @@ public class ReadyAbortLock {
         isAborted = true;
         notify();
     }
-    
+
     public boolean isAborted() {
         return isAborted;
-    }    
+    }
 
 }

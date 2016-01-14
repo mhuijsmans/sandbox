@@ -14,13 +14,13 @@ public class RequestProxyEvent {
     private final ReadyAbortLock lock = new ReadyAbortLock();
     private Optional<Object> result;
     private Optional<Throwable> exception;
-    private final Object proxy;
-    private final Method m;
+    private final Object proxyToObject;
+    private final Method method;
     private final Object[] args;
 
-    RequestProxyEvent(final Object proxy, final Method m, final Object[] args) {
-        this.proxy = proxy;
-        this.m = m;
+    RequestProxyEvent(final Object proxy, final Method method, final Object[] args) {
+        this.proxyToObject = proxy;
+        this.method = method;
         this.args = args;
         exception = Optional.empty();
         result = Optional.empty();
@@ -29,7 +29,7 @@ public class RequestProxyEvent {
     public void execute() {
         try {
             // In case of a void method, the invokeResult is null;
-            final Object invokeResult = m.invoke(proxy, args);
+            final Object invokeResult = method.invoke(proxyToObject, args);
             result = Optional.of(invokeResult == null ? NULL : invokeResult);
         } catch (Throwable t) {
             exception = Optional.of(t);
