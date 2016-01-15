@@ -18,10 +18,13 @@ package org.mahu.proto.lifecycle.impl;
 //@formatter:on
 public class ReadyAbortLock {
 
-    private boolean isReady = false;
-    private boolean isAborted = false;
+    public static enum LockResult {
+        unknown, ready, aborted, timeout, interrupted
+    }
 
-    public void wait2(final long timeoutInMs) throws InterruptedException {
+    private LockResult result = LockResult.unknown;
+
+    public LockResult wait2(final long timeoutInMs) throws InterruptedException {
         if (timeoutInMs > 0) {
             final long startTime = System.currentTimeMillis();
             final long endTime = startTime + timeoutInMs;
@@ -29,7 +32,7 @@ public class ReadyAbortLock {
                 throw new IllegalArgumentException("TimeoutInMs too high=" + timeoutInMs);
             }
             long timeLeftInMs = 1; // value doesn't matter, must be > 0
-            while (!isReady && !isAborted && timeLeftInMs > 0) {
+            while (result == LockResult.unknown && timeLeftInMs > 0) {
                 final long currentTime = System.currentTimeMillis();
                 timeLeftInMs = Math.max(endTime - currentTime, 0);
                 if (timeLeftInMs > 0) {
@@ -37,29 +40,47 @@ public class ReadyAbortLock {
                     wait(timeLeftInMs);
                 }
             }
+            if (result == LockResult.unknown) {
+                setResult(LockResult.timeout);
+            }
         } else {
             if (timeoutInMs < 0) {
                 throw new IllegalArgumentException("Invalid timeoutInMs=" + timeoutInMs);
             }
+            setResult(LockResult.timeout);
         }
+        return result;
+    }
+
+    public LockResult wait3(final long timeoutInMs) {
+        try {
+            wait2(timeoutInMs);
+        } catch (InterruptedException e) {
+            setResult(LockResult.interrupted);
+        }
+        return result;
     }
 
     public void ready() {
-        isReady = true;
-        notify();
-    }
-
-    public boolean isReady() {
-        return isReady;
+        setResult(LockResult.ready);
     }
 
     public void abort() {
-        isAborted = true;
-        notify();
+        setResult(LockResult.aborted);
+    }
+
+    public boolean isReady() {
+        return result == LockResult.ready;
     }
 
     public boolean isAborted() {
-        return isAborted;
+        return result == LockResult.aborted;
     }
 
+    private void setResult(final LockResult newResult) {
+        if (result == LockResult.unknown) {
+            result = newResult;
+            notifyAll();
+        }
+    }
 }

@@ -14,7 +14,7 @@ public class ApiBroker implements IApiBroker, IApiRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> Optional<T> resolve(Class<T> requestedInterface) {
+    public <T> Optional<T> resolve(final Class<T> requestedInterface) {
         return Optional.ofNullable((T) values.get(requestedInterface));
     }
 

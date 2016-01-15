@@ -11,7 +11,9 @@ import java.util.concurrent.RejectedExecutionException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.mahu.proto.lifecycle.example2.EventBusService;
 import org.mahu.proto.lifecycle.example2.EventLog;
 import org.mahu.proto.lifecycle.example2.EventLog.Event;
@@ -30,9 +32,9 @@ public class ServiceLifeCycleManagerTest {
     ApiBroker broker;
     AbstractServiceModule moduleBindings;
     ServiceLifeCycleManager serviceLifeCycleManager;
-    
-//    @Rule
-//    public Timeout globalTimeout = Timeout.seconds(10);      
+
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(30);
 
     @Before
     public void createServiceLifeCycleManager() {
@@ -59,6 +61,16 @@ public class ServiceLifeCycleManagerTest {
     }
 
     @Test
+    public void startServices_serviceAreAlreadyStarted_requestIgnored() {
+        serviceLifeCycleManager.startServices();
+
+        assertEquals(3, EventLog.size());
+
+        serviceLifeCycleManager.startServices();
+        assertEquals(3, EventLog.size());
+    }
+
+    @Test
     public void stop_afterStart_allServicesAreStoppedInCorrectOrder() {
         serviceLifeCycleManager.startServices();
 
@@ -74,6 +86,16 @@ public class ServiceLifeCycleManagerTest {
     }
 
     @Test
+    public void stop_serviceAreAlreadyStopped_requestIgnored() {
+        serviceLifeCycleManager.startServices();
+        serviceLifeCycleManager.stopServices();
+        assertEquals(6, EventLog.size());
+
+        serviceLifeCycleManager.stopServices();
+        assertEquals(6, EventLog.size());
+    }
+
+    @Test
     public void abort_afterStart_allServicesAreAbortedInCorrectOrder() {
         serviceLifeCycleManager.startServices();
 
@@ -86,6 +108,26 @@ public class ServiceLifeCycleManagerTest {
         assertEquals(new LogEntry(Event.abort, RequestService.class), EventLog.get(3));
         assertEquals(new LogEntry(Event.abort, RequestProxyDispatchService.class), EventLog.get(4));
         assertEquals(new LogEntry(Event.abort, EventBusService.class), EventLog.get(5));
+    }
+
+    @Test
+    public void abort_serviceAreAlreadyStopped_requestIgnored() {
+        serviceLifeCycleManager.startServices();
+        serviceLifeCycleManager.stopServices();
+        assertEquals(6, EventLog.size());
+
+        serviceLifeCycleManager.abortServices();
+        assertEquals(6, EventLog.size());
+    }
+
+    @Test
+    public void abort_serviceAreAlreadyAborted_requestIgnored() {
+        serviceLifeCycleManager.startServices();
+        serviceLifeCycleManager.abortServices();
+        assertEquals(6, EventLog.size());
+
+        serviceLifeCycleManager.abortServices();
+        assertEquals(6, EventLog.size());
     }
 
     @Test
@@ -105,7 +147,23 @@ public class ServiceLifeCycleManagerTest {
     }
 
     @Test
-    public void ISessionRequest_servicesStarted_correctResponse() {
+    public void resolve_ISessionRequestServiceIsRegistered_serviceIsFound() {
+        serviceLifeCycleManager.startServices();
+
+        Optional<ISessionRequest> request = broker.resolve(ISessionRequest.class);
+
+        assertTrue(request.isPresent());
+    }
+
+    @Test
+    public void resolve_ISessionRequestServiceIsNotRegistered_serviceIsNotFound() {
+        Optional<ISessionRequest> request = broker.resolve(ISessionRequest.class);
+
+        assertFalse(request.isPresent());
+    }
+
+    @Test
+    public void process_ISessionRequestServiceIsAvailable_correctResponse() {
         serviceLifeCycleManager.startServices();
         EventLog.clear();
 
@@ -119,21 +177,12 @@ public class ServiceLifeCycleManagerTest {
     }
 
     @Test
-    public void ISessionRequest_servicesNotStarted_correctResponse() {
-        EventLog.clear();
-
-        Optional<ISessionRequest> request = broker.resolve(ISessionRequest.class);
-        assertFalse(request.isPresent());
-    }
-
-    @Test
-    public void IErrorRequest_process_exceptionThrown() {
+    public void process_IErrorRequestServiceIsAvailable_serviceResponseIsReceived() {
         serviceLifeCycleManager.startServices();
-        EventLog.clear();
 
         Optional<IErrorRequest> request = broker.resolve(IErrorRequest.class);
         assertTrue(request.isPresent());
-        
+
         try {
             request.get().process(IErrorRequest.Test.throwException);
             fail("Expected exception");
@@ -141,26 +190,11 @@ public class ServiceLifeCycleManagerTest {
             assertEquals(IErrorRequest.THROW_EXCEPTION_MSG, e.getMessage());
         }
     }
-    
-    @Test
-    public void IErrorRequest_processThrowsException_exceptionReceived() {
-        serviceLifeCycleManager.startServices();
-        EventLog.clear();
-
-        Optional<IErrorRequest> request = broker.resolve(IErrorRequest.class);
-        assertTrue(request.isPresent());
-        try {
-            request.get().process(IErrorRequest.Test.throwException);
-            fail("Expected exception");
-        } catch (RuntimeException e) {
-            assertEquals(IErrorRequest.THROW_EXCEPTION_MSG, e.getMessage());
-        }
-    }  
 
     @Test
-    public void IErrorRequest_processCrossesServicesStopped_postRejectedExceptionReceived() throws InterruptedException {
+    public void process_IErrorRequestProcessCrossesServicesStopped_postRejectedExceptionReceived()
+            throws InterruptedException {
         serviceLifeCycleManager.startServices();
-        EventLog.clear();
 
         Optional<IErrorRequest> request = broker.resolve(IErrorRequest.class);
         assertTrue(request.isPresent());
@@ -173,7 +207,12 @@ public class ServiceLifeCycleManagerTest {
             assertTrue(true);
         }
     }
-    
+
+    /**
+     * This test case verifies the following scenario. The invoked services post
+     * a message on the EventBus. Processing of that message results in an
+     * Exception that is caught by the EventBus.
+     */
     @Test
     public void IErrorRequest_processCausingUncaughtException_exceptionOnNextCall() {
         serviceLifeCycleManager.startServices();
@@ -183,7 +222,7 @@ public class ServiceLifeCycleManagerTest {
         assertTrue(request.isPresent());
 
         assertEquals(IErrorRequest.RESPONSE_OK, request.get().process(IErrorRequest.Test.causeUncaughtException));
-    }     
 
-    // Test that requested get's processed by dead event handler.
+    }
+
 }

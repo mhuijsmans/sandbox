@@ -14,12 +14,13 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class ServiceLifeCycleManager implements IServiceLifeCycleManager {
-
+    
     private final IApiRegistry apiRegistry;
     private final Injector injector;
     private final AbstractServiceModule moduleBindings;
     private final RequestProxyList requestProxyList;
     private final List<ILifeCycleService> startedServices = new LinkedList<>();
+    private final List<ILifeCycleService> toBeStoppedServices = new LinkedList<>();
 
     public ServiceLifeCycleManager(final IApiRegistry apiRegistry, final AbstractServiceModule moduleBindings) {
         this.apiRegistry = apiRegistry;
@@ -29,6 +30,15 @@ public class ServiceLifeCycleManager implements IServiceLifeCycleManager {
         requestProxyList = RequestProxyList.class.cast(injector.getInstance(IRequestProxyList.class));
     }
 
+    /**
+     * StartServices perform the following tasks:
+     * 
+     * - start all services
+     * 
+     * - enable that requests to services are allowed
+     * 
+     * - make services available in IApiRegistry
+     */
     public void startServices() {
         if (startedServices.isEmpty()) {
             final Iterator<ILifeCycleService> it = moduleBindings.getObjectRegistry().getLifeCycleServiceIterator();
@@ -39,45 +49,64 @@ public class ServiceLifeCycleManager implements IServiceLifeCycleManager {
             }
             requestProxyList.allowedExecutionRequests();
             apiRegistry.setPublicService(moduleBindings.getObjectRegistry().getPublicServiceKeys());
-        } else {
-            throw new RuntimeException("Called twice");
         }
     }
 
+    /**
+     * StopServices perform the following tasks:
+     * 
+     * - remove services from IApiRegistry
+     * 
+     * - disable processing of requests for services
+     * 
+     * - stop all services
+     * 
+     * - abort received but not completed requests
+     */
     public void stopServices() {
-        apiRegistry.removeAllPublicServices();
-        requestProxyList.rejectExecutionRequests();
-        final Iterator<ILifeCycleService> it = getStartedServicesReverseIterator();
-        boolean noStopError = true;
-        while (it.hasNext()) {
-            final ILifeCycleService service = it.next();
-            if (noStopError) {
-                noStopError = service.stop();
-                if (!noStopError) {
-                    service.abort();
-                }
-            } else {
-                service.abort();
+        if (!startedServices.isEmpty()) {
+            apiRegistry.removeAllPublicServices();
+            requestProxyList.rejectExecutionRequests();
+            createToBeStoppedServices();
+            while (!toBeStoppedServices.isEmpty()) {
+                toBeStoppedServices.get(0).stop();
+                toBeStoppedServices.remove(0);
+            }
+            startedServices.clear();
+            requestProxyList.abortAllRequests();
+        }
+    }
+
+    /**
+     * abortServices perform the following tasks:
+     * 
+     * - remove services from IApiRegistry
+     * 
+     * - disable processing of requests for service
+     * 
+     * - abort received but not completed requests
+     * 
+     * - stop all services
+     */    
+    public void abortServices() {
+        if (!startedServices.isEmpty()) {
+            apiRegistry.removeAllPublicServices();
+            requestProxyList.rejectExecutionRequests();
+            requestProxyList.abortAllRequests();
+            createToBeStoppedServices();
+            startedServices.clear();
+            while (!toBeStoppedServices.isEmpty()) {
+                toBeStoppedServices.get(0).abort();
+                toBeStoppedServices.remove(0);
             }
         }
-        startedServices.clear();
-        requestProxyList.abortAllRequests();
     }
 
-    public void abortServices() {
-        requestProxyList.rejectExecutionRequests();        
-        requestProxyList.abortAllRequests();
-        apiRegistry.removeAllPublicServices();
-        final Iterator<ILifeCycleService> it = getStartedServicesReverseIterator();
-        while (it.hasNext()) {
-            it.next().abort();
+    public void createToBeStoppedServices() {
+        if (toBeStoppedServices.isEmpty()) {
+            List<ILifeCycleService> tmp = new LinkedList<>(startedServices);
+            Collections.reverse(tmp);
+            toBeStoppedServices.addAll(tmp);
         }
-        startedServices.clear();
-    }
-
-    public Iterator<ILifeCycleService> getStartedServicesReverseIterator() {
-        List<ILifeCycleService> tmp = new LinkedList<>(startedServices);
-        Collections.reverse(tmp);
-        return tmp.iterator();
     }
 }

@@ -2,6 +2,7 @@ package org.mahu.proto.lifecycle.example2;
 
 import static org.junit.Assert.assertTrue;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -15,7 +16,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 
 public class EventBusService implements IEventBus, ILifeCycleService {
-    
+
     private final static int TASKSCOMPLETED_TIMEOUT_IN_SEC = 30;
 
     private static final String EVENTBUS_NAME_MAIN = "main";
@@ -23,6 +24,19 @@ public class EventBusService implements IEventBus, ILifeCycleService {
     private final EventBusUncaughtExceptionHandler eventBusUncaughtExceptionHandler;
     private AsyncEventBus mainEventBus;
     private ExecutorService mainExecutor;
+
+    /**
+     * Guava doesn't catch all events Error's aren't caught. They are caught by
+     * the MyUncaughtExceptionHandler and fowarded to the
+     * EventBusUncaughtExceptionHandler.F
+     */
+    class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
+
+        @Override
+        public void uncaughtException(Thread arg0, Throwable throwable) {
+            eventBusUncaughtExceptionHandler.handleException(throwable, null);
+        }
+    }
 
     @Inject
     public EventBusService(final EventBusUncaughtExceptionHandler eventBusUncaughtExceptionHandler) {
@@ -71,7 +85,9 @@ public class EventBusService implements IEventBus, ILifeCycleService {
     private ThreadFactory namedEventBusThreadFactory(final String name) {
         // %%d resolves to %d after the String.format. This %d will be formatted
         // by ThreadFactoryBuilder.setNameFormat() (see javadoc)
-        return new ThreadFactoryBuilder().setNameFormat(String.format("EventBus-%s-%%d", name)).build();
+        ThreadFactory factory = new ThreadFactoryBuilder().setNameFormat(String.format("EventBus-%s-%%d", name))
+                .setUncaughtExceptionHandler(new MyUncaughtExceptionHandler()).build();
+        return factory;
     }
 
     @Override
@@ -111,7 +127,7 @@ public class EventBusService implements IEventBus, ILifeCycleService {
     public boolean awaitTermination(final long timeout, final TimeUnit unit) throws InterruptedException {
         return mainExecutor.awaitTermination(timeout, unit);
     }
-    
+
     /**
      * 
      */

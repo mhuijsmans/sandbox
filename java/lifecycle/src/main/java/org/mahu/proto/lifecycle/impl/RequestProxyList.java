@@ -31,11 +31,14 @@ public class RequestProxyList implements IRequestProxyList {
         }
     }
 
-    public void abortAllRequests() {
+    public int abortAllRequests() {
         synchronized (requests) {
+            int abortRequestCount = 0;
             for (RequestProxy requestProxy : requests) {
                 requestProxy.abort();
+                abortRequestCount++;
             }
+            return abortRequestCount;
         }
     }
 

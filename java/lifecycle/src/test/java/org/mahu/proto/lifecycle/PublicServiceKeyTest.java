@@ -67,13 +67,9 @@ public class PublicServiceKeyTest {
         threadpool.shutdownNow();
     }
 
-    private static class AsyncWaitOnLock implements Callable<Void> {
-        MeetUpLock lock = new MeetUpLock();
-        private final PublicServiceKey<ISessionRequest> key;
-
-        AsyncWaitOnLock(final PublicServiceKey<ISessionRequest> key) {
-            this.key = key;
-        }
+    private class AsyncWaitOnLock implements Callable<Void> {
+        final MeetUpLock lock = new MeetUpLock();
+        final PublicServiceKey<ISessionRequest> key = requestService.getPublicServiceKey();
 
         @Override
         public Void call() {
@@ -82,12 +78,8 @@ public class PublicServiceKeyTest {
         }
     }
 
-    private static class AsyncProcess implements Callable<String> {
-        private final PublicServiceKey<ISessionRequest> key;
-
-        AsyncProcess(final PublicServiceKey<ISessionRequest> key) {
-            this.key = key;
-        }
+    private class AsyncProcess implements Callable<String> {
+        final PublicServiceKey<ISessionRequest> key = requestService.getPublicServiceKey();
 
         @Override
         public String call() {
@@ -142,36 +134,48 @@ public class PublicServiceKeyTest {
     }
 
     /**
-     * This test case deal with a abort a 2 request, one request that is
-     * executing on the EventBus and a second request that is posted( thus queued), ready to
-     * execute on EventBus, but is not started yet.
+     * This test in included because certain errors were only detected when
+     * called test were only detected when run many times. That is causes by
+     * threading / timing.
+     */
+    @Test
+    public void manyCalls_to_process_abortPostedRequest_exception() throws InterruptedException, ExecutionException {
+        for (int i = 0; i < 100; i++) {
+            process_abortPostedRequest_exception();
+        }
+
+    }
+
+    /**
+     * This test case deal with a abort of 2 requests. One request that is
+     * executing on the EventBus when the calls is aborted. The request is posted (thus
+     * queued on EventBus queue), ready to execute on EventBus, but is not started yet.
      */
     @Test
     public void process_abortPostedRequest_exception() throws InterruptedException, ExecutionException {
-        final AsyncWaitOnLock asyncWaitOnLock1 = new AsyncWaitOnLock(key);
-        final Future<Void> future1 = threadpool.submit(asyncWaitOnLock1);
-        asyncWaitOnLock1.lock.waitForWaitOnLockCall();
+        final AsyncWaitOnLock asyncWaitOnLock = new AsyncWaitOnLock();
+        final Future<Void> futureWaitOnLock = threadpool.submit(asyncWaitOnLock);
+        asyncWaitOnLock.lock.waitForWaitOnLockCall();
 
-        final PublicServiceKey<ISessionRequest> key2 = requestService.getPublicServiceKey();
-        final AsyncProcess asyncProcess = new AsyncProcess(key2);
-        final Future<String> future2 = threadpool.submit(asyncProcess);
+        final AsyncProcess asyncProcess = new AsyncProcess();
+        final Future<String> futureProcess = threadpool.submit(asyncProcess);
         while (requestProxyList.size() != 2) {
-            TimeUnit.MICROSECONDS.sleep(1);
+            TimeUnit.NANOSECONDS.sleep(1);
         }
 
-        requestProxyList.abortAllRequests();
-        asyncWaitOnLock1.lock.signalWaitOnLockToContinue();
+        assertEquals(2, requestProxyList.abortAllRequests());
+        asyncWaitOnLock.lock.signalWaitOnLockToContinue();
 
         try {
-            future1.get();
-            fail("Get shall throw exception because of abort");
+            futureProcess.get();
+            fail("futureProcess shall throw exception because of abort");
         } catch (ExecutionException e) {
             assertEquals(RequestProxyEvent.REQUEST_EXECUTE_ABORT_REASON, e.getCause().getMessage());
         }
 
         try {
-            future2.get();
-            fail("Get shall throw exception because of abort");
+            futureWaitOnLock.get();
+            fail("futureWaitOnLock shall throw exception because of abort");
         } catch (ExecutionException e) {
             assertEquals(RequestProxyEvent.REQUEST_EXECUTE_ABORT_REASON, e.getCause().getMessage());
         }
