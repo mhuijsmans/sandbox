@@ -201,7 +201,7 @@ public class GuaveEventBusTest {
     }
 
     @Test
-    public void register_afterShutdown_ok() {
+    public void register_afterShutdown_isAllowed() {
         executor.shutdown();
         assertTrue(executor.isTerminated());
 

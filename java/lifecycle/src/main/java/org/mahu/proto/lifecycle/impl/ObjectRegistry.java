@@ -19,14 +19,13 @@ public class ObjectRegistry {
     private final List<ILifeCycleService> services = new LinkedList<>();
     private final List<IPublicService<?>> publicServices = new ArrayList<>();
 
-    public void objectCreated(final Object obj) {
-        // System.out.println("ObjectRegistry: add" +obj.getClass().getName());
-        objects.add(obj);
-        if (obj instanceof ILifeCycleService) {
-            services.add(ILifeCycleService.class.cast(obj));
+    public void objectCreated(final Object createdObject) {
+        objects.add(createdObject);
+        if (createdObject instanceof ILifeCycleService) {
+            services.add(ILifeCycleService.class.cast(createdObject));
         } 
-        if (obj instanceof IPublicService) {
-            publicServices.add(IPublicService.class.cast(obj));
+        if (createdObject instanceof IPublicService) {
+            publicServices.add(IPublicService.class.cast(createdObject));
         }        
     }
 

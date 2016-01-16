@@ -13,16 +13,17 @@ import org.mahu.proto.lifecycle.IServiceLifeCycleManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-public class ServiceLifeCycleManager implements IServiceLifeCycleManager {
-    
+public class ServiceLifeCycleControl implements IServiceLifeCycleManager {
+
     private final IApiRegistry apiRegistry;
     private final Injector injector;
     private final AbstractServiceModule moduleBindings;
     private final RequestProxyList requestProxyList;
     private final List<ILifeCycleService> startedServices = new LinkedList<>();
     private final List<ILifeCycleService> toBeStoppedServices = new LinkedList<>();
+    private final List<ILifeCycleService> stoppedServices = new LinkedList<>();
 
-    public ServiceLifeCycleManager(final IApiRegistry apiRegistry, final AbstractServiceModule moduleBindings) {
+    public ServiceLifeCycleControl(final IApiRegistry apiRegistry, final AbstractServiceModule moduleBindings) {
         this.apiRegistry = apiRegistry;
         this.moduleBindings = moduleBindings;
         injector = Guice.createInjector(moduleBindings);
@@ -30,15 +31,17 @@ public class ServiceLifeCycleManager implements IServiceLifeCycleManager {
         requestProxyList = RequestProxyList.class.cast(injector.getInstance(IRequestProxyList.class));
     }
 
+    //@formatter:off
     /**
      * StartServices perform the following tasks:
-     * 
      * - start all services
-     * 
      * - enable that requests to services are allowed
-     * 
      * - make services available in IApiRegistry
+     * 
+     * Exceptions that happens when a service starts, are not caught 
+     * are for the caller of this method to handle.
      */
+    //@formatter:on
     public void startServices() {
         if (startedServices.isEmpty()) {
             final Iterator<ILifeCycleService> it = moduleBindings.getObjectRegistry().getLifeCycleServiceIterator();
@@ -52,25 +55,29 @@ public class ServiceLifeCycleManager implements IServiceLifeCycleManager {
         }
     }
 
+    //@formatter:off
     /**
      * StopServices perform the following tasks:
-     * 
      * - remove services from IApiRegistry
-     * 
      * - disable processing of requests for services
-     * 
      * - stop all services
-     * 
      * - abort received but not completed requests
+     * Exceptions that happens when a service starts, are not caught 
+     * are for the caller of this method to handle.
      */
+    //@formatter:on
     public void stopServices() {
         if (!startedServices.isEmpty()) {
             apiRegistry.removeAllPublicServices();
             requestProxyList.rejectExecutionRequests();
             createToBeStoppedServices();
             while (!toBeStoppedServices.isEmpty()) {
-                toBeStoppedServices.get(0).stop();
+                // First stop the first service in queue and if successful (no
+                // exception), remove and add to stoppedServiceList.
+                final ILifeCycleService service = toBeStoppedServices.get(0);
+                service.stop();
                 toBeStoppedServices.remove(0);
+                stoppedServices.add(service);
             }
             startedServices.clear();
             requestProxyList.abortAllRequests();
@@ -79,15 +86,11 @@ public class ServiceLifeCycleManager implements IServiceLifeCycleManager {
 
     /**
      * abortServices perform the following tasks:
-     * 
      * - remove services from IApiRegistry
-     * 
      * - disable processing of requests for service
-     * 
      * - abort received but not completed requests
-     * 
      * - stop all services
-     */    
+     */
     public void abortServices() {
         if (!startedServices.isEmpty()) {
             apiRegistry.removeAllPublicServices();
@@ -96,8 +99,10 @@ public class ServiceLifeCycleManager implements IServiceLifeCycleManager {
             createToBeStoppedServices();
             startedServices.clear();
             while (!toBeStoppedServices.isEmpty()) {
-                toBeStoppedServices.get(0).abort();
+                final ILifeCycleService service = toBeStoppedServices.get(0);
+                service.abort();
                 toBeStoppedServices.remove(0);
+                stoppedServices.add(service);
             }
         }
     }
@@ -109,4 +114,20 @@ public class ServiceLifeCycleManager implements IServiceLifeCycleManager {
             toBeStoppedServices.addAll(tmp);
         }
     }
+
+    public Object getStartedServicesCount() {
+        return startedServices.size();
+    }
+
+    public Class<? extends ILifeCycleService> getStartedServiceClass(final int i) {
+        return startedServices.get(i).getClass();
+    }
+
+    public Object getStoppedServicesCount() {
+        return stoppedServices.size();
+    }
+    
+    public Class<? extends ILifeCycleService> getStoppedServiceClass(final int i) {
+        return stoppedServices.get(i).getClass();
+    }    
 }

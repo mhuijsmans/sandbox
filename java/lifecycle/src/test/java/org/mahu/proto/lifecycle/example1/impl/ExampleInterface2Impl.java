@@ -23,8 +23,7 @@ public class ExampleInterface2Impl implements ExampleInterface2, ILifeCycleServi
     }
 
     @Override
-    public boolean stop() {
-        return true;
+    public void stop() {
     }
 
     @Override

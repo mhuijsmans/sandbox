@@ -9,7 +9,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.mahu.proto.lifecycle.ILifeCycleService;
-import org.mahu.proto.lifecycle.example2.EventLog.Event;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -26,9 +25,9 @@ public class EventBusService implements IEventBus, ILifeCycleService {
     private ExecutorService mainExecutor;
 
     /**
-     * Guava doesn't catch all events Error's aren't caught. They are caught by
-     * the MyUncaughtExceptionHandler and fowarded to the
-     * EventBusUncaughtExceptionHandler.F
+     * Guava doesn't catch all events, Error's aren't caught. They are caught by
+     * MyUncaughtExceptionHandler and forwarded to the
+     * EventBusUncaughtExceptionHandler
      */
     class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
 
@@ -45,20 +44,17 @@ public class EventBusService implements IEventBus, ILifeCycleService {
 
     @Override
     public void start() {
-        EventLog.log(Event.start, this);
         mainExecutor = Executors.newSingleThreadExecutor(namedEventBusThreadFactory(EVENTBUS_NAME_MAIN));
         mainEventBus = new AsyncEventBus(mainExecutor, eventBusUncaughtExceptionHandler);
     }
 
     @Override
-    public boolean stop() {
-        EventLog.log(Event.stop, this);
-        return shutdown(mainExecutor);
+    public void stop() {
+        shutdown(mainExecutor);
     }
 
     @Override
     public void abort() {
-        EventLog.log(Event.abort, this);
         shutdownNow(mainExecutor);
     }
 
@@ -70,6 +66,7 @@ public class EventBusService implements IEventBus, ILifeCycleService {
             } catch (InterruptedException e) {
                 // When interrupted, there must be a reason, so stop wait
             }
+            shutdownNow(executor);
         }
         installDummySubscriber();
         return executor.isTerminated();
@@ -128,9 +125,6 @@ public class EventBusService implements IEventBus, ILifeCycleService {
         return mainExecutor.awaitTermination(timeout, unit);
     }
 
-    /**
-     * 
-     */
     private void installDummySubscriber() {
         mainEventBus.register(new DummySubscriber());
     }

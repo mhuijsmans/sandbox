@@ -1,6 +1,4 @@
-package org.mahu.proto.lifecycle.impl;
-
-import org.mahu.proto.lifecycle.PublicServiceKey;
+package org.mahu.proto.lifecycle;
 
 public interface IPublicServiceKeyFactory {
 

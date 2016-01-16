@@ -1,6 +1,7 @@
 package org.mahu.proto.lifecycle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -19,8 +20,7 @@ public class ObjectRegistryTest {
         }
 
         @Override
-        public boolean stop() {
-            return false;
+        public void stop() {
         }
 
         @Override
@@ -68,11 +68,6 @@ public class ObjectRegistryTest {
         assertNotNull(it.next());
         assertNotNull(it.next());
         assertFalse(it.hasNext());
-    }
-
-    private void assertFalse(boolean hasNext) {
-        // TODO Auto-generated method stub
-        
     }
 
 }

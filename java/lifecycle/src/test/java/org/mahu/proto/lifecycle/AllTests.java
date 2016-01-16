@@ -16,7 +16,7 @@ import org.junit.runners.Suite;
   ObjectRegistryTest.class,
   PublicServiceKeyTest.class,
   RequestProxyDispatchServiceTest.class,
-  ServiceLifeCycleManagerTest.class,
+  ServiceLifeCycleControlTest.class,
   StopEventTest.class
 })
 public class AllTests {

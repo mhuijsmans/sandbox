@@ -21,8 +21,7 @@ public class ExampleInterface1Impl implements ExampleInterface1, ILifeCycleServi
     }
 
     @Override
-    public boolean stop() {
-        return true;
+    public void stop() {
     }
 
     @Override

@@ -1,50 +1,40 @@
 package org.mahu.proto.lifecycle.example2;
 
-import org.mahu.proto.lifecycle.ILifeCycleService;
 import org.mahu.proto.lifecycle.IPublicService;
+import org.mahu.proto.lifecycle.IPublicServiceKeyFactory;
 import org.mahu.proto.lifecycle.PublicServiceKey;
-import org.mahu.proto.lifecycle.example2.EventLog.Event;
-import org.mahu.proto.lifecycle.impl.IPublicServiceKeyFactory;
+import org.mahu.proto.lifecycle.impl.LifeCycleServiceBase;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
-public class RequestService implements ILifeCycleService, IPublicService<ISessionRequest>, ISessionRequest {
+public class RequestService extends LifeCycleServiceBase implements  IPublicService<ISessionRequest>, ISessionRequest {
 
-    final IEventBus eventBus;
     final IPublicServiceKeyFactory publicServiceKeyFactory;
 
     @Inject
     public RequestService(final IEventBus eventBus, final IPublicServiceKeyFactory publicServiceKeyFactory) {
-        this.eventBus = eventBus;
+        super(eventBus);
         this.publicServiceKeyFactory = publicServiceKeyFactory;
     }
 
+    // Called in LifeCycleService thread
     @Override
-    public void start() {
-        EventLog.log(Event.start, this);
-        eventBus.register(this);
+    public void stop() {
+        final RequestServiceStopEvent stopEvent = new RequestServiceStopEvent();
+        eventBusPost(stopEvent);
+        if (stopEvent.waitForStopped()) {
+            super.stop();
+        } else {
+            throw new RuntimeException("RequestServiceStopEvent wait timeout");
+        };
     }
 
-    @Override
-    public boolean stop() {
-        EventLog.log(Event.stop, this);
-        RequestServiceStopEvent stopEvent = new RequestServiceStopEvent();
-        eventBus.post(stopEvent);
-        return stopEvent.waitForStopped();
-    }
-
-    @Override
-    public void abort() {
-        EventLog.log(Event.abort, this);
-        eventBus.unregister(this);
-    }
-
+    // Called on EventBus thread
     @Subscribe
     public void process(RequestServiceStopEvent event) {
         event.stopped();
         // Clean up while executing on the EventBus thread
-        eventBus.unregister(this);
     }
 
     // IPublicService
@@ -53,10 +43,9 @@ public class RequestService implements ILifeCycleService, IPublicService<ISessio
         return publicServiceKeyFactory.createKey(ISessionRequest.class, this);
     }
 
-    // ISessionRequest
+    // ISessionRequest, called on EventBus thread
     @Override
     public String process(String data) {
-        EventLog.log(Event.event, this);
         return ISessionRequest.RESPONSE + data;
     }
 

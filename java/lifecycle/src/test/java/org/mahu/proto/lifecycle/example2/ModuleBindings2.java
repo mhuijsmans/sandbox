@@ -1,7 +1,7 @@
 package org.mahu.proto.lifecycle.example2;
 
+import org.mahu.proto.lifecycle.IPublicServiceKeyFactory;
 import org.mahu.proto.lifecycle.impl.AbstractServiceModule;
-import org.mahu.proto.lifecycle.impl.IPublicServiceKeyFactory;
 import org.mahu.proto.lifecycle.impl.PublicServiceKeyFactory;
 import org.mahu.proto.lifecycle.impl.RequestProxyDispatchService;
 

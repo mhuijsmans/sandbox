@@ -1,38 +1,21 @@
 package org.mahu.proto.lifecycle.example2;
 
-import org.mahu.proto.lifecycle.ILifeCycleService;
 import org.mahu.proto.lifecycle.IPublicService;
+import org.mahu.proto.lifecycle.IPublicServiceKeyFactory;
 import org.mahu.proto.lifecycle.PublicServiceKey;
-import org.mahu.proto.lifecycle.impl.IPublicServiceKeyFactory;
+import org.mahu.proto.lifecycle.impl.LifeCycleServiceBase;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
-public class ErrorService implements ILifeCycleService, IPublicService<IErrorRequest>, IErrorRequest {
+public class ErrorService extends LifeCycleServiceBase implements IPublicService<IErrorRequest>, IErrorRequest {
 
-    private final IEventBus eventBus;
     private final IPublicServiceKeyFactory publicServiceKeyFactory;
 
     @Inject
     ErrorService(final IEventBus eventBus, final IPublicServiceKeyFactory publicServiceKeyFactory) {
-        this.eventBus = eventBus;
+        super(eventBus);
         this.publicServiceKeyFactory = publicServiceKeyFactory;
-    }
-
-    @Override
-    public void start() {
-        eventBus.register(this);
-    }
-
-    @Override
-    public boolean stop() {
-        eventBus.unregister(this);
-        return true;
-    }
-
-    @Override
-    public void abort() {
-        eventBus.unregister(this);
     }
 
     // IPublicService
@@ -48,7 +31,7 @@ public class ErrorService implements ILifeCycleService, IPublicService<IErrorReq
         case throwException:
             throw new RuntimeException(IErrorRequest.THROW_EXCEPTION_MSG);
         case causeUncaughtException:
-            eventBus.post(new UncaughtExceptionEvent());
+            eventBusPost(new UncaughtExceptionEvent());
             return IErrorRequest.RESPONSE_OK;
         default:
             // Fall through, send default answer

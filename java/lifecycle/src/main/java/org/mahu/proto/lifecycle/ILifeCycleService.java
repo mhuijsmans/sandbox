@@ -11,7 +11,7 @@ public interface ILifeCycleService {
      * Gracefull terminate, on return service is stopped. Can take some time.
      * @return 
      */
-    boolean stop();
+    void stop();
   
     /**
      * Hard stop of service. On return service is stopped.

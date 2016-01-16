@@ -14,10 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import org.mahu.proto.lifecycle.example2.ErrorService;
 import org.mahu.proto.lifecycle.example2.EventBusService;
-import org.mahu.proto.lifecycle.example2.EventLog;
-import org.mahu.proto.lifecycle.example2.EventLog.Event;
-import org.mahu.proto.lifecycle.example2.EventLog.LogEntry;
 import org.mahu.proto.lifecycle.example2.IErrorRequest;
 import org.mahu.proto.lifecycle.example2.ISessionRequest;
 import org.mahu.proto.lifecycle.example2.ModuleBindings2;
@@ -25,130 +23,133 @@ import org.mahu.proto.lifecycle.example2.RequestService;
 import org.mahu.proto.lifecycle.impl.AbstractServiceModule;
 import org.mahu.proto.lifecycle.impl.ApiBroker;
 import org.mahu.proto.lifecycle.impl.RequestProxyDispatchService;
-import org.mahu.proto.lifecycle.impl.ServiceLifeCycleManager;
+import org.mahu.proto.lifecycle.impl.ServiceLifeCycleControl;
 
-public class ServiceLifeCycleManagerTest {
+public class ServiceLifeCycleControlTest {
+    
+    // The number of ILifeCycleService defined in used ModuleBindings class.
+    private final static int NR_OF_SERVICES = 4;
 
     ApiBroker broker;
     AbstractServiceModule moduleBindings;
-    ServiceLifeCycleManager serviceLifeCycleManager;
+    ServiceLifeCycleControl serviceLifeCycleControl;
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(30);
 
     @Before
     public void createServiceLifeCycleManager() {
-        EventLog.clear();
         broker = new ApiBroker();
         moduleBindings = new ModuleBindings2();
-        serviceLifeCycleManager = new ServiceLifeCycleManager(broker, moduleBindings);
+        serviceLifeCycleControl = new ServiceLifeCycleControl(broker, moduleBindings);
     }
 
     @After
     public void deleteServiceLifeCycleManager() {
-        serviceLifeCycleManager.stopServices();
-        serviceLifeCycleManager = null;
+        serviceLifeCycleControl.stopServices();
+        serviceLifeCycleControl = null;
     }
 
     @Test
     public void startServices_allServiceStartedInCorrectOrder() {
-        serviceLifeCycleManager.startServices();
+        serviceLifeCycleControl.startServices();
 
-        assertEquals(3, EventLog.size());
-        assertEquals(new LogEntry(Event.start, EventBusService.class), EventLog.get(0));
-        assertEquals(new LogEntry(Event.start, RequestProxyDispatchService.class), EventLog.get(1));
-        assertEquals(new LogEntry(Event.start, RequestService.class), EventLog.get(2));
+        assertEquals(NR_OF_SERVICES, serviceLifeCycleControl.getStartedServicesCount());
+        assertEquals(EventBusService.class, serviceLifeCycleControl.getStartedServiceClass(0));
+        assertEquals(RequestProxyDispatchService.class, serviceLifeCycleControl.getStartedServiceClass(1));
+        assertEquals(RequestService.class, serviceLifeCycleControl.getStartedServiceClass(2));
+        assertEquals(ErrorService.class, serviceLifeCycleControl.getStartedServiceClass(3));
     }
 
     @Test
     public void startServices_serviceAreAlreadyStarted_requestIgnored() {
-        serviceLifeCycleManager.startServices();
+        serviceLifeCycleControl.startServices();
 
-        assertEquals(3, EventLog.size());
+        assertEquals(NR_OF_SERVICES, serviceLifeCycleControl.getStartedServicesCount());
 
-        serviceLifeCycleManager.startServices();
-        assertEquals(3, EventLog.size());
+        serviceLifeCycleControl.startServices();
+        assertEquals(NR_OF_SERVICES, serviceLifeCycleControl.getStartedServicesCount());
     }
 
     @Test
     public void stop_afterStart_allServicesAreStoppedInCorrectOrder() {
-        serviceLifeCycleManager.startServices();
+        serviceLifeCycleControl.startServices();
 
-        serviceLifeCycleManager.stopServices();
+        serviceLifeCycleControl.stopServices();
 
-        assertEquals(6, EventLog.size());
-        assertEquals(new LogEntry(Event.start, EventBusService.class), EventLog.get(0));
-        assertEquals(new LogEntry(Event.start, RequestProxyDispatchService.class), EventLog.get(1));
-        assertEquals(new LogEntry(Event.start, RequestService.class), EventLog.get(2));
-        assertEquals(new LogEntry(Event.stop, RequestService.class), EventLog.get(3));
-        assertEquals(new LogEntry(Event.stop, RequestProxyDispatchService.class), EventLog.get(4));
-        assertEquals(new LogEntry(Event.stop, EventBusService.class), EventLog.get(5));
+        assertEquals(0, serviceLifeCycleControl.getStartedServicesCount());
+        assertEquals(NR_OF_SERVICES, serviceLifeCycleControl.getStoppedServicesCount());
+        assertEquals(ErrorService.class, serviceLifeCycleControl.getStoppedServiceClass(0));
+        assertEquals(RequestService.class, serviceLifeCycleControl.getStoppedServiceClass(1));
+        assertEquals(RequestProxyDispatchService.class, serviceLifeCycleControl.getStoppedServiceClass(2));
+        assertEquals(EventBusService.class, serviceLifeCycleControl.getStoppedServiceClass(3));
     }
 
     @Test
     public void stop_serviceAreAlreadyStopped_requestIgnored() {
-        serviceLifeCycleManager.startServices();
-        serviceLifeCycleManager.stopServices();
-        assertEquals(6, EventLog.size());
-
-        serviceLifeCycleManager.stopServices();
-        assertEquals(6, EventLog.size());
+        serviceLifeCycleControl.startServices();
+        serviceLifeCycleControl.stopServices();
+        assertEquals(NR_OF_SERVICES, serviceLifeCycleControl.getStoppedServicesCount());
+        
+        serviceLifeCycleControl.stopServices();
+        assertEquals(NR_OF_SERVICES, serviceLifeCycleControl.getStoppedServicesCount());
     }
 
     @Test
     public void abort_afterStart_allServicesAreAbortedInCorrectOrder() {
-        serviceLifeCycleManager.startServices();
+        serviceLifeCycleControl.startServices();
 
-        serviceLifeCycleManager.abortServices();
+        serviceLifeCycleControl.abortServices();
 
-        assertEquals(6, EventLog.size());
-        assertEquals(new LogEntry(Event.start, EventBusService.class), EventLog.get(0));
-        assertEquals(new LogEntry(Event.start, RequestProxyDispatchService.class), EventLog.get(1));
-        assertEquals(new LogEntry(Event.start, RequestService.class), EventLog.get(2));
-        assertEquals(new LogEntry(Event.abort, RequestService.class), EventLog.get(3));
-        assertEquals(new LogEntry(Event.abort, RequestProxyDispatchService.class), EventLog.get(4));
-        assertEquals(new LogEntry(Event.abort, EventBusService.class), EventLog.get(5));
+        assertEquals(0, serviceLifeCycleControl.getStartedServicesCount());
+        assertEquals(NR_OF_SERVICES, serviceLifeCycleControl.getStoppedServicesCount());
+        assertEquals(ErrorService.class, serviceLifeCycleControl.getStoppedServiceClass(0));
+        assertEquals(RequestService.class, serviceLifeCycleControl.getStoppedServiceClass(1));
+        assertEquals(RequestProxyDispatchService.class, serviceLifeCycleControl.getStoppedServiceClass(2));
+        assertEquals(EventBusService.class, serviceLifeCycleControl.getStoppedServiceClass(3));
     }
 
     @Test
     public void abort_serviceAreAlreadyStopped_requestIgnored() {
-        serviceLifeCycleManager.startServices();
-        serviceLifeCycleManager.stopServices();
-        assertEquals(6, EventLog.size());
+        serviceLifeCycleControl.startServices();
+        serviceLifeCycleControl.stopServices();
+        assertEquals(0, serviceLifeCycleControl.getStartedServicesCount());
+        assertEquals(NR_OF_SERVICES, serviceLifeCycleControl.getStoppedServicesCount());
 
-        serviceLifeCycleManager.abortServices();
-        assertEquals(6, EventLog.size());
+        serviceLifeCycleControl.abortServices();
+        assertEquals(NR_OF_SERVICES, serviceLifeCycleControl.getStoppedServicesCount());
     }
 
     @Test
     public void abort_serviceAreAlreadyAborted_requestIgnored() {
-        serviceLifeCycleManager.startServices();
-        serviceLifeCycleManager.abortServices();
-        assertEquals(6, EventLog.size());
+        serviceLifeCycleControl.startServices();
+        serviceLifeCycleControl.abortServices();
+        assertEquals(0, serviceLifeCycleControl.getStartedServicesCount());
+        assertEquals(NR_OF_SERVICES, serviceLifeCycleControl.getStoppedServicesCount());
 
-        serviceLifeCycleManager.abortServices();
-        assertEquals(6, EventLog.size());
+        serviceLifeCycleControl.abortServices();
+        assertEquals(NR_OF_SERVICES, serviceLifeCycleControl.getStoppedServicesCount());
     }
 
     @Test
     public void startServices_serviceRegisteredInBroker() {
-        serviceLifeCycleManager.startServices();
+        serviceLifeCycleControl.startServices();
 
         assertNotNull(broker.resolve(ISessionRequest.class).get());
     }
 
     @Test
     public void stop_afterStart_serviceUnregisteredInBroker() {
-        serviceLifeCycleManager.startServices();
+        serviceLifeCycleControl.startServices();
 
-        serviceLifeCycleManager.stopServices();
+        serviceLifeCycleControl.stopServices();
 
         assertEquals(Optional.empty(), broker.resolve(ISessionRequest.class));
     }
 
     @Test
     public void resolve_ISessionRequestServiceIsRegistered_serviceIsFound() {
-        serviceLifeCycleManager.startServices();
+        serviceLifeCycleControl.startServices();
 
         Optional<ISessionRequest> request = broker.resolve(ISessionRequest.class);
 
@@ -164,21 +165,18 @@ public class ServiceLifeCycleManagerTest {
 
     @Test
     public void process_ISessionRequestServiceIsAvailable_correctResponse() {
-        serviceLifeCycleManager.startServices();
-        EventLog.clear();
+        serviceLifeCycleControl.startServices();
 
         Optional<ISessionRequest> request = broker.resolve(ISessionRequest.class);
         assertTrue(request.isPresent());
         String result = request.get().process(new String());
 
         assertEquals(ISessionRequest.RESPONSE, result);
-        assertEquals(1, EventLog.size());
-        assertEquals(new LogEntry(Event.event, RequestService.class), EventLog.get(0));
     }
 
     @Test
     public void process_IErrorRequestServiceIsAvailable_serviceResponseIsReceived() {
-        serviceLifeCycleManager.startServices();
+        serviceLifeCycleControl.startServices();
 
         Optional<IErrorRequest> request = broker.resolve(IErrorRequest.class);
         assertTrue(request.isPresent());
@@ -194,11 +192,11 @@ public class ServiceLifeCycleManagerTest {
     @Test
     public void process_IErrorRequestProcessCrossesServicesStopped_postRejectedExceptionReceived()
             throws InterruptedException {
-        serviceLifeCycleManager.startServices();
+        serviceLifeCycleControl.startServices();
 
         Optional<IErrorRequest> request = broker.resolve(IErrorRequest.class);
         assertTrue(request.isPresent());
-        serviceLifeCycleManager.stopServices();
+        serviceLifeCycleControl.stopServices();
 
         try {
             request.get().process(IErrorRequest.Test.throwException);
@@ -215,8 +213,7 @@ public class ServiceLifeCycleManagerTest {
      */
     @Test
     public void IErrorRequest_processCausingUncaughtException_exceptionOnNextCall() {
-        serviceLifeCycleManager.startServices();
-        EventLog.clear();
+        serviceLifeCycleControl.startServices();
 
         Optional<IErrorRequest> request = broker.resolve(IErrorRequest.class);
         assertTrue(request.isPresent());

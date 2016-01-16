@@ -99,7 +99,7 @@ public class EventBusServiceTest {
     public void stop_afterStart_noException() {
         eventBusService.start();
 
-        assertTrue(eventBusService.stop());
+        eventBusService.stop();
 
         assertEquals(0, handler.getExceptionCounter());
     }
