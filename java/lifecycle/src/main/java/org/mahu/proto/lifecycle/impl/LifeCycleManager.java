@@ -33,7 +33,30 @@ public class LifeCycleManager implements ILifeCycleManager, UncaughtExceptionHan
         private Optional<ServiceLifeCycleControl> serviceLifeCycleControl;
     }
 
-    class StartupTask implements Runnable {
+    static class LifeCycleTaskException extends RuntimeException {
+        private final Class<? extends LifeCycleTask> cls;
+
+        LifeCycleTaskException(final Throwable t, final Class<? extends LifeCycleTask> cls) {
+            super(t);
+            this.cls = cls;
+        }
+
+        Class<? extends LifeCycleTask> getTaskClass() {
+            return cls;
+        }
+    }
+
+    class LifeCycleTask {
+        protected void guardedExecution(final Runnable runnable, final Class<? extends LifeCycleTask> cls) {
+            try {
+                runnable.run();
+            } catch (Throwable t) {
+                throw new LifeCycleTaskException(t, cls);
+            }
+        }
+    }
+
+    class StartupTask extends LifeCycleTask implements Runnable {
 
         StartupTask() {
             status.setState(LifeCycleState.startingUp);
@@ -43,21 +66,23 @@ public class LifeCycleManager implements ILifeCycleManager, UncaughtExceptionHan
         public void run() {
             lifeCycleTaskContext.serviceLifeCycleControl = Optional
                     .of(new ServiceLifeCycleControl(apiRegistry, moduleBindings));
-            lifeCycleTaskContext.serviceLifeCycleControl.get().startServices();
+            guardedExecution(() -> lifeCycleTaskContext.serviceLifeCycleControl.get().startServices(),
+                    StartupTask.class);
             status.setState(LifeCycleState.running);
             status.incrServiceStartCount();
         }
     }
 
-    class RestartTask implements Runnable {
+    class RestartTask extends LifeCycleTask implements Runnable {
         RestartTask() {
             status.setState(LifeCycleState.restarting);
         }
 
         @Override
         public void run() {
-            lifeCycleTaskContext.serviceLifeCycleControl.get().abortServices();
-            executorService.execute(new StartupTask());
+            guardedExecution(() -> lifeCycleTaskContext.serviceLifeCycleControl.get().abortServices(),
+                    RestartTask.class);
+            executorServiceExecute(new StartupTask());
         }
     }
 
@@ -74,14 +99,11 @@ public class LifeCycleManager implements ILifeCycleManager, UncaughtExceptionHan
             // To prevent looping, abort of services in transition to fatal is
             // called only once
             if (!isEntryStateFinal && lifeCycleTaskContext.serviceLifeCycleControl.isPresent()) {
-                try {
-                    lifeCycleTaskContext.serviceLifeCycleControl.get().abortServices();
-                } catch (Throwable t) {
-                    // log, aborting of of the services failed.
-                }
+                abortServices();
             }
 
         }
+
     }
 
     class ShutdownTask implements Runnable {
@@ -104,19 +126,32 @@ public class LifeCycleManager implements ILifeCycleManager, UncaughtExceptionHan
         @Override
         public void run() {
             if (providedThreadName.equals(SERVICETHREAD_NAME)) {
-                // Exception in ServiceThread, which must? imply in a started
-                // service
-                executorService.execute(new FatalTask());
+                if (throwable instanceof LifeCycleTaskException) {
+                    /**
+                     * The exception was caused by code other than this class.
+                     * Thus ServiceLifeCycleControl or one of the services
+                     * during start/stop/abort. There is no recovery possible
+                     * from this.
+                     */
+                    executorServiceExecute(new FatalTask());
+                } else {
+                    /**
+                     * The exception was causes by code in this class. There is
+                     * no recovery from this other than restarting the Java
+                     * application / WebContainer.
+                     */
+                    panic();
+                }
             } else {
                 // Exception in EventBusThread
                 switch (status.getState()) {
                 case startingUp:
                     // exception during start of services
-                    executorService.execute(new FatalTask());
+                    executorServiceExecute(new FatalTask());
                     break;
                 case running:
                     // exception during start of services
-                    executorService.execute(new RestartTask());
+                    executorServiceExecute(new RestartTask());
                     break;
                 case restarting:
                     // State restarting is entered, because of uncaught
@@ -126,11 +161,16 @@ public class LifeCycleManager implements ILifeCycleManager, UncaughtExceptionHan
                 case fatal:
                 case shutdown:
                 default:
-                    executorService.execute(new FatalTask());
+                    executorServiceExecute(new FatalTask());
                 }
             }
         }
+    }
 
+    private void panic() {
+        status.setState(LifeCycleState.fatal);
+        executorService.shutdownNow();
+        abortServices();
     }
 
     class GetServiceLifeCycleControlTask implements Callable<Optional<ServiceLifeCycleControl>> {
@@ -155,11 +195,11 @@ public class LifeCycleManager implements ILifeCycleManager, UncaughtExceptionHan
     @Override
     public void startUp() {
         verifyStateIs(LifeCycleState.init);
-        executorService.execute(new StartupTask());
+        executorServiceExecute(new StartupTask());
     }
 
     private void postFatalTask() {
-        executorService.execute(new FatalTask());
+        executorServiceExecute(new FatalTask());
     }
 
     private void verifyStateIs(final LifeCycleState requiredState) {
@@ -170,7 +210,7 @@ public class LifeCycleManager implements ILifeCycleManager, UncaughtExceptionHan
 
     @Override
     public void shutdown() {
-        executorService.execute(new ShutdownTask());
+        executorServiceExecute(new ShutdownTask());
         ExecutorUtils.shutdown(executorService);
     }
 
@@ -185,19 +225,38 @@ public class LifeCycleManager implements ILifeCycleManager, UncaughtExceptionHan
         // Notification from another thread about an UncaughtException.
         // There can be multiple exceptions.
         // Exception can be from the ServiceThread or EventBusThread
+        // Exception has
         final String providedName = ThreadFactoryFactory.getProvidedName(thread);
-        executorService.execute(new UncaughtExceptionTask(providedName, throwable));
+        executorServiceExecute(new UncaughtExceptionTask(providedName, throwable));
     }
 
     @Override
     public int getActiveServiceCount() {
         try {
-            Future<Optional<ServiceLifeCycleControl>> serviceLifeCycleControlFuture  = executorService.submit(new GetServiceLifeCycleControlTask());
+            Future<Optional<ServiceLifeCycleControl>> serviceLifeCycleControlFuture = executorService
+                    .submit(new GetServiceLifeCycleControlTask());
             Optional<ServiceLifeCycleControl> serviceLifeCycleControl;
             serviceLifeCycleControl = serviceLifeCycleControlFuture.get();
             return serviceLifeCycleControl.isPresent() ? serviceLifeCycleControl.get().getActiveServiceCount() : 0;
         } catch (InterruptedException | ExecutionException | RejectedExecutionException e) {
             throw new RuntimeException(GET_ACTIVESERVICECOUNT_ERROR, e);
+        }
+    }
+
+    private void executorServiceExecute(final Runnable runnable) {
+        try {
+            executorService.execute(runnable);
+        } catch (RejectedExecutionException e) {
+            // ExecutorService is no longer active, i.e. the underlying thread
+            // was stopped. So shutdown was called.
+        }
+    }
+    
+    private void abortServices() {
+        try {
+            lifeCycleTaskContext.serviceLifeCycleControl.get().abortServices();
+        } catch (Throwable t) {
+            // log, aborting of of the services failed.
         }
     }
 }

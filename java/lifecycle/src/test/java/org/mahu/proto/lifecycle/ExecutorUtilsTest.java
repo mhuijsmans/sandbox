@@ -147,9 +147,10 @@ public class ExecutorUtilsTest {
         assertEquals(1, uncaughtHandler.getExceptionCount());
         assertTrue(uncaughtHandler.getLastThrownException().isPresent());
         assertTrue(uncaughtHandler.getThreadLastThrownException().isPresent());
-        final String providedThreadName = ThreadFactoryFactory.getProvidedName(uncaughtHandler.getThreadLastThrownException().get());
+        final String providedThreadName = ThreadFactoryFactory
+                .getProvidedName(uncaughtHandler.getThreadLastThrownException().get());
         assertEquals(THREADNAME, providedThreadName);
         checkNoException = false;
-    }
+    }   
 
 }

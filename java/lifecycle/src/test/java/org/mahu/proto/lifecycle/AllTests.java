@@ -8,6 +8,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
   APIBrokerTest.class,
   EventBusServiceTest.class,
+  ExecutorServiceTest.class,
   ExecutorUtilsTest.class,
   GuaveEventBusTest.class,
   GuiceTest.class,
