@@ -8,16 +8,19 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
   APIBrokerTest.class,
   EventBusServiceTest.class,
+  ExecutorUtilsTest.class,
   GuaveEventBusTest.class,
   GuiceTest.class,
   InitDestroyTest.class,
-  ReadyAbortLockTest.class,
+  LifeCycleManagerTest.class,
   ModuleBindings2Test.class,
   ObjectRegistryTest.class,
   PublicServiceKeyTest.class,
+  ReadyAbortLockTest.class,  
   RequestProxyDispatchServiceTest.class,
   ServiceLifeCycleControlTest.class,
-  StopEventTest.class
+  StopEventTest.class,
+  ThreadFactoryFactoryTest.class
 })
 public class AllTests {
 }

@@ -1,5 +1,6 @@
 package org.mahu.proto.lifecycle.example2;
 
+import org.mahu.proto.lifecycle.IEventBus;
 import org.mahu.proto.lifecycle.IPublicService;
 import org.mahu.proto.lifecycle.IPublicServiceKeyFactory;
 import org.mahu.proto.lifecycle.PublicServiceKey;

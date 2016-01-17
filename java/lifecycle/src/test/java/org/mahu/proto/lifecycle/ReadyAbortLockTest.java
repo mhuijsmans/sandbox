@@ -25,7 +25,7 @@ public class ReadyAbortLockTest {
     @Rule
     public Timeout globalTimeout = Timeout.seconds(30);
 
-    ExecutorService threadpool;
+    private ExecutorService threadpool;
     private ReadyAbortLock lock;
 
     private class AsyncLockWait3 implements Callable<LockResult> {

@@ -1,7 +1,9 @@
 package org.mahu.proto.lifecycle.impl;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.mahu.proto.lifecycle.ILifeCycleService;
 import org.mahu.proto.lifecycle.IRequestProxyList;
@@ -21,29 +23,37 @@ public abstract class AbstractServiceModule extends AbstractModule {
     private final ObjectRegistry objectRegistry = new ObjectRegistry();
     private List<Class<?>> lifeCycleServices = new LinkedList<>();
     private final String subPackageOf;
-    
+    // Exception handler may be access from ServiceThread and BootThread. 
+    private volatile Optional<UncaughtExceptionHandler> uncaughtExceptionHandler = Optional.empty();
+
     protected AbstractServiceModule(final String subPackageOf) {
         this.subPackageOf = subPackageOf;
     }
 
     protected void bindServiceListener() {
         bind(ObjectRegistry.class).toInstance(objectRegistry);
-        bind(IRequestProxyList.class).to(RequestProxyList.class).in(Scopes.SINGLETON);        
+        bind(IRequestProxyList.class).to(RequestProxyList.class).in(Scopes.SINGLETON);
+        if (uncaughtExceptionHandler.isPresent()) {
+            bind(UncaughtExceptionHandler.class).toInstance(uncaughtExceptionHandler.get());
+        }
 
-        //bindListener(new ClassToTypeLiteralMatcherAdapter(Matchers.subclassesOf(ILifeCycleService.class)),
-        bindListener(new ClassToTypeLiteralMatcherAdapter(Matchers.inSubpackage(subPackageOf)),
-                new TypeListener() {
+        // bindListener(new
+        // ClassToTypeLiteralMatcherAdapter(Matchers.subclassesOf(ILifeCycleService.class)),
+        bindListener(new ClassToTypeLiteralMatcherAdapter(Matchers.inSubpackage(subPackageOf)), new TypeListener() {
+            @Override
+            public <I> void hear(final TypeLiteral<I> typeLiteral, TypeEncounter<I> typeEncounter) {
+                typeEncounter.register(new InjectionListener<I>() {
                     @Override
-                    public <I> void hear(final TypeLiteral<I> typeLiteral, TypeEncounter<I> typeEncounter) {
-                        typeEncounter.register(new InjectionListener<I>() {
-                            @Override
-                            public void afterInjection(Object i) {
-                                objectRegistry.objectCreated(i);
-                            }
-                        });
+                    public void afterInjection(Object i) {
+                        objectRegistry.objectCreated(i);
                     }
                 });
+            }
+        });
+    }
 
+    public void setUncaughtExceptionHandler(final UncaughtExceptionHandler uncaughtExceptionHandler) {
+        this.uncaughtExceptionHandler = Optional.of(uncaughtExceptionHandler);
     }
 
     public ObjectRegistry getObjectRegistry() {

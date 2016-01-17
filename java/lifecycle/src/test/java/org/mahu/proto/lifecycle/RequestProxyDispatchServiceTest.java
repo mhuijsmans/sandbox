@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mahu.proto.lifecycle.example2.IEventBus;
 import org.mahu.proto.lifecycle.impl.RequestProxyDispatchService;
 import org.mahu.proto.lifecycle.impl.RequestProxyEvent;
 import org.mockito.Mockito;

@@ -1,6 +1,6 @@
 package org.mahu.proto.lifecycle.impl;
 
-import org.mahu.proto.lifecycle.example2.IEventBus;
+import org.mahu.proto.lifecycle.IEventBus;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;

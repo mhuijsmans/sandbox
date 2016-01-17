@@ -5,8 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+import org.mahu.proto.lifecycle.IEventBus;
 import org.mahu.proto.lifecycle.IRequestProxyList;
-import org.mahu.proto.lifecycle.example2.IEventBus;
 
 public class RequestProxy implements InvocationHandler {
     public static final String METHOD_CALLED_TWICE_REASON = "Use-once Object"; 

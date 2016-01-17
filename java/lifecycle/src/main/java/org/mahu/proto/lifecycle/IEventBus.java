@@ -1,4 +1,4 @@
-package org.mahu.proto.lifecycle.example2;
+package org.mahu.proto.lifecycle;
 
 import java.util.concurrent.TimeUnit;
 

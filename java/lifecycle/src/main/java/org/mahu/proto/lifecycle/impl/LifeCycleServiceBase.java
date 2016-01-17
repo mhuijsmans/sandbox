@@ -1,9 +1,7 @@
 package org.mahu.proto.lifecycle.impl;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import org.mahu.proto.lifecycle.IEventBus;
 import org.mahu.proto.lifecycle.ILifeCycleService;
-import org.mahu.proto.lifecycle.example2.IEventBus;
 
 //@formatter:off
 /**
@@ -22,18 +20,19 @@ import org.mahu.proto.lifecycle.example2.IEventBus;
 public abstract class LifeCycleServiceBase implements ILifeCycleService {
 
     public static String SERVICE_UNAVAILABLE = "Requested service temporarily not available";
-
-    private AtomicBoolean isActive;
     private final IEventBus eventBus;
+    // isActive is volatile because it accessed in ServiceThread and EventBusThread 
+    private volatile boolean isActive;
+
 
     public LifeCycleServiceBase(final IEventBus eventBus) {
         this.eventBus = eventBus;
-        isActive = new AtomicBoolean(false);
+        isActive = false;
     }
 
     @Override
     public void start() {
-        isActive.set(true);
+        isActive = true;
         eventBus.register(this);
     }
 
@@ -58,7 +57,7 @@ public abstract class LifeCycleServiceBase implements ILifeCycleService {
      * will throw a RuntimeException.
      */
     protected void verifyServiceIsActive() {
-        if (!isActive.get()) {
+        if (!isActive) {
             throw new RuntimeException(SERVICE_UNAVAILABLE);
         }
     }
@@ -68,7 +67,7 @@ public abstract class LifeCycleServiceBase implements ILifeCycleService {
     }
 
     private void serviceIsNoLongerActive() {
-        isActive.set(false);
+        isActive = false;
         eventBus.unregister(this);
     }
 

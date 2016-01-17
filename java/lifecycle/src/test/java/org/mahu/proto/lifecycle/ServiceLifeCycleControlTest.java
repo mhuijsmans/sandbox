@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.mahu.proto.lifecycle.example2.ErrorService;
-import org.mahu.proto.lifecycle.example2.EventBusService;
 import org.mahu.proto.lifecycle.example2.IErrorRequest;
 import org.mahu.proto.lifecycle.example2.ISessionRequest;
 import org.mahu.proto.lifecycle.example2.ModuleBindings2;

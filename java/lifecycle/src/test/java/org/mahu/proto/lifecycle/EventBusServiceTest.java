@@ -1,7 +1,6 @@
 package org.mahu.proto.lifecycle;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.annotation.AnnotationFormatError;
@@ -12,9 +11,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.mahu.proto.lifecycle.example2.EventBusService;
-import org.mahu.proto.lifecycle.example2.EventBusUncaughtExceptionHandler;
+import org.mahu.proto.lifecycle.example2.UncaughtExceptionInMemoryLog;
 import org.mahu.proto.lifecycle.impl.ReadyAbortLock;
+import org.mahu.proto.lifecycle.impl.ThreadFactoryFactory;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -25,16 +24,18 @@ public class EventBusServiceTest {
     @Rule
     public Timeout globalTimeout = Timeout.seconds(30);
 
-    EventBusUncaughtExceptionHandler handler;
+    UncaughtExceptionInMemoryLog handler;
     EventBusService eventBusService;
-    
+    IThreadFactoryFactory threadFactory;
+
     static class ErrorEvent {
         final Throwable t;
+
         ErrorEvent(final Throwable t) {
             this.t = t;
         }
     }
-    
+
     static class TestErrorSubscriber {
         private ReadyAbortLock lock = new ReadyAbortLock();
 
@@ -51,8 +52,8 @@ public class EventBusServiceTest {
                 lock.wait3(EVENT_MAX_WAIT_IN_MS);
             }
         }
-    }    
-    
+    }
+
     static class TestSubscriber {
         private Optional<String> lastData = Optional.empty();
         private ReadyAbortLock lock = new ReadyAbortLock();
@@ -77,8 +78,9 @@ public class EventBusServiceTest {
 
     @Before
     public void prepare() {
-        handler = new EventBusUncaughtExceptionHandler();
-        eventBusService = new EventBusService(handler);
+        handler = new UncaughtExceptionInMemoryLog();
+        threadFactory = new ThreadFactoryFactory(handler);
+        eventBusService = new EventBusService(handler, threadFactory);
     }
 
     @After
@@ -86,13 +88,14 @@ public class EventBusServiceTest {
         eventBusService.stop();
         eventBusService = null;
         handler = null;
+        threadFactory = null;
     }
 
     @Test
     public void start_noException() {
         eventBusService.start();
 
-        assertEquals(0, handler.getExceptionCounter());
+        assertEquals(0, handler.getExceptionCount());
     }
 
     @Test
@@ -101,7 +104,7 @@ public class EventBusServiceTest {
 
         eventBusService.stop();
 
-        assertEquals(0, handler.getExceptionCounter());
+        assertEquals(0, handler.getExceptionCount());
     }
 
     @Test
@@ -109,92 +112,92 @@ public class EventBusServiceTest {
         eventBusService.start();
         final TestSubscriber testSub = new TestSubscriber();
         eventBusService.register(testSub);
-        
+
         final String event = "hi";
         eventBusService.post(event);
-        
+
         Optional<String> result = testSub.getData();
         assertTrue(result.isPresent());
         assertEquals(event, result.get());
     }
-    
+
     @Test
     public void subscriberThrowsRunTimeException_exceptionIsCaught() {
         eventBusService.start();
         final TestErrorSubscriber testSub = new TestErrorSubscriber();
         eventBusService.register(testSub);
-        
+
         eventBusService.post(new ErrorEvent(new RuntimeException()));
         handler.waitForExceptionCaught(EVENT_MAX_WAIT_IN_MS);
- 
-        assertEquals(1, handler.getExceptionCounter());
+
+        assertEquals(1, handler.getExceptionCount());
         assertTrue(handler.getLastThrownException().isPresent());
         assertTrue(handler.getLastThrownException().get() instanceof RuntimeException);
-        assertTrue(handler.getSubscriberExceptionContext().isPresent());          
-        assertTrue(handler.getSubscriberExceptionContext().get().getSubscriber() instanceof TestErrorSubscriber);         
+//        assertTrue(handler.getSubscriberExceptionContext().isPresent());
+//        assertTrue(handler.getSubscriberExceptionContext().get().getSubscriber() instanceof TestErrorSubscriber);
     }
-    
+
     @Test
     public void subscriberThrowsException_exceptionIsCaught() {
         eventBusService.start();
         final TestErrorSubscriber testSub = new TestErrorSubscriber();
         eventBusService.register(testSub);
-        
+
         eventBusService.post(new ErrorEvent(new Exception()));
         handler.waitForExceptionCaught(EVENT_MAX_WAIT_IN_MS);
- 
-        assertEquals(1, handler.getExceptionCounter());
+
+        assertEquals(1, handler.getExceptionCount());
         assertTrue(handler.getLastThrownException().isPresent());
-        assertTrue(handler.getLastThrownException().get() instanceof Exception);   
-        assertTrue(handler.getSubscriberExceptionContext().isPresent());          
-        assertTrue(handler.getSubscriberExceptionContext().get().getSubscriber() instanceof TestErrorSubscriber);        
+        assertTrue(handler.getLastThrownException().get() instanceof Exception);
+//        assertTrue(handler.getSubscriberExceptionContext().isPresent());
+//        assertTrue(handler.getSubscriberExceptionContext().get().getSubscriber() instanceof TestErrorSubscriber);
     }
-    
+
     @Test
     public void subscriberThrowsThrowable_exceptionIsCaught() {
         eventBusService.start();
         final TestErrorSubscriber testSub = new TestErrorSubscriber();
         eventBusService.register(testSub);
-        
+
         eventBusService.post(new ErrorEvent(new Throwable()));
         handler.waitForExceptionCaught(EVENT_MAX_WAIT_IN_MS);
- 
-        assertEquals(1, handler.getExceptionCounter());
+
+        assertEquals(1, handler.getExceptionCount());
         assertTrue(handler.getLastThrownException().isPresent());
-        assertTrue(handler.getLastThrownException().get() instanceof Throwable);    
-        assertTrue(handler.getSubscriberExceptionContext().isPresent());          
-        assertTrue(handler.getSubscriberExceptionContext().get().getSubscriber() instanceof TestErrorSubscriber);
+        assertTrue(handler.getLastThrownException().get() instanceof Throwable);
+//        assertTrue(handler.getSubscriberExceptionContext().isPresent());
+//        assertTrue(handler.getSubscriberExceptionContext().get().getSubscriber() instanceof TestErrorSubscriber);
     }
-    
+
     @Test
     public void subscriberThrowsError_exceptionIsCaught() {
         eventBusService.start();
         final TestErrorSubscriber testSub = new TestErrorSubscriber();
         eventBusService.register(testSub);
-        
+
         eventBusService.post(new ErrorEvent(new Error()));
         handler.waitForExceptionCaught(EVENT_MAX_WAIT_IN_MS);
- 
-        assertEquals(1, handler.getExceptionCounter());
+
+        assertEquals(1, handler.getExceptionCount());
         assertTrue(handler.getLastThrownException().isPresent());
         assertTrue(handler.getLastThrownException().get() instanceof Error);
-        assertFalse(handler.getSubscriberExceptionContext().isPresent());          
+//        assertFalse(handler.getSubscriberExceptionContext().isPresent());
     }
-    
+
     @Test
     public void subscriberThrowsAnnotationFormatError_exceptionIsCaught() {
         eventBusService.start();
         final TestErrorSubscriber testSub = new TestErrorSubscriber();
         eventBusService.register(testSub);
-        
+
         // AnnotationFormatError extends Error
         eventBusService.post(new ErrorEvent(new AnnotationFormatError("DoNotCare")));
         handler.waitForExceptionCaught(EVENT_MAX_WAIT_IN_MS);
- 
-        assertEquals(1, handler.getExceptionCounter());
+
+        assertEquals(1, handler.getExceptionCount());
         assertTrue(handler.getLastThrownException().isPresent());
         assertTrue(handler.getLastThrownException().get() instanceof AnnotationFormatError);
-        assertFalse(handler.getSubscriberExceptionContext().isPresent());          
+//        assertFalse(handler.getSubscriberExceptionContext().isPresent());
     }
 
 }

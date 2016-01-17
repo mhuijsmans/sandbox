@@ -8,12 +8,12 @@ import java.util.List;
 import org.mahu.proto.lifecycle.IApiRegistry;
 import org.mahu.proto.lifecycle.ILifeCycleService;
 import org.mahu.proto.lifecycle.IRequestProxyList;
-import org.mahu.proto.lifecycle.IServiceLifeCycleManager;
+import org.mahu.proto.lifecycle.IServiceLifeCycleControl;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-public class ServiceLifeCycleControl implements IServiceLifeCycleManager {
+public class ServiceLifeCycleControl implements IServiceLifeCycleControl {
 
     private final IApiRegistry apiRegistry;
     private final Injector injector;
@@ -115,7 +115,7 @@ public class ServiceLifeCycleControl implements IServiceLifeCycleManager {
         }
     }
 
-    public Object getStartedServicesCount() {
+    public int getStartedServicesCount() {
         return startedServices.size();
     }
 
@@ -123,11 +123,15 @@ public class ServiceLifeCycleControl implements IServiceLifeCycleManager {
         return startedServices.get(i).getClass();
     }
 
-    public Object getStoppedServicesCount() {
+    public int getStoppedServicesCount() {
         return stoppedServices.size();
     }
     
     public Class<? extends ILifeCycleService> getStoppedServiceClass(final int i) {
         return stoppedServices.get(i).getClass();
+    }
+
+    public int getActiveServiceCount() {
+        return getStartedServicesCount() - getStoppedServicesCount();
     }    
 }

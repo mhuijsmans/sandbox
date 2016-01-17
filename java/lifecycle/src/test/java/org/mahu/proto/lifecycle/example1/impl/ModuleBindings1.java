@@ -15,11 +15,10 @@ public class ModuleBindings1 extends AbstractServiceModule {
 
     @Override
     protected void configure() {
-          
+        bindServiceListener();
+        
         bindService(ExampleInterface2.class).to(ExampleInterface2Impl.class).in(Scopes.SINGLETON);
         bind(ExampleInterface3.class).to(ExampleInterface3Impl.class).in(Scopes.SINGLETON);         
         bindService(ExampleInterface1.class).to(ExampleInterface1Impl.class).in(Scopes.SINGLETON);
-
-        bindServiceListener();
     }
 }

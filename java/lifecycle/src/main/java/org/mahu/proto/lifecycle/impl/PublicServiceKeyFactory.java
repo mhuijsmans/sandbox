@@ -1,9 +1,9 @@
 package org.mahu.proto.lifecycle.impl;
 
+import org.mahu.proto.lifecycle.IEventBus;
 import org.mahu.proto.lifecycle.IPublicServiceKeyFactory;
 import org.mahu.proto.lifecycle.IRequestProxyList;
 import org.mahu.proto.lifecycle.PublicServiceKey;
-import org.mahu.proto.lifecycle.example2.IEventBus;
 
 import com.google.inject.Inject;
 

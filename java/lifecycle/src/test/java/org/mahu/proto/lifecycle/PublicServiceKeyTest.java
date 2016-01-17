@@ -16,17 +16,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.mahu.proto.lifecycle.example2.EventBusService;
-import org.mahu.proto.lifecycle.example2.EventBusUncaughtExceptionHandler;
 import org.mahu.proto.lifecycle.example2.ISessionRequest;
 import org.mahu.proto.lifecycle.example2.ISessionRequest.MeetUpLock;
 import org.mahu.proto.lifecycle.example2.ISessionRequest.SessionRequestException;
 import org.mahu.proto.lifecycle.example2.RequestService;
+import org.mahu.proto.lifecycle.example2.UncaughtExceptionInMemoryLog;
 import org.mahu.proto.lifecycle.impl.PublicServiceKeyFactory;
 import org.mahu.proto.lifecycle.impl.RequestProxy;
 import org.mahu.proto.lifecycle.impl.RequestProxyDispatchService;
 import org.mahu.proto.lifecycle.impl.RequestProxyEvent;
 import org.mahu.proto.lifecycle.impl.RequestProxyList;
+import org.mahu.proto.lifecycle.impl.ThreadFactoryFactory;
 
 public class PublicServiceKeyTest {
 
@@ -34,7 +34,8 @@ public class PublicServiceKeyTest {
     public Timeout globalTimeout = Timeout.seconds(30);
 
     ExecutorService threadpool;
-    EventBusUncaughtExceptionHandler handler;
+    UncaughtExceptionInMemoryLog uncaughExceptionHandler;
+    IThreadFactoryFactory threadFactory;
     EventBusService eventBusService;
     RequestProxyList requestProxyList;
     RequestService requestService;
@@ -43,8 +44,9 @@ public class PublicServiceKeyTest {
     @Before
     public void prepare() {
         threadpool = Executors.newFixedThreadPool(2);
-        handler = new EventBusUncaughtExceptionHandler();
-        eventBusService = new EventBusService(handler);
+        uncaughExceptionHandler = new UncaughtExceptionInMemoryLog();
+        threadFactory = new ThreadFactoryFactory(uncaughExceptionHandler);
+        eventBusService = new EventBusService(uncaughExceptionHandler, threadFactory);
         eventBusService.start();
         requestProxyList = new RequestProxyList();
         RequestProxyDispatchService requestProxyDispatchService = new RequestProxyDispatchService(eventBusService);
@@ -61,7 +63,8 @@ public class PublicServiceKeyTest {
     public void cleanup() {
         eventBusService.stop();
         eventBusService = null;
-        handler = null;
+        uncaughExceptionHandler = null;
+        threadFactory = null;
         requestProxyList = null;
         key = null;
         threadpool.shutdownNow();
@@ -148,8 +151,9 @@ public class PublicServiceKeyTest {
 
     /**
      * This test case deal with a abort of 2 requests. One request that is
-     * executing on the EventBus when the calls is aborted. The request is posted (thus
-     * queued on EventBus queue), ready to execute on EventBus, but is not started yet.
+     * executing on the EventBus when the calls is aborted. The request is
+     * posted (thus queued on EventBus queue), ready to execute on EventBus, but
+     * is not started yet.
      */
     @Test
     public void process_abortPostedRequest_exception() throws InterruptedException, ExecutionException {

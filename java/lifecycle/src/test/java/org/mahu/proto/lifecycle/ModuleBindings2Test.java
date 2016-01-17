@@ -31,7 +31,7 @@ public class ModuleBindings2Test {
         injector = Guice.createInjector(moduleBindings);
         moduleBindings.createLifeCycleServicesObjects(injector);
         
-        assertEquals(8, moduleBindings.getObjectRegistry().getObjectCount());
+        assertEquals(9, moduleBindings.getObjectRegistry().getObjectCount());
     }
 
 }
