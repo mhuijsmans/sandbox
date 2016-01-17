@@ -6,7 +6,7 @@ import org.junit.Test;
 
 // ifinitest doesn't run this test, because of infinitest.filters
 
-public class AppTest {
+public class App1Test {
 
     @Test
     public void testApp() {
