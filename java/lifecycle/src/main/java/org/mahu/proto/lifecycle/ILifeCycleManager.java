@@ -3,22 +3,31 @@ package org.mahu.proto.lifecycle;
 public interface ILifeCycleManager {
     
     public static enum LifeCycleState {
-        init, startingUp, restarting, running, shutdown, fatal 
+        // Init is the state when the the LifeCycleManager is created.
+        // In this start a Services can be started. On successful startup
+        // of services, state will become running.
+        // If services fail to start, state will become fatal 
+        init, 
+        // In this state anything can happens, restart, shutdown, fatal
+        running, 
+        // final state: shutdown request received.
+        shutdown, 
+        // final state
+        fatal 
     }
     
     /**
-     * Startup of the services 
+     * Startup of the services in own thread.
      * @return 
      */
-    public void startUp();
+    void startUp();
     
     /**
-     * 
+     * Shutdown services and return when that has completed. 
      */
-    public void shutdown();
+    void shutdown();
     
-    public ILifeCycleManagerStatus getStatus();
+    ILifeCycleManagerStatus getStatus();
 
-    public int getActiveServiceCount();
-    
+    int getActiveServiceCount();
 }

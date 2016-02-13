@@ -42,6 +42,7 @@ public class ServiceLifeCycleControl implements IServiceLifeCycleControl {
      * are for the caller of this method to handle.
      */
     //@formatter:on
+    @Override
     public void startServices() {
         if (startedServices.isEmpty()) {
             final Iterator<ILifeCycleService> it = moduleBindings.getObjectRegistry().getLifeCycleServiceIterator();
@@ -66,6 +67,7 @@ public class ServiceLifeCycleControl implements IServiceLifeCycleControl {
      * are for the caller of this method to handle.
      */
     //@formatter:on
+    @Override
     public void stopServices() {
         if (!startedServices.isEmpty()) {
             apiRegistry.removeAllPublicServices();
@@ -91,6 +93,7 @@ public class ServiceLifeCycleControl implements IServiceLifeCycleControl {
      * - abort received but not completed requests
      * - stop all services
      */
+    @Override
     public void abortServices() {
         if (!startedServices.isEmpty()) {
             apiRegistry.removeAllPublicServices();
@@ -119,6 +122,7 @@ public class ServiceLifeCycleControl implements IServiceLifeCycleControl {
         return startedServices.size();
     }
 
+    @Override
     public Class<? extends ILifeCycleService> getStartedServiceClass(final int i) {
         return startedServices.get(i).getClass();
     }

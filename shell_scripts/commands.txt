@@ -1,0 +1,10 @@
+Extract entris from a logfile in a certain range
+sed -n '/20160202T1418/ , /20160202T1422/p' /var/log/messages | gzip -9 > B.gz
+Source:
+- http://superuser.com/questions/439688/how-to-grep-a-log-file-within-a-specific-time-period
+- http://superuser.com/questions/325504/howto-pipe-cp-tar-gzip-without-creating-intermediary-files
+
+Limit size outputfile
+http://stackoverflow.com/questions/6708580/use-tee-or-equivalent-but-limit-max-file-size-or-rotate-to-new-file
+example: my_program | split -d -b 100000 -
+http://www.gnu.org/software/coreutils/manual/html_node/split-invocation.html#split-invocation

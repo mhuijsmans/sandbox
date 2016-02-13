@@ -4,9 +4,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.mahu.proto.lifecycle.IApiBroker;
-import org.mahu.proto.lifecycle.IServiceLifeCycleControl;
+import org.mahu.proto.lifecycle.ILifeCycleManager;
 import org.mahu.proto.lifecycle.impl.ApiBroker;
-import org.mahu.proto.lifecycle.impl.ServiceLifeCycleControl;
+import org.mahu.proto.lifecycle.impl.LifeCycleManager;
 
 public class ApplicationInitializeDestroy implements ServletContextListener {
 
@@ -14,13 +14,22 @@ public class ApplicationInitializeDestroy implements ServletContextListener {
 	public void contextInitialized(final ServletContextEvent sce) {
 		final ApiBroker broker = new ApiBroker();
 		final ModuleBindings1 moduleBindings = new ModuleBindings1();
-		final IServiceLifeCycleControl serviceLifeCycleManager = new ServiceLifeCycleControl(broker, moduleBindings);
+		ILifeCycleManager lifeCycleManager = new LifeCycleManager(broker, moduleBindings);		
+		/**
+		 * Make the IAPiBroker service available such that REST / WebSocket services can access the public API's. 
+		 */
 		sce.getServletContext().setAttribute(IApiBroker.class.getName(), broker);
-		sce.getServletContext().setAttribute(IServiceLifeCycleControl.class.getName(), serviceLifeCycleManager);
+		/**
+		 * Register the service that will control the actual life cycle of software..
+		 * This service can be stopped again.
+		 */
+		sce.getServletContext().setAttribute(ILifeCycleManager.class.getName(), lifeCycleManager);
+		lifeCycleManager.startUp();
 	}
 
 	@Override
 	public void contextDestroyed(final ServletContextEvent sce) {
-		sce.getServletContext().getAttribute(ApplicationInitializeDestroy.class.getName());
+	    ILifeCycleManager lifeCycleManager = (ILifeCycleManager)sce.getServletContext().getAttribute(ILifeCycleManager.class.getName());
+	    lifeCycleManager.shutdown();
 	}
 }

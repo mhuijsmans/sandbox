@@ -31,7 +31,7 @@ public class ServiceLifeCycleControlTest {
 
     ApiBroker broker;
     AbstractServiceModule moduleBindings;
-    ServiceLifeCycleControl serviceLifeCycleControl;
+    IServiceLifeCycleControl serviceLifeCycleControl;
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(30);

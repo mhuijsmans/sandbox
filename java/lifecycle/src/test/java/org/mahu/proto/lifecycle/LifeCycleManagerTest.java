@@ -116,19 +116,20 @@ public class LifeCycleManagerTest {
     public void executeRequest_uncaughtException_requestIsOkButServiceAreRestarted() throws InterruptedException, ExecutionException {
         lifeCycleManagerStartUp();
         Optional<IErrorRequest> request = broker.resolve(IErrorRequest.class);
+        assertEquals(0, lifeCycleManager.getStatus().getExceptionCount());
 
         assertEquals(IErrorRequest.RESPONSE_OK, request.get().process(IErrorRequest.Test.causeUncaughtException));
-
-        assertEquals(LifeCycleState.running, lifeCycleManager.getStatus().getState());
         TestUtils.pollingWait(() -> lifeCycleManager.getStatus().getExceptionCount() == 1, TESTCASE_TIMEOUT_IN_MS);
         assertEquals(1, lifeCycleManager.getStatus().getExceptionCount());
         TestUtils.pollingWait(() -> lifeCycleManager.getStatus().getServicesStartCount() == 2, TESTCASE_TIMEOUT_IN_MS);
         assertEquals(2, lifeCycleManager.getStatus().getServicesStartCount());
+        assertEquals(LifeCycleState.running, lifeCycleManager.getStatus().getState());
     }
     
     @Test
     public void executeRequest_uncaughtException_afterRestartServicesAreAvailable() throws InterruptedException, ExecutionException {
         lifeCycleManagerStartUp();
+        TestUtils.pollingWait(() -> lifeCycleManager.getStatus().getServicesStartCount() == 1, TESTCASE_TIMEOUT_IN_MS);
         Optional<IErrorRequest> request1 = broker.resolve(IErrorRequest.class);
         assertEquals(IErrorRequest.RESPONSE_OK, request1.get().process(IErrorRequest.Test.causeUncaughtException));
         TestUtils.pollingWait(() -> lifeCycleManager.getStatus().getServicesStartCount() == 2, TESTCASE_TIMEOUT_IN_MS);
