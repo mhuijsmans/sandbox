@@ -7,6 +7,8 @@ public interface IServiceLifeCycleControl {
     void stopServices();    
     
     void abortServices();
+    
+    int getActiveServiceCount();    
 
     int getStartedServicesCount();
     
@@ -15,5 +17,4 @@ public interface IServiceLifeCycleControl {
     int getStoppedServicesCount();
     
     Class<? extends ILifeCycleService> getStoppedServiceClass(final int i);
-
 }

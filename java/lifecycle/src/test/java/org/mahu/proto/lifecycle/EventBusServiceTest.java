@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.mahu.proto.lifecycle.example2.UncaughtExceptionInMemoryLog;
+import org.mahu.proto.lifecycle.impl.EventBusService;
 import org.mahu.proto.lifecycle.impl.ReadyAbortLock;
 import org.mahu.proto.lifecycle.impl.ThreadFactoryFactory;
 

@@ -1,7 +1,5 @@
 package org.mahu.proto.lifecycle;
 
-import java.util.concurrent.TimeUnit;
-
 public interface IEventBus {
 
     /**
@@ -32,16 +30,16 @@ public interface IEventBus {
      */
     public void unregister(Object object);
 
-    /**
-     * @return ............
-     */
-    public boolean isTerminated();
-
-    /**
-     * @return ............
-     */
-    public boolean isShutdown();
-
-    boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException;
+//    /**
+//     * @return ............
+//     */
+//    public boolean isTerminated();
+//
+//    /**
+//     * @return ............
+//     */
+//    public boolean isShutdown();
+//
+//    boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException;
 
 }

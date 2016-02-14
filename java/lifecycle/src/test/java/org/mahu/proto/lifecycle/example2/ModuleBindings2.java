@@ -2,11 +2,11 @@ package org.mahu.proto.lifecycle.example2;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
-import org.mahu.proto.lifecycle.EventBusService;
 import org.mahu.proto.lifecycle.IEventBus;
 import org.mahu.proto.lifecycle.IPublicServiceKeyFactory;
 import org.mahu.proto.lifecycle.IThreadFactoryFactory;
 import org.mahu.proto.lifecycle.impl.AbstractServiceModule;
+import org.mahu.proto.lifecycle.impl.EventBusService;
 import org.mahu.proto.lifecycle.impl.PublicServiceKeyFactory;
 import org.mahu.proto.lifecycle.impl.RequestProxyDispatchService;
 import org.mahu.proto.lifecycle.impl.ThreadFactoryFactory;

@@ -1,4 +1,4 @@
-package org.mahu.proto.lifecycle;
+package org.mahu.proto.lifecycle.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -14,8 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import org.mahu.proto.lifecycle.TestUtils;
 import org.mahu.proto.lifecycle.example2.UncaughtExceptionInMemoryLog;
-import org.mahu.proto.lifecycle.impl.ThreadFactoryFactory;
 
 public class ExecutorUtilsTest {
 
@@ -28,10 +28,25 @@ public class ExecutorUtilsTest {
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(30);
+    
+    static class BlockingTaskCatchFirstInterrupt extends BlockingTask {
+        @Override
+        public void run() {
+            cdl1.countDown();
+            try {
+                cdl2.await();
+            } catch (InterruptedException e1) {
+                try {
+                    cdl2.await();
+                } catch (InterruptedException e2) {
+                }
+            }
+        }
+    }
 
     static class BlockingTask implements Runnable {
-        private final CountDownLatch cdl1 = new CountDownLatch(1);
-        private final CountDownLatch cdl2 = new CountDownLatch(1);
+        protected final CountDownLatch cdl1 = new CountDownLatch(1);
+        protected final CountDownLatch cdl2 = new CountDownLatch(1);
 
         @Override
         public void run() {
@@ -151,6 +166,33 @@ public class ExecutorUtilsTest {
                 .getProvidedName(uncaughtHandler.getThreadLastThrownException().get());
         assertEquals(THREADNAME, providedThreadName);
         checkNoException = false;
-    }   
+    }
+    
+    @Test
+    public void shutdown_blockingTask_success() throws InterruptedException {
+        BlockingTask task = new BlockingTask();
+        executorService.execute(task);
+        task.cdl1.await();
+        
+        final int MAXWAIT_SHUTDOWN_MS = 100;
+        ExecutorUtils.shutdown(executorService, MAXWAIT_SHUTDOWN_MS);
+    }
+    
+    @Test
+    public void shutdown_blockingTaskCatchingInterrupt_success() throws InterruptedException {
+        BlockingTask task = new BlockingTaskCatchFirstInterrupt();
+        executorService.execute(task);
+        task.cdl1.await();
+        
+        final int MAXWAIT_SHUTDOWN_MS = 100;
+        try {
+            ExecutorUtils.shutdown(executorService, MAXWAIT_SHUTDOWN_MS);
+            fail("Shutdown shall fail because interrupt is caught");
+        } catch (RuntimeException e) {
+            assertEquals(ExecutorUtils.ERROR_AT_SHUTDOWN_TASKS_STILL_RUNNING, e.getMessage());
+        }
+        // BlockingTaskCatchFirstInterrupt will accept a second interrupt
+        executorService.shutdownNow();
+    }    
 
 }

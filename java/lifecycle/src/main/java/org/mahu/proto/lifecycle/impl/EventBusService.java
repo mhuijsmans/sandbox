@@ -1,20 +1,19 @@
-package org.mahu.proto.lifecycle;
+package org.mahu.proto.lifecycle.impl;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
+import org.mahu.proto.lifecycle.IEventBus;
+import org.mahu.proto.lifecycle.ILifeCycleService;
+import org.mahu.proto.lifecycle.IThreadFactoryFactory;
 import org.mahu.proto.lifecycle.example2.DummySubscriber;
 import org.mahu.proto.lifecycle.example2.EventBusUncaughtExceptionProxy;
-import org.mahu.proto.lifecycle.impl.ExecutorUtils;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.inject.Inject;
 
 public class EventBusService implements IEventBus, ILifeCycleService {
-
-    private final static int TASKSCOMPLETED_TIMEOUT_IN_SEC = 30;
 
     private static final String EVENTBUS_NAME = "eventBusThread";
 
@@ -83,20 +82,20 @@ public class EventBusService implements IEventBus, ILifeCycleService {
         }
     }
 
-    @Override
-    public boolean isTerminated() {
-        return eventBusExecutor.isTerminated();
-    }
-
-    @Override
-    public boolean isShutdown() {
-        return eventBusExecutor.isShutdown();
-    }
-
-    @Override
-    public boolean awaitTermination(final long timeout, final TimeUnit unit) throws InterruptedException {
-        return eventBusExecutor.awaitTermination(timeout, unit);
-    }
+//    @Override
+//    public boolean isTerminated() {
+//        return eventBusExecutor.isTerminated();
+//    }
+//
+//    @Override
+//    public boolean isShutdown() {
+//        return eventBusExecutor.isShutdown();
+//    }
+//
+//    @Override
+//    public boolean awaitTermination(final long timeout, final TimeUnit unit) throws InterruptedException {
+//        return eventBusExecutor.awaitTermination(timeout, unit);
+//    }
 
     private void installDummySubscriber() {
         eventBus.register(new DummySubscriber());

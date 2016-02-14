@@ -1,4 +1,4 @@
-package org.mahu.proto.lifecycle;
+package org.mahu.proto.lifecycle.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import org.mahu.proto.lifecycle.IThreadFactoryFactory;
+import org.mahu.proto.lifecycle.PublicServiceKey;
 import org.mahu.proto.lifecycle.example2.ISessionRequest;
 import org.mahu.proto.lifecycle.example2.ISessionRequest.MeetUpLock;
 import org.mahu.proto.lifecycle.example2.ISessionRequest.SessionRequestException;

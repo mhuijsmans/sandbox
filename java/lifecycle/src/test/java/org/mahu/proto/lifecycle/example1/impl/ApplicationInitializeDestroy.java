@@ -24,7 +24,7 @@ public class ApplicationInitializeDestroy implements ServletContextListener {
 		 * This service can be stopped again.
 		 */
 		sce.getServletContext().setAttribute(ILifeCycleManager.class.getName(), lifeCycleManager);
-		lifeCycleManager.startUp();
+		lifeCycleManager.start();
 	}
 
 	@Override

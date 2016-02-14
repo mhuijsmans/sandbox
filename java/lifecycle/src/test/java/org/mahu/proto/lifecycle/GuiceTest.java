@@ -2,6 +2,7 @@ package org.mahu.proto.lifecycle;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,8 +15,10 @@ import org.mahu.proto.lifecycle.example1.impl.ExampleInterface2Impl;
 import org.mahu.proto.lifecycle.example1.impl.ModuleBindings1;
 import org.mahu.proto.lifecycle.impl.ObjectRegistry;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Scopes;
 
 public class GuiceTest {
 
@@ -131,4 +134,46 @@ public class GuiceTest {
         assertTrue(objectCreationOrder.getObject(2) instanceof ExampleInterface2);
     }
 
+    interface I1 {
+    }
+    
+    static class Impl0 implements I1 {
+    }
+
+    static class Impl1 implements I1 {
+    }
+
+    class TestAbstractModule extends AbstractModule {
+
+        @Override
+        protected void configure() {
+            bind(I1.class).to(Impl0.class).in(Scopes.SINGLETON);
+        }
+
+        void bindImpl1() {
+            bind(I1.class).to(Impl1.class).in(Scopes.SINGLETON);
+        }
+    }
+
+    @Test
+    public void getInstance_configureImpl0_correctClass() {
+        TestAbstractModule modules = new TestAbstractModule();
+        // The next line will actually result in calling 
+        Injector injector = Guice.createInjector(modules);
+
+        assertTrue(injector.getInstance(I1.class) instanceof Impl0);
+    }  
+
+    @Test
+    public void bindImpl1_afterConfigure_NPE() {
+        TestAbstractModule modules = new TestAbstractModule();
+        try {
+            modules.bindImpl1();
+            fail("After module.configure() has been called, content can not be changed anymore.");
+        } catch (NullPointerException e) {
+            // bindImpl1() calls a bind method; that is not allowed outside configure 
+            assertTrue(true);
+        }
+    }
+ 
 }

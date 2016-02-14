@@ -12,7 +12,7 @@ import com.google.inject.Inject;
 
 public final class ThreadFactoryFactory implements IThreadFactoryFactory {
     
-    public final static String THREADNAME_PREFIX = "TFT";
+    public final static String THREADNAME_PREFIX = "TFF";
     
     private final UncaughtExceptionHandler uncaughtExceptionHandler;
     

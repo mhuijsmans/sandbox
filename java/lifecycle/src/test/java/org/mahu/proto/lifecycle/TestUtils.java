@@ -4,7 +4,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 public class TestUtils {
-    
+
+    public static class PollingWaitException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+        public PollingWaitException(final String msg) {
+            super(msg);
+        }
+    }
+
     public static void pollingWait(final BooleanSupplier object, final int timeoutInMs) {
         if (timeoutInMs > 0) {
             final long startTime = System.currentTimeMillis();
@@ -19,6 +26,9 @@ public class TestUtils {
                     Thread.currentThread().interrupt();
                 }
             }
+        }
+        if (!object.getAsBoolean()) {
+            throw new PollingWaitException("Polling wait failed within set time");
         }
     }
 

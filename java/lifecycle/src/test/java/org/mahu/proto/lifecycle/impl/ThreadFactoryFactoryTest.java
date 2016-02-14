@@ -1,9 +1,10 @@
-package org.mahu.proto.lifecycle;
+package org.mahu.proto.lifecycle.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ThreadFactory;
 
 import org.junit.Test;
@@ -22,30 +23,46 @@ public class ThreadFactoryFactoryTest {
         assertInvalidName("a-");
         assertInvalidName("a-b");
     }
-    
+
     @Test
     public void threadFactoryName_incrementedForEachCreatedThread() {
         final String name = "mies";
-        final ThreadFactory tf= ThreadFactoryFactory.createNamedThreadFactory(name, uncaughtExceptionHandler);
-        final Thread t1 = tf.newThread(() -> {} );
-        final Thread t2 = tf.newThread(() -> {} );
-        
-        assertEquals(ThreadFactoryFactory.THREADNAME_PREFIX+"-"+name+"-0", t1.getName());
-        assertEquals(ThreadFactoryFactory.THREADNAME_PREFIX+"-"+name+"-1", t2.getName());
+        final ThreadFactory tf = ThreadFactoryFactory.createNamedThreadFactory(name, uncaughtExceptionHandler);
+        final Thread t1 = tf.newThread(() -> {
+        });
+        final Thread t2 = tf.newThread(() -> {
+        });
+
+        assertEquals(ThreadFactoryFactory.THREADNAME_PREFIX + "-" + name + "-0", t1.getName());
+        assertEquals(ThreadFactoryFactory.THREADNAME_PREFIX + "-" + name + "-1", t2.getName());
     }
-    
+
     @Test
     public void threadFactoryName_correctFormat() {
         final String name = "mies";
-        final ThreadFactory tf= ThreadFactoryFactory.createNamedThreadFactory(name, uncaughtExceptionHandler);
-        final Thread t1 = tf.newThread(() -> {} );
-        final Thread t2 = tf.newThread(() -> {} );
-        
+        final ThreadFactory tf = ThreadFactoryFactory.createNamedThreadFactory(name, uncaughtExceptionHandler);
+        final Thread t1 = tf.newThread(() -> {
+        });
+        final Thread t2 = tf.newThread(() -> {
+        });
+
         assertEquals(name, ThreadFactoryFactory.getProvidedName(t1));
         assertEquals(name, ThreadFactoryFactory.getProvidedName(t2));
         assertEquals("0", ThreadFactoryFactory.getSequenceNr(t1));
         assertEquals("1", ThreadFactoryFactory.getSequenceNr(t2));
-    }    
+    }
+
+    @Test
+    public void createNamedThreadFactory_nullUncaughExceptionHandler_exception() {
+        final String name = "mies";
+        final UncaughtExceptionHandler uncaughtExceptionHandler = null;
+        try {
+            ThreadFactoryFactory.createNamedThreadFactory(name, uncaughtExceptionHandler);
+            fail("UncaughtExceptionHandler may not be null");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
 
     private void assertInvalidName(final String name) {
         try {

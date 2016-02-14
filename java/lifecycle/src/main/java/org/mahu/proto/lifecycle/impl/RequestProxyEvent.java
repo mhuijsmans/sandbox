@@ -12,7 +12,7 @@ public class RequestProxyEvent {
 
     private final static long REQUEST_EXECUTEWAIT_TIMEOUT_IN_MS = 30 * 1000;
 
-    private final ReadyAbortLock lock = new ReadyAbortLock();
+    private final ReadyAbortLock lock;
     private final Object proxyToObject;
     private final Method method;
     private final Object[] args;
@@ -20,7 +20,8 @@ public class RequestProxyEvent {
     private Object result;
 
     RequestProxyEvent(final Object proxy, final Method method, final Object[] args) {
-        this.proxyToObject = proxy;
+        lock = new ReadyAbortLock();
+        proxyToObject = proxy;
         this.method = method;
         this.args = args;
         exception = Optional.empty();

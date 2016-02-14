@@ -1,4 +1,4 @@
-package org.mahu.proto.lifecycle;
+package org.mahu.proto.lifecycle.impl;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mahu.proto.lifecycle.PublicServiceKey;
 import org.mahu.proto.lifecycle.example1.ExampleInterface3;
 import org.mahu.proto.lifecycle.example1.impl.ExampleInterface3Impl;
 import org.mahu.proto.lifecycle.impl.ApiBroker;

@@ -18,12 +18,14 @@ public interface ILifeCycleManager {
     
     /**
      * Startup of the services in own thread.
+     * This method can be called only once.
      * @return 
      */
-    void startUp();
+    void start();
     
     /**
      * Shutdown services and return when that has completed. 
+     * This method can be called only once.
      */
     void shutdown();
     

@@ -2,8 +2,11 @@ package org.mahu.proto.lifecycle;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
@@ -35,6 +38,22 @@ public class ExecutorServiceTest {
         @Override
         public void run() {
             executorService.shutdownNow();
+        }
+
+    }
+    
+    static class WaitForExternalTriggerToCompleteTask implements Runnable {
+        final CountDownLatch started = new CountDownLatch(1);
+        final CountDownLatch complete = new CountDownLatch(1);
+
+        @Override
+        public void run() {
+            started.countDown();
+            try {
+                complete.await();
+            } catch (InterruptedException e) {
+                // ignore. test case shall check post conditions
+            }
         }
 
     }
@@ -91,5 +110,25 @@ public class ExecutorServiceTest {
     public void shutdown_AfterShutdowNow_isAllowed() {
         executorService.shutdownNow();
         executorService.shutdown();
+    }
+    
+    @Test
+    public void execute_afterShutdown_notAccepted() throws InterruptedException {
+        WaitForExternalTriggerToCompleteTask task = new WaitForExternalTriggerToCompleteTask();
+        executorService.execute(task);
+        task.started.await();
+        
+        executorService.shutdown();
+        try {
+            // Request execution of a dummy task.
+            executorService.execute(() -> {});
+            fail("Calling execute after shutdown has been called is not allowed");
+        } catch (RejectedExecutionException e) {
+            // This is expected behavior
+        } finally {
+            task.complete.countDown();
+        }
+        
+        assertEquals(0,  task.complete.getCount());
     }
 }

@@ -1,4 +1,4 @@
-package org.mahu.proto.lifecycle;
+package org.mahu.proto.lifecycle.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import org.mahu.proto.lifecycle.IServiceLifeCycleControl;
 import org.mahu.proto.lifecycle.example2.ErrorService;
 import org.mahu.proto.lifecycle.example2.IErrorRequest;
 import org.mahu.proto.lifecycle.example2.ISessionRequest;

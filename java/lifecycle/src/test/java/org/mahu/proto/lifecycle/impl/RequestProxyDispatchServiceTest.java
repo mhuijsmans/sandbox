@@ -1,4 +1,4 @@
-package org.mahu.proto.lifecycle;
+package org.mahu.proto.lifecycle.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mahu.proto.lifecycle.IEventBus;
 import org.mahu.proto.lifecycle.impl.RequestProxyDispatchService;
 import org.mahu.proto.lifecycle.impl.RequestProxyEvent;
 import org.mockito.Mockito;

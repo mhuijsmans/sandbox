@@ -1,4 +1,4 @@
-package org.mahu.proto.lifecycle;
+package org.mahu.proto.lifecycle.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,6 +9,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.Iterator;
 
 import org.junit.Test;
+import org.mahu.proto.lifecycle.ILifeCycleService;
+import org.mahu.proto.lifecycle.IPublicService;
+import org.mahu.proto.lifecycle.PublicServiceKey;
 import org.mahu.proto.lifecycle.impl.ObjectRegistry;
 
 public class ObjectRegistryTest {

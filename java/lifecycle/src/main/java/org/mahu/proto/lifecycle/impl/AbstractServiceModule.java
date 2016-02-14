@@ -3,7 +3,6 @@ package org.mahu.proto.lifecycle.impl;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import org.mahu.proto.lifecycle.ILifeCycleService;
 import org.mahu.proto.lifecycle.IRequestProxyList;
@@ -23,8 +22,8 @@ public abstract class AbstractServiceModule extends AbstractModule {
     private final ObjectRegistry objectRegistry = new ObjectRegistry();
     private List<Class<?>> lifeCycleServices = new LinkedList<>();
     private final String subPackageOf;
-    // Exception handler may be access from ServiceThread and BootThread. 
-    private volatile Optional<UncaughtExceptionHandler> uncaughtExceptionHandler = Optional.empty();
+    // provider may be access from LifeCycleManagerThread and BootThread.
+    private volatile UncaughtExceptionHandlerProvider provider = new UncaughtExceptionHandlerProvider();
 
     protected AbstractServiceModule(final String subPackageOf) {
         this.subPackageOf = subPackageOf;
@@ -33,8 +32,8 @@ public abstract class AbstractServiceModule extends AbstractModule {
     protected void bindServiceListener() {
         bind(ObjectRegistry.class).toInstance(objectRegistry);
         bind(IRequestProxyList.class).to(RequestProxyList.class).in(Scopes.SINGLETON);
-        if (uncaughtExceptionHandler.isPresent()) {
-            bind(UncaughtExceptionHandler.class).toInstance(uncaughtExceptionHandler.get());
+        if (provider.isPresent()) {
+            bind(UncaughtExceptionHandler.class).toProvider(provider);
         }
 
         // bindListener(new
@@ -53,7 +52,7 @@ public abstract class AbstractServiceModule extends AbstractModule {
     }
 
     public void setUncaughtExceptionHandler(final UncaughtExceptionHandler uncaughtExceptionHandler) {
-        this.uncaughtExceptionHandler = Optional.of(uncaughtExceptionHandler);
+        provider.setUncaughtExceptionHandler(uncaughtExceptionHandler);
     }
 
     public ObjectRegistry getObjectRegistry() {

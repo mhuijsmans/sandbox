@@ -11,6 +11,7 @@ final class LifeCycleManagerStatus implements ILifeCycleManagerStatus {
     private volatile LifeCycleState state = LifeCycleState.init; 
     private volatile int serviceStartCount = 0;
     private volatile int exceptionCount = 0;
+    private volatile int forwardedExceptionCount = 0;
 
     @Override
     public LifeCycleState getState() {
@@ -23,9 +24,19 @@ final class LifeCycleManagerStatus implements ILifeCycleManagerStatus {
     }
     
     @Override
-    public int getExceptionCount() {
+    public int getUncaughtExceptionCount() {
         return exceptionCount;
     }
+    
+    @Override
+    public int getForwardedUncaughtExceptionCount() {
+        return forwardedExceptionCount;
+    }  
+    
+    @Override    
+    public boolean isState(final LifeCycleState newState) {
+        return state == newState;
+    }    
 
     void setState(final LifeCycleState newState) {
         state = newState;
@@ -35,11 +46,11 @@ final class LifeCycleManagerStatus implements ILifeCycleManagerStatus {
         serviceStartCount++;
     }
 
-    boolean stateEquals(LifeCycleState requiredState) {
-        return state == requiredState;
-    }
-
     public void incrExceptionCount() {
         exceptionCount++;
     }
+
+    public void incrForwardedExceptionCount() {
+        forwardedExceptionCount++;   
+    }    
 }
