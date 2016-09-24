@@ -1,0 +1,1 @@
+del C:\Users\310160231\Documents\MyProjects\apache-tomcat-7.0.72\webapps\app2.war

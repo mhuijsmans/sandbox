@@ -1,0 +1,1 @@
+cp C:\Users\310160231\Documents\MyGit\sandbox\java\multi-app\app2-war\target\app2-1.4.0-SNAPSHOT.war C:\Users\310160231\Documents\MyProjects\apache-tomcat-7.0.72\webapps\app2.war

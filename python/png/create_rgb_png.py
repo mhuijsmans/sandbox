@@ -36,3 +36,11 @@ with open('rgb_1c_4r_16bd_interlace.png', 'wb') as f:
     nrOfRows = 4
     w = png.Writer(nrOfColums, nrOfRows, interlace=True, bitdepth=16)
     w.write(f, p4)
+
+p1 = [(1,1,1, 1023,1023,1023, 65535,65535,65535),
+     (0,1,2, 1021,1022,1023, 253,254,255)]
+with open('rgb_3c_2r_16bd_pgr.png', 'wb') as f:
+    nrOfColums = 3
+    nrOfRows = 2
+    w = png.Writer(nrOfColums, nrOfRows, bitdepth=16)
+    w.write(f, p1)

@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <!-- this module refers to the maven-setup -->
+    <!-- modules will refer to this module as parent -->
+    <!-- module pom's will serve as reference for their child-modules -->
+	<parent>
+		<groupId>org.mahu.multiapp</groupId>
+		<artifactId>maven-setup</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>maven-setup/pom.xml</relativePath>
+	</parent>
+
+    <!-- A multi-module pom name has format NAME-setup -->
+    <!-- This also applies to child  multi-module pom's -->
+	<artifactId>project-setup</artifactId>
+	<packaging>pom</packaging>
+	<name>Project setup module</name>
+
+	<modules>
+        <module>app1</module>
+        <module>app1-war</module>
+        <module>app2-war</module>
+		<module>common</module>
+        <module>testcommon</module>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<system.version.release>1</system.version.release>
+		<system.version.subrelease>1</system.version.subrelease>
+		<system.version.version>1</system.version.version>
+		<system.version.level>1</system.version.level>
+	</properties>
+
+    <!-- configure here the plugins to run for all projects -->
+
+</project>

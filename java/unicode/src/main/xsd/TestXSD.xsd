@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="SelectionRules">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Default" type="xs:string" />
+				<xs:element name='Rules' type="Rules" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name='Rules'>
+		<xs:sequence>
+			<xs:element name="Rule" type="Rule" minOccurs='0'
+				maxOccurs='unbounded' />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name='Rule'>
+		<xs:sequence>
+			<xs:element name='Prefix' type='xs:string' />
+			<xs:element name='Name' type='xs:string' />
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>
