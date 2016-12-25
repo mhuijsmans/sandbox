@@ -1,0 +1,1 @@
+http://stackoverflow.com/questions/3428273/validate-jaxbelement-in-jpa-jax-rs-web-service/3440388#3440388
