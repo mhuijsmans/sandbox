@@ -12,14 +12,14 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.AfterClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
-public class SimpleTest extends JerseyTest {
+public class SimpleTest1 extends JerseyTest {
 
     final int max = 1000;
     private static Metrics metrics = new Metrics();
 
+    @Path("/")
     public static class HelloResource {
 
         @GET
@@ -40,10 +40,9 @@ public class SimpleTest extends JerseyTest {
     }
 
     @Test
-    @Ignore
     public void test1() {
-        final String hello = target("hello").request().get(String.class);
-        assertEquals("Hello World!", hello);
+        final String hello = target("/hello").request().get(String.class);
+        assertEquals("Hello world", hello);
     }
 
     @Test
@@ -67,6 +66,7 @@ public class SimpleTest extends JerseyTest {
             Response response = null;
             try {
                 response = target.request().get();
+                assertEquals(200, response.getStatus());
             } finally {
                 if (response != null) {
                     response.close();
@@ -99,6 +99,7 @@ public class SimpleTest extends JerseyTest {
             Response response = null;
             try {
                 response = target.path("hello").request().get();
+                assertEquals(200, response.getStatus());
             } finally {
                 if (response != null) {
                     response.close();
@@ -117,6 +118,7 @@ public class SimpleTest extends JerseyTest {
             try {
                 target = client.target(getTarget() + "/hello");
                 response = target.request().get();
+                assertEquals(200, response.getStatus());
             } finally {
                 if (response != null) {
                     response.close();
@@ -133,6 +135,7 @@ public class SimpleTest extends JerseyTest {
             Response response = null;
             try {
                 response = target.request().get();
+                assertEquals(200, response.getStatus());
             } finally {
                 if (response != null) {
                     response.close();
@@ -149,6 +152,7 @@ public class SimpleTest extends JerseyTest {
             Response response = null;
             try {
                 response = target.request().get();
+                assertEquals(200, response.getStatus());
             } finally {
                 if (response != null) {
                     response.close();
