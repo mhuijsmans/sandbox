@@ -12,7 +12,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>4.11</version>
       <scope>test</scope>
     </dependency>
 
@@ -23,8 +23,34 @@
       <version>4.1.0</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/com.google.inject.extensions/guice-servlet -->
+    <!-- next dependency is required because of use of @RequestScope (see test) -->
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-servlet</artifactId>
+      <version>4.1.0</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
+    <!-- next dependency is required because of guice-servlet -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.3</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.google.inject.extensions/guice-multibindings -->
+    <!-- next dependency is required because of OptionalBinder -->
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-multibindings</artifactId>
+      <version>4.1.0</version>
+    </dependency>
+
+
   </dependencies>
-  
+
   <build>
 
     <plugins>
@@ -38,6 +64,6 @@
       </plugin>
     </plugins>
 
-  </build>  
+  </build>
 
 </project>

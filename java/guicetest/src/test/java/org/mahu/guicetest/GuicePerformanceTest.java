@@ -2,22 +2,24 @@ package org.mahu.guicetest;
 
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Test;
+
 import com.google.common.base.Stopwatch;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-public class AppPerformanceTest {
+public class GuicePerformanceTest {
 
-    public static void main(String[] args) {
+    @Test
+    public void testDifferentCases() {
 
         Injector injector = Guice.createInjector(new BindingModule1(), new BindingModule2());
-        injector.getInstance(InjectorProxy.class).set(injector);
 
         final int max = 20000;
         measure("BillingService via Guice", max, () -> {
             for (int i = 0; i < max; i++) {
-                BillingService1 billingService = injector.getInstance(BillingService1.class);
+                injector.getInstance(BillingService1.class);
             }
         });
 
@@ -25,20 +27,20 @@ public class AppPerformanceTest {
             for (int i = 0; i < max; i++) {
                 ICreditCardProcessor processor = new PaypalCreditCardProcessor();
                 BillingService2 billingService2 = new BillingService2(processor);
-                BillingService1 billingService1 = new BillingService1(processor, billingService2);
+                new BillingService1(processor, billingService2);
             }
         });
 
         measure("Task2 via Guice", max, () -> {
             for (int i = 0; i < max; i++) {
-                Task2 task2 = injector.getInstance(Task2.class);
+                injector.getInstance(Task2.class);
             }
         });
 
         measure("ChildInjector", max, () -> {
             for (int i = 0; i < max; i++) {
                 IDiagnosticsLogger diagnosticsLogger = new DiagnosticsLogger();
-                Injector requestInjector = injector.createChildInjector(new AbstractModule() {
+                injector.createChildInjector(new AbstractModule() {
                     @Override
                     protected void configure() {
                         bind(IDiagnosticsLogger.class).toInstance(diagnosticsLogger);
@@ -49,13 +51,16 @@ public class AppPerformanceTest {
 
         IDiagnosticsLogger diagnosticsLogger = new DiagnosticsLogger();
         Injector requestInjector = injector.createChildInjector(new AbstractModule() {
+
             @Override
             protected void configure() {
                 bind(IDiagnosticsLogger.class).toInstance(diagnosticsLogger);
             }
         });
         measure("ChildInjector - task3", max, () -> {
-            for (int i = 0; i < max; i++) {
+            for (
+
+                    int i = 0; i < max; i++) {
                 requestInjector.getInstance(Task3.class);
             }
         });

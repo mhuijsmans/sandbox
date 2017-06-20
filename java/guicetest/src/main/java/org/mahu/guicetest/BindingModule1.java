@@ -11,7 +11,5 @@ public class BindingModule1 extends AbstractModule {
         bind(IConfigData.class).to(RealConfigData.class);
         bind(IRequestContext.class).to(RequestContextImpl.class).in(Singleton.class);
         bind(DataType1.class).toProvider(DataType1Provider.class).in(Singleton.class);
-
-        bind(InjectorProxy.class).toInstance(new InjectorProxy());
     }
 }

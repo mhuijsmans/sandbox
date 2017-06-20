@@ -2,6 +2,8 @@ package org.mahu.guicetest;
 
 import javax.inject.Inject;
 
+import com.google.inject.Injector;
+
 class BillingService2 {
 
     private final ICreditCardProcessor processor;
@@ -14,7 +16,7 @@ class BillingService2 {
     Task2 task2;
 
     @Inject
-    InjectorProxy injectorProxy;
+    Injector injector;
 
     @Inject
     BillingService2(ICreditCardProcessor processor) {
@@ -27,7 +29,7 @@ class BillingService2 {
         task1.act();
 
         // Create a Task through Guice
-        Task1 task = injectorProxy.getInstance(Task1.class);
+        Task1 task = injector.getInstance(Task1.class);
         task.act();
 
         task2.act();
