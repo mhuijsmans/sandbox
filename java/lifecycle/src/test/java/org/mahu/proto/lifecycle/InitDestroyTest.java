@@ -24,10 +24,10 @@ public class InitDestroyTest {
 		appInitDestroy.contextInitialized(event);
 
 		ILifeCycleManager lifeCycleManager = (ILifeCycleManager)servletContext.getAttribute(ILifeCycleManager.class.getName());
-        TestUtils.pollingWait(() -> lifeCycleManager.getStatus().getState() == LifeCycleState.running, TESTCASE_TIMEOUT_IN_MS);		
+        TestUtils.pollingWait(() -> lifeCycleManager.getStatus().getState() == LifeCycleState.RUNNING, TESTCASE_TIMEOUT_IN_MS);		
 		
 		appInitDestroy.contextDestroyed(event);
-        TestUtils.pollingWait(() -> lifeCycleManager.getStatus().getState() == LifeCycleState.shutdown, TESTCASE_TIMEOUT_IN_MS); 		
+        TestUtils.pollingWait(() -> lifeCycleManager.getStatus().getState() == LifeCycleState.SHUTDOWN, TESTCASE_TIMEOUT_IN_MS); 		
 	}	
 
 }

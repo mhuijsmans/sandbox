@@ -10,7 +10,7 @@ class ServicesRestartTask extends LifeCycleTask implements Runnable {
 
     @Override
     public void run() {
-        if (isState(LifeCycleState.running)) {
+        if (isState(LifeCycleState.RUNNING)) {
             guardedExecution(() -> abortServices(), ServicesRestartTask.class);
             asyncExecute(new ServiceStartTask(getContext()));
         }

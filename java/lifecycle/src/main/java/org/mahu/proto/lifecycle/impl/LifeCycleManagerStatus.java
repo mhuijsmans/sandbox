@@ -8,7 +8,7 @@ final class LifeCycleManagerStatus implements ILifeCycleManagerStatus {
     /**
      * The variables listed below are volatile because they are accessed from different threads. 
      */
-    private volatile LifeCycleState state = LifeCycleState.init; 
+    private volatile LifeCycleState state = LifeCycleState.INIT; 
     private volatile int serviceStartCount = 0;
     private volatile int exceptionCount = 0;
     private volatile int forwardedExceptionCount = 0;

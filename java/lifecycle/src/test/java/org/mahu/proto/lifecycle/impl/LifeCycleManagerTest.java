@@ -51,7 +51,7 @@ public class LifeCycleManagerTest {
 
     @Test
     public void initialStatusIsInit() {
-        assertEquals(LifeCycleState.init, lifeCycleManager.getStatus().getState());
+        assertEquals(LifeCycleState.INIT, lifeCycleManager.getStatus().getState());
         assertEquals(0, lifeCycleManager.getStatus().getServicesStartCount());
         assertEquals(0, lifeCycleManager.getStatus().getUncaughtExceptionCount());
     }
@@ -69,7 +69,7 @@ public class LifeCycleManagerTest {
         lifeCycleManagerStartUp();
         waitForServicesRunning();
         lifeCycleManager.shutdown();
-        waitForServicesState(LifeCycleState.shutdown);
+        waitForServicesState(LifeCycleState.SHUTDOWN);
     }
 
     /**
@@ -85,7 +85,7 @@ public class LifeCycleManagerTest {
         Optional<IErrorRequest> request = broker.resolve(IErrorRequest.class);
         request.get().process(IErrorRequest.Test.throwExceptionInStopService);
         lifeCycleManager.shutdown();
-        waitForServicesState(LifeCycleState.shutdown);
+        waitForServicesState(LifeCycleState.SHUTDOWN);
         assertEquals(1, lifeCycleManager.getStatus().getUncaughtExceptionCount());
     }
 
@@ -97,8 +97,8 @@ public class LifeCycleManagerTest {
         TestUtils.pollingWait(() -> lifeCycleManager.getStatus().getUncaughtExceptionCount() == 1,
                 POLLINGWAIT_TIMEOUT_IN_MS);
 
-        waitForServicesState(LifeCycleState.fatal);
-        assertEquals(LifeCycleState.fatal, lifeCycleManager.getStatus().getState());
+        waitForServicesState(LifeCycleState.FATAL);
+        assertEquals(LifeCycleState.FATAL, lifeCycleManager.getStatus().getState());
         assertEquals(1, lifeCycleManager.getStatus().getServicesStartCount());
     }
 
@@ -113,12 +113,12 @@ public class LifeCycleManagerTest {
         TestUtils.pollingWait(() -> lifeCycleManager.getStatus().getUncaughtExceptionCount() == 1,
                 POLLINGWAIT_TIMEOUT_IN_MS);
 
-        waitForServicesState(LifeCycleState.fatal);
-        assertEquals(LifeCycleState.fatal, lifeCycleManager.getStatus().getState());
+        waitForServicesState(LifeCycleState.FATAL);
+        assertEquals(LifeCycleState.FATAL, lifeCycleManager.getStatus().getState());
         assertEquals(1, lifeCycleManager.getStatus().getServicesStartCount());
 
         lifeCycleManager.shutdown();
-        waitForServicesState(LifeCycleState.shutdown);
+        waitForServicesState(LifeCycleState.SHUTDOWN);
     }
 
     @Test
@@ -157,7 +157,7 @@ public class LifeCycleManagerTest {
         } catch (RuntimeException e) {
             assertEquals(IErrorRequest.THROW_EXCEPTION_MSG, e.getMessage());
         }
-        assertEquals(LifeCycleState.running, lifeCycleManager.getStatus().getState());
+        assertEquals(LifeCycleState.RUNNING, lifeCycleManager.getStatus().getState());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class LifeCycleManagerTest {
         waitForServiceStartCount(2);
 
         assertEquals(2, lifeCycleManager.getStatus().getServicesStartCount());
-        assertEquals(LifeCycleState.running, lifeCycleManager.getStatus().getState());
+        assertEquals(LifeCycleState.RUNNING, lifeCycleManager.getStatus().getState());
     }
 
     @Test
@@ -274,7 +274,7 @@ public class LifeCycleManagerTest {
     }
 
     private void waitForServicesRunning() {
-        waitForServicesState(LifeCycleState.running);
+        waitForServicesState(LifeCycleState.RUNNING);
     }
 
     private void waitForServicesState(final LifeCycleState state) {

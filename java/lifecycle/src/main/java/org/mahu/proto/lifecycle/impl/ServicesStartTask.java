@@ -10,11 +10,11 @@ class ServiceStartTask extends LifeCycleTask implements Runnable {
 
     @Override
     public void run() {
-        if (isState(LifeCycleState.init) || isState(LifeCycleState.running)) {
+        if (isState(LifeCycleState.INIT) || isState(LifeCycleState.RUNNING)) {
             try {
                 getContext().createNewServiceLifeCycleControl();
                 guardedExecution(() -> startServices(), ServiceStartTask.class);
-                setState(LifeCycleState.running);
+                setState(LifeCycleState.RUNNING);
             } finally {
                 getContext().getStatus().incrServiceStartCount();
             }

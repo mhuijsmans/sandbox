@@ -57,7 +57,7 @@ public class UncaughtExceptionTaskTest {
         task.run();
 
         verify(executorService).asyncExecute(any(FatalTask.class));
-        assertEquals(LifeCycleState.fatal, status.getState());
+        assertEquals(LifeCycleState.FATAL, status.getState());
     }
 
     @Test
@@ -68,54 +68,54 @@ public class UncaughtExceptionTaskTest {
 
         task.run();
 
-        assertEquals(LifeCycleState.fatal, status.getState());
+        assertEquals(LifeCycleState.FATAL, status.getState());
         verify(serviceLifeCycleControl).abortServices();
         verify(executorService).shutdownNow();
     }
 
     @Test
     public void run_ServiceThread_StateRunning_Exception_restartTaskPosted() {
-        status.setState(LifeCycleState.running);
+        status.setState(LifeCycleState.RUNNING);
         String providedName = THREAD_NAME;
         Throwable throwable = new Throwable();
         UncaughtExceptionTask task = new UncaughtExceptionTask(context, providedName, throwable);
 
         task.run();
 
-        assertEquals(LifeCycleState.running, status.getState());
+        assertEquals(LifeCycleState.RUNNING, status.getState());
         verify(executorService).asyncExecute(any(ServicesRestartTask.class));
     }
     
     @Test
     public void run_ServiceThread_StateInit_Exception_nothingPosted() {
-        status.setState(LifeCycleState.init);
+        status.setState(LifeCycleState.INIT);
         UncaughtExceptionTask task = new UncaughtExceptionTask(context, THREAD_NAME, new Throwable());
 
         task.run();
 
-        assertEquals(LifeCycleState.init, status.getState());
+        assertEquals(LifeCycleState.INIT, status.getState());
         verify(executorService, never()).asyncExecute(any(Runnable.class));
     }
     
     @Test
     public void run_ServiceThread_StateFatal_Exception_nothingPosted() {
-        status.setState(LifeCycleState.fatal);
+        status.setState(LifeCycleState.FATAL);
         UncaughtExceptionTask task = new UncaughtExceptionTask(context, THREAD_NAME, new Throwable());
 
         task.run();
 
-        assertEquals(LifeCycleState.fatal, status.getState());
+        assertEquals(LifeCycleState.FATAL, status.getState());
         verify(executorService, never()).asyncExecute(any(Runnable.class));
     }
     
     @Test
     public void run_ServiceThread_StateShutdown_Exception_nothingPosted() {
-        status.setState(LifeCycleState.shutdown);
+        status.setState(LifeCycleState.SHUTDOWN);
         UncaughtExceptionTask task = new UncaughtExceptionTask(context, THREAD_NAME, new Throwable());
 
         task.run();
 
-        assertEquals(LifeCycleState.shutdown, status.getState());
+        assertEquals(LifeCycleState.SHUTDOWN, status.getState());
         verify(executorService, never()).asyncExecute(any(Runnable.class));
     }    
 

@@ -13,7 +13,7 @@ public interface IEventBus {
 
     /**
      * Registers all subscriber methods on {@code object} to receive events. A
-     * subscriber is a m3thod with the @Subscribe annotation
+     * subscriber is a method with the @Subscribe annotation
      *
      * @param object
      *            object whose subscriber methods should be registered.
@@ -29,17 +29,5 @@ public interface IEventBus {
      *             if the object was not previously registered.
      */
     public void unregister(Object object);
-
-//    /**
-//     * @return ............
-//     */
-//    public boolean isTerminated();
-//
-//    /**
-//     * @return ............
-//     */
-//    public boolean isShutdown();
-//
-//    boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException;
 
 }

@@ -39,18 +39,18 @@ class UncaughtExceptionTask extends LifeCycleTask implements Runnable {
         } else {
             // Exception in one of the EventBusThreads.
             switch (getState()) {
-            case running:
+            case RUNNING:
                 // This is expected to be the typical case:
                 // an uncaught exception in one of the services after being
                 // started by ServiceLifeCycleControl.
                 postServicesRestartTask();
                 break;
-            case init:
+            case INIT:
                 // exception during initial start of services means unstable software.
                 // That is detected and handled as LifeCycleTaskException. So exception
                 // in init is not possible.
-            case fatal:
-            case shutdown:
+            case FATAL:
+            case SHUTDOWN:
             default:
             }
         }
@@ -61,7 +61,7 @@ class UncaughtExceptionTask extends LifeCycleTask implements Runnable {
      * possible is to fix the bug and deployed a new version of this class.
      */
     private void panic() {
-        setState(LifeCycleState.fatal);
+        setState(LifeCycleState.FATAL);
         abortServicesCatchException();
         shutdownNowExecutorService();
     }

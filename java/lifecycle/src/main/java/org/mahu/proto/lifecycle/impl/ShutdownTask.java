@@ -12,23 +12,23 @@ class ShutdownTask extends LifeCycleTask implements Runnable {
     public void run() {
         try {
             switch (getState()) {
-            case running:
+            case RUNNING:
                 stopServices();
                 break;
-            case init:
+            case INIT:
                 // In theory a shutdown can be called immediately after start
                 // where an exception is thrown 
                 abortServices();
                 break;
-            case fatal:
-            case shutdown:
+            case FATAL:
+            case SHUTDOWN:
             default:
             }
         } catch (Throwable t1) {
             getContext().getStatus().incrExceptionCount();
             abortServicesCatchException();
         } finally {
-            setState(LifeCycleState.shutdown);
+            setState(LifeCycleState.SHUTDOWN);
         }
     }
     

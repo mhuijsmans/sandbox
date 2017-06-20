@@ -8,8 +8,8 @@ class FatalTask extends LifeCycleTask implements Runnable {
 
     FatalTask(final LifeCycleTaskContext context) {
         super(context);
-        isEntryStateFinal = isState(LifeCycleState.fatal);
-        setState(LifeCycleState.fatal);
+        isEntryStateFinal = isState(LifeCycleState.FATAL);
+        setState(LifeCycleState.FATAL);
     }
 
     @Override
