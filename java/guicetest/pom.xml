@@ -20,7 +20,7 @@
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
-      <version>4.1.0</version>
+      <version>${guice.version}</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.inject.extensions/guice-servlet -->
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>com.google.inject.extensions</groupId>
       <artifactId>guice-servlet</artifactId>
-      <version>4.1.0</version>
+      <version>${guice.version}</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
@@ -45,9 +45,16 @@
     <dependency>
       <groupId>com.google.inject.extensions</groupId>
       <artifactId>guice-multibindings</artifactId>
-      <version>4.1.0</version>
+      <version>${guice.version}</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/com.google.inject.extensions/guice-assistedinject -->
+    <!-- next dependency is required because of @Assist, @AssistInject -->
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-assistedinject</artifactId>
+      <version>${guice.version}</version>
+    </dependency>
 
   </dependencies>
 
@@ -65,5 +72,10 @@
     </plugins>
 
   </build>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <guice.version>4.1.0</guice.version>
+  </properties>
 
 </project>

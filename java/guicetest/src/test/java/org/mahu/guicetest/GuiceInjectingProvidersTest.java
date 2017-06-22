@@ -12,6 +12,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+// This test case explores BuildIn bindings.
 // source: https://github.com/google/guice/wiki/InjectingProviders
 public class GuiceInjectingProvidersTest {
 
@@ -36,7 +37,6 @@ public class GuiceInjectingProvidersTest {
 
     }
 
-    // This test case explores BuildIn bindings.
     @Test
     public void requestScope() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule());

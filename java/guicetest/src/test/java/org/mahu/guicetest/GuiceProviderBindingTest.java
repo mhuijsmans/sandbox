@@ -11,6 +11,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+// This test case explores Provider responsible for generating an object.
 // source: https://github.com/google/guice/wiki/ProviderBindings
 public class GuiceProviderBindingTest {
 
@@ -44,7 +45,6 @@ public class GuiceProviderBindingTest {
 
     }
 
-    // This test case explores Provider responsible for generating an object.
     @Test
     public void requestScope() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule());

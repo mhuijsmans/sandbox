@@ -16,6 +16,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.name.Names;
 
+// This test case explores Annotated bindings: named annotation and (custom qualifier) annotation class.
 public class GuiceBindingAnnotationsTest {
 
     @Qualifier
@@ -53,8 +54,6 @@ public class GuiceBindingAnnotationsTest {
         }
     }
 
-    // This test case explores Annotated bindings: named annotation and
-    // (custom) annotation class
     @Test
     public void requestScope() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule());

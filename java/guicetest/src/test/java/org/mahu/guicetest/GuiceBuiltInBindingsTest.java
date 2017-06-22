@@ -10,6 +10,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+// This test case explores BuildIn bindings supported.
 public class GuiceBuiltInBindingsTest {
 
     static class BindingModule extends AbstractModule {
@@ -30,7 +31,6 @@ public class GuiceBuiltInBindingsTest {
         }
     }
 
-    // This test case explores BuildIn bindings supported.
     @Test
     public void requestScope() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule());

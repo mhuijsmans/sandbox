@@ -18,6 +18,8 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.servlet.ServletScopes;
 
+// This test case explores use of JSR330 @RequestScope scope.
+// It includes open/close of the RequestScope.
 public class GuiceRequestScopeTest {
 
     static class BindingModule extends AbstractModule {
@@ -65,7 +67,6 @@ public class GuiceRequestScopeTest {
 
     }
 
-    // This test case explores use of JSR330 @RequestScope scope.
     @Test
     public void requestScope() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule());

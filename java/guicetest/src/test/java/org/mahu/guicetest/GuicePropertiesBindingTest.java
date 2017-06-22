@@ -14,6 +14,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.name.Names;
 
+// This test case explores binding of constant values using Properties & Names.bindProperties(..).
 public class GuicePropertiesBindingTest {
 
     private static final int PORT = 8080;
@@ -41,8 +42,6 @@ public class GuicePropertiesBindingTest {
         }
     }
 
-    // This test case explores binding of constant values using Properties &
-    // Names.bindProperties().
     @Test
     public void requestScope() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule());

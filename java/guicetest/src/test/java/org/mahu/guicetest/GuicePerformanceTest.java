@@ -9,6 +9,12 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+// This test case explores costs associated with use of guice
+// - cost of getInstance(BillingService1.class) via guice
+// - cost of new BillingService1(..) without guice
+// - cost of getInstance(Task3.class) via guice
+// - cost of use of a childInjector
+// - cost of getInstance(Task3.class) via guice childInjector
 public class GuicePerformanceTest {
 
     @Test
@@ -58,9 +64,7 @@ public class GuicePerformanceTest {
             }
         });
         measure("ChildInjector - task3", max, () -> {
-            for (
-
-                    int i = 0; i < max; i++) {
+            for (int i = 0; i < max; i++) {
                 requestInjector.getInstance(Task3.class);
             }
         });

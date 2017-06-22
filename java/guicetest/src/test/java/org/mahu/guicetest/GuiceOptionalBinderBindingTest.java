@@ -16,6 +16,8 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.OptionalBinder;
 
+// This test case explores Optional<..>
+// Current impression is that a transition from Optional.empty() to Optional not-empty. 
 public class GuiceOptionalBinderBindingTest {
 
     static class BindingModule1 extends AbstractModule {
@@ -66,8 +68,6 @@ public class GuiceOptionalBinderBindingTest {
         }
     }
 
-    // This test case explores binding is constant value for basic data type &
-    // string
     @Test
     public void requestScope() throws Exception {
         {

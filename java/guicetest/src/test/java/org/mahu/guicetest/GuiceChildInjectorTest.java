@@ -11,6 +11,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+// This test case explores a childInjector. 
+// It include a check that the childInjector is injected.
 public class GuiceChildInjectorTest {
 
     static class BindingModule1 extends AbstractModule {
@@ -60,8 +62,6 @@ public class GuiceChildInjectorTest {
         }
     }
 
-    // This test case explores a childInjector. It include a check that the
-    // childInjector is inserted.
     @Test
     public void requestScope() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule1());

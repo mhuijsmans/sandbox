@@ -12,6 +12,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 
+// This test case explores exposing data managed through a DataContainer.
+// This test case overlaps with GuiceContextProviderBindingTest w.r.t. used implementation patterns.
 public class GuiceRequestResultDataTest {
 
     static class BindingModule extends AbstractModule {
@@ -79,7 +81,6 @@ public class GuiceRequestResultDataTest {
 
     }
 
-    // This test case explores exposing data managed through a DataContainer.
     @Test
     public void requestScope() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule());
