@@ -7,6 +7,7 @@ import org.mahu.proto.webguice.rest.RestServiceJerseyTest;
 import org.mahu.proto.webguice.rest.RestServiceTest;
 import org.mahu.proto.webguice.stm.IRequestProcessorTest;
 import org.mahu.proto.webguice.stm.StateMachineBindingModuleTest;
+import org.mahu.proto.webguice.workflowtask.Task2Test;
 
 //@formatter:off
 @RunWith(Suite.class)
@@ -15,7 +16,8 @@ import org.mahu.proto.webguice.stm.StateMachineBindingModuleTest;
     RequestScopedExecutorTest.class,
     RestServiceJerseyTest.class,
     RestServiceTest.class,
-    StateMachineBindingModuleTest.class
+    StateMachineBindingModuleTest.class,
+    Task2Test.class
 })
 public final class AllTests {
 }

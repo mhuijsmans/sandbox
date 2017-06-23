@@ -3,8 +3,6 @@ package org.mahu.proto.webguice.restconfig;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.mahu.proto.webguice.stm.StateMachineBindingModule;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -23,7 +21,7 @@ public class ApplicationInitializeDestroy implements ServletContextListener {
     }
 
     public static Injector createApplicationInjector() {
-        return Guice.createInjector(new StateMachineBindingModule());
+        return Guice.createInjector(new ApplicationModule());
     }
 
 }
