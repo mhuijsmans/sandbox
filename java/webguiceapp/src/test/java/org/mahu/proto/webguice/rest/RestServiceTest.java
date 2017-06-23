@@ -12,7 +12,7 @@ import com.google.inject.Injector;
 public class RestServiceTest {
 
     @Test
-    public void test() {
+    public void testPOST() {
         Injector injector = ApplicationInitializeDestroy.createApplicationInjector();
         RestService restService = new RestService(injector);
         Response response = restService.postMsg("hi");

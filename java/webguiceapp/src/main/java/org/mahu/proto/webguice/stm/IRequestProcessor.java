@@ -3,10 +3,12 @@ package org.mahu.proto.webguice.stm;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
+import org.mahu.proto.webguice.inject.RequestScopeRunnable;
+import org.mahu.proto.webguice.inject.RequestScopedExecutor;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 
-// package scope
 class IRequestProcessor implements IIRequestProcessor {
 
     private final IStateMachine stateMachine;
@@ -20,13 +22,12 @@ class IRequestProcessor implements IIRequestProcessor {
 
     @Override
     public Response execute(RequestType requestType, AbstractModule childModule) {
-        final IRequestProvider requestProvider = new IRequestProvider(injector, childModule, requestType);
-        try {
-            // TODO: set request scope
-            return stateMachine.execute(requestProvider);
-        } finally {
-            // TODO: clear requestScope
-        }
+        return RequestScopedExecutor.execute(new RequestScopeRunnable<Response>() {
+            public Response run() {
+                final IRequestProvider requestProvider = new IRequestProvider(injector, childModule, requestType);
+                return stateMachine.execute(requestProvider);
+            }
+        });
     }
 
 }
