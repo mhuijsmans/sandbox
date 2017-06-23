@@ -70,8 +70,7 @@ public class GuiceRequestScopeTest {
     @Test
     public void requestScope() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule());
-
-        ExecutorUsingRequestScope executorUsingRequestScope = injector.getInstance(ExecutorUsingRequestScope.class);
+        final ExecutorUsingRequestScope executorUsingRequestScope = new ExecutorUsingRequestScope();
 
         TestObject testObject1 = executorUsingRequestScope.execute(new RequestScopeRunnable<TestObject>() {
             public TestObject run() {
