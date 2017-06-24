@@ -16,5 +16,4 @@ public class ApplicationModule extends AbstractModule {
         install(new WorkflowModule());
         install(new WorkFlowTaskModule());
     }
-
 }

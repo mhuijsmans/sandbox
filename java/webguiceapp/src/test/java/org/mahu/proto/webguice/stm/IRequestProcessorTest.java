@@ -1,19 +1,16 @@
 package org.mahu.proto.webguice.stm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
+import org.mahu.proto.webguice.request.RequestCommonBindingsModule;
 import org.mahu.proto.webguice.workflow.ITaskListExecutor;
 import org.mahu.proto.webguice.workflow.IWorkFlowExecutor;
 import org.mahu.proto.webguice.workflow.WorkflowModule;
 import org.mockito.Mockito;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class IRequestProcessorTest {
@@ -28,6 +25,7 @@ public class IRequestProcessorTest {
 
         @Override
         protected void configure() {
+            ;
             bind(IRequest.class).toInstance(request);
         }
     }
@@ -83,37 +81,9 @@ public class IRequestProcessorTest {
         @Override
         protected void configure() {
             install(new WorkflowModule());
+            install(new RequestCommonBindingsModule());
             bind(IRequest.class).to(ScopeTestRequest.class);
         }
     };
-
-    @Test
-    public void execute_request_workFlowAndTaskListExecutorAreRequestScoped() {
-        SaveRequestStateMachine stateMachine = new SaveRequestStateMachine();
-        Injector injector = Guice.createInjector(new StateMachineBindingModule());
-
-        IIRequestProcessor requestprocessor = new IRequestProcessor(stateMachine, injector);
-        requestprocessor.execute(RequestType.GET, new RequestScopeTestModule());
-
-        assertEquals(stateMachine.request.workFlowExecutor1, stateMachine.request.workFlowExecutor2);
-        assertEquals(stateMachine.request.taskListExecutor1, stateMachine.request.taskListExecutor2);
-    }
-
-    @Test
-    public void execute_twoRequests_differentWorkFlowAndTaskListExecutors() {
-        SaveRequestStateMachine stateMachine = new SaveRequestStateMachine();
-        Injector injector = Guice.createInjector(new StateMachineBindingModule());
-        IIRequestProcessor requestprocessor = new IRequestProcessor(stateMachine, injector);
-
-        requestprocessor.execute(RequestType.GET, new RequestScopeTestModule());
-        ScopeTestRequest request1 = stateMachine.request;
-        stateMachine.request = null;
-
-        requestprocessor.execute(RequestType.GET, new RequestScopeTestModule());
-        ScopeTestRequest request2 = stateMachine.request;
-
-        assertNotEquals(request1.workFlowExecutor1, request2.workFlowExecutor1);
-        assertNotEquals(request1.taskListExecutor1, request2.taskListExecutor1);
-    }
 
 }

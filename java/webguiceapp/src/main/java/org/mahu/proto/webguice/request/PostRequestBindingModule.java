@@ -14,6 +14,7 @@ public class PostRequestBindingModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        install(new RequestCommonBindingsModule());
         install(new ScanWorkflowModule());
         bind(IRequest.class).to(PostRequest.class);
         bind(PostRequestData.class).toInstance(requestData);

@@ -9,6 +9,7 @@ public class GetRequestBindingModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        install(new RequestCommonBindingsModule());
         bind(IRequest.class).to(GetRequest.class);
     }
 }

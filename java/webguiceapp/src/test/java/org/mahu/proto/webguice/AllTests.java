@@ -2,7 +2,7 @@ package org.mahu.proto.webguice;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.mahu.proto.webguice.inject.RequestScopedExecutorTest;
+import org.mahu.proto.webguice.request.RequestCommonBindingsModuleTest;
 import org.mahu.proto.webguice.rest.RestServiceJerseyTest;
 import org.mahu.proto.webguice.rest.RestServiceTest;
 import org.mahu.proto.webguice.stm.IRequestProcessorTest;
@@ -13,7 +13,7 @@ import org.mahu.proto.webguice.workflowtask.Task2Test;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ 
     IRequestProcessorTest.class,
-    RequestScopedExecutorTest.class,
+    RequestCommonBindingsModuleTest.class,
     RestServiceJerseyTest.class,
     RestServiceTest.class,
     StateMachineBindingModuleTest.class,
