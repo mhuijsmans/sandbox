@@ -1,0 +1,96 @@
+% The document class plays an importat role.It defines the type of document
+% https://tex.stackexchange.com/questions/782/what-are-the-available-documentclass-types-and-their-uses
+% My choice would be report, but that has other style for chapter & paragraphs.
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+
+% image related properties
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+% set page size and margins
+\usepackage[a4paper, top=2cm, bottom=2cm, left=2cm, right=2cm, marginparwidth=11.75cm]{geometry}
+
+% The next three rows define the content for the front page
+\author{Martien Huijsmans}
+\title{The Latex Example}
+\date{\today}
+
+% By default (in most document classes), all paragraphs except for the first paragraph in a section are indented. 
+% Next line disables the indentation.
+\setlength{\parindent}{0in}
+
+% To add additional spacing between paragraphs, set the "parskip" parameter to an appropriate value. For example: 
+\setlength{\parskip}{5pt}
+
+% adds page number to each page
+\pagestyle{myheadings}
+
+% verything before this point is called preamble
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\begin{abstract}
+Your abstract.
+\end{abstract}
+
+\newpage
+
+% starts a level 1 chapter
+\section{chapter}
+
+% The [h] is somethimg weard. It keeps image at this place. Else it is at the top of the page.
+\begin{figure}[h!]
+    \centering
+    % fbox puts a box around where the picture is shown
+    \fbox{\includegraphics[width=0.3\textwidth]{ys_image}}
+    \caption{a nice picture}
+    \label{fig:universe1}
+\end{figure}
+As you can see in the figure \ref{fig:universe1}, it is big.
+
+% starts a level a.b sections
+\subsection{Sub-section}
+
+Some text \textbf{in bold} and \textit{in italic} and \underline{underlined}.
+
+% starts a level a.b.c section
+%  there is no subsubsubsection
+\subsubsection{Sub-section}
+
+\paragraph{A pagrapaph. It is printed in bold}
+% Create a bullet list
+\begin{itemize}
+\item This is the first item
+\item This is the second item
+\item This is the last itme
+\end{itemize}
+
+\subsection{Section with a table}
+
+Tabletext. 
+\\
+% the | used in next row, tell where the lines shall be
+\begin{table}[h!]
+\centering
+\begin{tabular}{| l || r | r | r | c |}  
+\hline
+Name&Exam1&Exam2&Exam3&Grade\\
+% \hline\hline will add a clear seperation between header of table and content
+\hline\hline
+John&19& 28&33&C \\  
+\hline
+Jane&49& 35&60&B  \\
+\hline
+Jim&76& 38&59&A  \\
+\hline
+\end{tabular}
+\caption{Table to test captions and labels}
+\label{table:data}
+\end{table}
+
+\end{document}
