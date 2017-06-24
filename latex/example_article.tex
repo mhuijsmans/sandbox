@@ -54,14 +54,16 @@
     \end{tabular}
   }
   \lfoot{
-    ©  Dragon Quest T.V. 2017  \newline
-    \tiny
-    All rights are reserved. Reproduction or transmission in whole or in part, in any form or by any means,  \newline
-    electronic, mechanical or otherwise, is prohibited without the prior written consent of the copyright owner.
+    \begin{minipage}{0.05\textwidth}
+    \includegraphics[scale=0.1]{philips_footer}
+    \end{minipage}
+    \begin{minipage}[b]{0.7\linewidth}
+    ©  Dragon Quest T.V. 2017  \\
+    \tiny All rights are reserved. Reproduction or transmission in whole or in part, in any form or by any means,  \\
+    \tiny electronic, mechanical or otherwise, is prohibited without the prior written consent of the copyright owner.
+    \end{minipage}
   }
   \rfoot{
-    % next line add some white space so that text bottom aligns with bottom of copyright
-    \vspace*{0.6\baselineskip}
     \tiny
     Template: RST-0063/Approved
   }
@@ -100,18 +102,19 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % everything before this point is called preamble
 \begin{document}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The documt content starts here
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \maketitle
-\tableofcontents
 
 \begin{abstract}
-Your abstract.
+This document is a template for latex based documents.
 \end{abstract}
+
+\tableofcontents
 
 \newpage
 
@@ -122,7 +125,7 @@ Your abstract.
 \begin{figure}[h!]
     \centering
     % fbox puts a box around where the picture is shown
-    \fbox{\includegraphics[width=0.3\textwidth]{ys_image}}
+    \fbox{\includegraphics[width=0.2\textwidth]{ys_image}}
     \caption{a nice picture}
     \label{fig:universe1}
 \end{figure}
@@ -149,9 +152,11 @@ Some text \textbf{in bold} and \textit{in italic} and \underline{underlined}.
 
 Tabletext. 
 \\
-% the | used in next row, tell where the lines shall be
+% the h  in next row, tells the table to be placed here (alt: at top of page)
+% source: http://web.mit.edu/rsi/www/pdfs/fig-intro.pdf
 \begin{table}[h!]
 \centering
+% next row defines 5 columns, with visible lines ( | ) and alignment (l(eft), c(enter) and r(ight))
 \begin{tabular}{| l || r | r | r | c |}  
 \hline
 Name&Exam1&Exam2&Exam3&Grade\\
