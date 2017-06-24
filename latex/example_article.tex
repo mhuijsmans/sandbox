@@ -9,8 +9,8 @@
 \usepackage{graphicx}
 \graphicspath{ {images/} }
 
-% set page size and margins
-\usepackage[a4paper, top=2cm, bottom=2cm, left=2cm, right=2cm, marginparwidth=11.75cm]{geometry}
+% set page size and margins; + settings headheight for customer header
+\usepackage[a4paper, top=3cm, bottom=2cm, left=2cm, right=2cm, marginparwidth=11.75cm, headheight=55pt]{geometry}
 
 % The next three rows define the content for the front page
 \author{Martien Huijsmans}
@@ -24,10 +24,49 @@
 % To add additional spacing between paragraphs, set the "parskip" parameter to an appropriate value. For example: 
 \setlength{\parskip}{5pt}
 
-% adds page number to each page
-\pagestyle{myheadings}
+% table: adds \hdashline for horizontal and : for vertical dashed lines
+\usepackage{arydshln}
 
-% verything before this point is called preamble
+% adds page number to each page
+% \pagestyle{myheadings}
+
+% customer header
+% source: http://tug.ctan.org/macros/latex/contrib/fancyhdr/fancyhdr.pdf
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{
+\begin{tabular}{l}
+\textbf{Digital Earth Investor} \tabularnewline
+\textbf{Cooperation }
+\\
+\today
+\end{tabular}
+}
+\chead{
+\begin{tabular}{c}
+Interface Specification \tabularnewline
+Going into Orbit
+\\
+Beta product
+\end{tabular}
+}
+\rhead{
+\begin{tabular}{r}
+AB-123456-12.01 / Draft
+\\
+\thepage\ of \pageref{LastPage}
+\end{tabular}
+}
+\lfoot{© Dragon Quest T.V. 2017. All rights reserved.}
+\cfoot{}
+\rfoot{Confidential}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% everything before this point is called preamble
 \begin{document}
 
 \maketitle
@@ -90,7 +129,27 @@ Jim&76& 38&59&A  \\
 \hline
 \end{tabular}
 \caption{Table to test captions and labels}
-\label{table:data}
+\label{table:data1}
+\end{table}
+
+Tabletext. 
+\\
+% the | used in next row, tell where the lines shall be
+\begin{table}[h!]
+\centering
+\begin{tabular}{:c:c:c:c:c:c}  
+\hdashline
+Name&Exam1&Exam2&Exam3&Grade\\
+\hdashline\hdashline
+John&19& 28&33&C \\  
+\hdashline
+Jane&49& 35&60&B  \\
+\hdashline
+Jim&76& 38&59&A  \\
+\hdashline
+\end{tabular}
+\caption{Table to test captions and labels}
+\label{table:data2}
 \end{table}
 
 \end{document}
