@@ -10,7 +10,7 @@
 \graphicspath{ {images/} }
 
 % set page size and margins; + settings headheight for customer header
-\usepackage[a4paper, top=3cm, bottom=2cm, left=2cm, right=2cm, marginparwidth=11.75cm, headheight=55pt]{geometry}
+\usepackage[a4paper, top=3cm, bottom=3cm, left=2cm, right=2cm, marginparwidth=11.75cm, headheight=55pt]{geometry}
 
 % The next three rows define the content for the front page
 \author{Martien Huijsmans}
@@ -30,32 +30,69 @@
 % adds page number to each page
 % \pagestyle{myheadings}
 
-% customer header
-% source: http://tug.ctan.org/macros/latex/contrib/fancyhdr/fancyhdr.pdf
+% customer headers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FIRST PAGE ONLY (redefine via \fancypagestyle the plain pagestyle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% source: http://latex.org/forum/viewtopic.php?t=15166
+% source: font size https://texblog.org/2012/08/29/changing-the-font-size-in-latex/
 \usepackage{fancyhdr}
+  \fancypagestyle{plain}{
+  \fancyhf{}
+  \lhead{
+    \begin{tabular}{l}
+      Specification
+      \\
+      Digital Earth Investor Cooperation
+    \end{tabular}
+  }
+  \rhead{
+  \begin{tabular}{r}
+      Specification
+      \\
+     Confidenitial
+    \end{tabular}
+  }
+  \lfoot{
+    ©  Dragon Quest T.V. 2017  \newline
+    \tiny
+    All rights are reserved. Reproduction or transmission in whole or in part, in any form or by any means,  \newline
+    electronic, mechanical or otherwise, is prohibited without the prior written consent of the copyright owner.
+  }
+  \rfoot{
+    % next line add some white space so that text bottom aligns with bottom of copyright
+    \vspace*{0.6\baselineskip}
+    \tiny
+    Template: RST-0063/Approved
+  }
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PAGES 2-END 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% source: http://tug.ctan.org/macros/latex/contrib/fancyhdr/fancyhdr.pdf
 \pagestyle{fancy}
 \lhead{
-\begin{tabular}{l}
-\textbf{Digital Earth Investor} \tabularnewline
-\textbf{Cooperation }
-\\
-\today
-\end{tabular}
+  \begin{tabular}{l}
+  \textbf{Digital Earth Investor} \tabularnewline
+  \textbf{Cooperation }
+  \\
+  \today
+  \end{tabular}
 }
 \chead{
-\begin{tabular}{c}
-Interface Specification \tabularnewline
-Going into Orbit
-\\
-Beta product
-\end{tabular}
+  \begin{tabular}{c}
+  Interface Specification \tabularnewline
+  Going into Orbit
+  \\
+  Beta product
+  \end{tabular}
 }
 \rhead{
-\begin{tabular}{r}
-AB-123456-12.01 / Draft
-\\
-\thepage\ of \pageref{LastPage}
-\end{tabular}
+  \begin{tabular}{r}
+  AB-123456-12.01 / Draft
+  \\
+  \thepage\ of \pageref{LastPage}
+  \end{tabular}
 }
 \lfoot{© Dragon Quest T.V. 2017. All rights reserved.}
 \cfoot{}
@@ -70,7 +107,6 @@ AB-123456-12.01 / Draft
 \begin{document}
 
 \maketitle
-
 \tableofcontents
 
 \begin{abstract}
