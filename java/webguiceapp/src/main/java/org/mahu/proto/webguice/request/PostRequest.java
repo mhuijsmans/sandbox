@@ -12,8 +12,8 @@ class PostRequest implements IRequest {
 
     private final PostRequestData postRequestData;
     // Use of IStateContext is a anti-pattern. IStateContext is a dataContainer.
-    // This class is interested in member of IStateContext. Can be solved in
-    // module.
+    // This class is interested in members of IStateContext. Can be solved in a
+    // module with Provider methods.
     private final IStateContext stateMachineContext;
     private final ScanWorkFlow workflow;
 

@@ -36,7 +36,7 @@ public class RestServiceJerseyTest extends JerseyTest {
 
     @Override
     protected DeploymentContext configureDeployment() {
-        ResourceConfig config = new ResourceConfig(RestService.class);
+        ResourceConfig config = new ResourceConfig(RestService.class, HelloResource.class);
         return ServletDeploymentContext.forServlet(new ServletContainer(config))
                 .addListener(ApplicationInitializeDestroy.class).build();
     }
