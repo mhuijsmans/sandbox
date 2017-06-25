@@ -16,4 +16,7 @@ public class ScanWorkflowModule extends AbstractModule {
         bind(ScanWorkFlow.class);
     }
 
+    // This class can contain provider methods that take ScanWorkFlowSettings as
+    // input and generate Objects for injection into the ScanWorkFlow.
+
 }

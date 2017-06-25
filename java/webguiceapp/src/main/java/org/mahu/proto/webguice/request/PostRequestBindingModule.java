@@ -30,7 +30,8 @@ public class PostRequestBindingModule extends AbstractModule {
 
     @Provides
     ScanWorkFlowSettings provideScanWorkFlowData(PostRequestData postRequestData) {
-        // Perform conversion from PostRequestData to ScanWorkFlowData
+        // Perform conversion from settings in PostRequestData to
+        // ScanWorkFlowData.
         return new ScanWorkFlowSettings();
     }
 }

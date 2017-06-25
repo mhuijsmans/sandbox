@@ -14,11 +14,13 @@ public class ScanWorkFlow {
     @Inject
     ScanWorkFlow(final Provider<Step> stepProvider, final ScanWorkFlowSettings scanWorkFlowSettings) {
         this.stepProvider = stepProvider;
+        // Rather that storing settings, they can be used to constructor the
+        // class specific object graph.
         this.scanWorkFlowSettings = scanWorkFlowSettings;
     }
 
-    public void execute() {
-        // Use the ScanWorkFlowSettings here
+    public void execute(final ScanWorkFlowExecuteData scanWorkFlowExecuteData) {
+        // Use the scanWorkFlowExecuteData for the execution.
         Task2Data data = new Task2Data();
         stepProvider.get().execute(data);
     }

@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import org.mahu.proto.webguice.scanworkflow.ScanWorkFlow;
+import org.mahu.proto.webguice.scanworkflow.ScanWorkFlowExecuteData;
 import org.mahu.proto.webguice.stm.IRequest;
 import org.mahu.proto.webguice.stm.IStateContext;
 
@@ -27,7 +28,10 @@ class PostRequest implements IRequest {
 
     @Override
     public Response execute() {
-        workflow.execute();
+        // Create ScanWorkFlowExecuteData, probably from PostRequestData and
+        // other (global) data.
+        ScanWorkFlowExecuteData scanWorkFlowExecuteData = new ScanWorkFlowExecuteData();
+        workflow.execute(scanWorkFlowExecuteData);
         return Response.ok(postRequestData.getText()).build();
     }
 

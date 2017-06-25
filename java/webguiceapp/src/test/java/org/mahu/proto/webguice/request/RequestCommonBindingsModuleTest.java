@@ -23,6 +23,13 @@ public class RequestCommonBindingsModuleTest {
         }
     };
 
+    static class RequestTestModule extends AbstractModule {
+        @Override
+        protected void configure() {
+            RequestCommonBindingsModule.bindTaskListExecutorInSingleton(binder());
+        }
+    };
+
     @Test
     public void getInstance_noTaskListBinding_exception() {
         Injector injector = Guice.createInjector(new AppTestModule());
@@ -37,7 +44,7 @@ public class RequestCommonBindingsModuleTest {
     @Test
     public void getInstance_oneChildWithBinding_workFlowIsSingletonAndTaskListExecutorIsRequestScoped() {
         Injector injector = Guice.createInjector(new AppTestModule());
-        Injector childInjector = injector.createChildInjector(new RequestCommonBindingsModule());
+        Injector childInjector = injector.createChildInjector(new RequestTestModule());
 
         assertEquals(childInjector.getInstance(IWorkFlowExecutor.class),
                 childInjector.getInstance(IWorkFlowExecutor.class));
@@ -48,8 +55,8 @@ public class RequestCommonBindingsModuleTest {
     @Test
     public void getInstance_twoChildrenWithBinding_workFlowIsSingletonAndTaskListExecutorIsRequestScoped() {
         Injector injector = Guice.createInjector(new AppTestModule());
-        Injector childInjector1 = injector.createChildInjector(new RequestCommonBindingsModule());
-        Injector childInjector2 = injector.createChildInjector(new RequestCommonBindingsModule());
+        Injector childInjector1 = injector.createChildInjector(new RequestTestModule());
+        Injector childInjector2 = injector.createChildInjector(new RequestTestModule());
 
         assertEquals(childInjector1.getInstance(IWorkFlowExecutor.class),
                 childInjector2.getInstance(IWorkFlowExecutor.class));
