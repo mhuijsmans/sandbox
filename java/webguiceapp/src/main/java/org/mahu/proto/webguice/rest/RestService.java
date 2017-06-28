@@ -13,6 +13,7 @@ import org.mahu.proto.webguice.request.GetRequestBindingModule;
 import org.mahu.proto.webguice.request.PostRequestBindingModule;
 import org.mahu.proto.webguice.request.PostRequestData;
 import org.mahu.proto.webguice.stm.IIRequestProcessor;
+import org.mahu.proto.webguice.stm.IStateMachine;
 import org.mahu.proto.webguice.stm.RequestType;
 
 import com.google.inject.Injector;
@@ -21,6 +22,7 @@ import com.google.inject.Injector;
 public class RestService {
 
     private final IIRequestProcessor requestProcessor;
+    private final IStateMachine stateMachine;
 
     public RestService(final @Context ServletContext servletContext) {
         this(((Injector) servletContext.getAttribute(Injector.class.getName())));
@@ -28,6 +30,7 @@ public class RestService {
 
     public RestService(final Injector injector) {
         requestProcessor = injector.getInstance(IIRequestProcessor.class);
+        stateMachine = injector.getInstance(IStateMachine.class);
     }
 
     @GET
