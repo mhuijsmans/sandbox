@@ -82,7 +82,7 @@ public class GuiceOptionalBinderBindingTest {
         {
             Injector injector = Guice.createInjector(new BindingModule1(), new BindingModule2());
             // In Child add instance for Renamer
-            // Child DOES NOT WORK. De tails below.
+            // Child DOES NOT WORK. Details below.
             Injector childInjector = injector.createChildInjector(new BindingModule4());
             TestObject testObject2 = childInjector.getInstance(TestObject.class);
             assertNotNull(testObject2.renamer);
