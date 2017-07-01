@@ -19,6 +19,7 @@ import com.google.inject.Injector;
 import com.google.inject.name.Names;
 
 // This test case explores Annotated bindings: named annotation and (custom qualifier) annotation class.
+// It shows that a child Module can extend an existing binding.
 public class GuiceSpecialBindingsTest {
 
     @Qualifier
