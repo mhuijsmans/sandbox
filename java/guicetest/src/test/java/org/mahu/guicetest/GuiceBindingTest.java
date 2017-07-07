@@ -19,6 +19,7 @@ public class GuiceBindingTest {
             // Data 3 (@Inject constructor) is not bound, but is/can be injected
             // Data 4 (@Inject members) is not bound, but is/can be injected
             bind(TestObject.class);
+            bind(IData5.class).to(Data5.class);
         }
     }
 
@@ -40,17 +41,27 @@ public class GuiceBindingTest {
         Data1 data1;
     }
 
+    static interface IData5 {
+    }
+
+    static class Data5 implements IData5 {
+    }
+
     static class TestObject {
 
         @Inject
-        TestObject(Data1 data1, Data1 data2, Data3 data3, Data4 data4) {
+        TestObject(Data1 data1, Data1 data2, Data3 data3, Data4 data4, IData5 data5a, Data5 data5b) {
         }
     }
 
     @Test
-    public void twestBasicBinding() throws Exception {
+    public void testBasicBinding() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule());
-        injector.getInstance(TestObject.class);
+        TestObject testObject = injector.getInstance(TestObject.class);
+        // cal method on test object
+
+        injector.getInstance(IData5.class);
+        injector.getInstance(Data5.class);
     }
 
 }
