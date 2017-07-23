@@ -54,6 +54,11 @@ public class GuiceAopTest {
                         getProvider(Printer.class));
                 bindInterceptor(classMatcher, methodMatcher, methodInterceptor);
             }
+
+            {
+                // Following defines a interceptor for TestObject or derived
+                bindInterceptor(Matchers.any(), Matchers.any(), new MeasurementLogger3());
+            }
         }
     }
 
@@ -112,6 +117,14 @@ public class GuiceAopTest {
             d.print("MeasurementLogger-pre, name=" + annotation.name());
             Object obj = invocation.proceed();
             d.print("MeasurementLogger-post, name=" + annotation.name());
+            return obj;
+        }
+    }
+
+    static class MeasurementLogger3 implements MethodInterceptor {
+        public Object invoke(MethodInvocation invocation) throws Throwable {
+            System.out.println("####" + invocation.getThis().getClass() + "." + invocation.getMethod().getName());
+            Object obj = invocation.proceed();
             return obj;
         }
     }
