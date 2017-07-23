@@ -39,21 +39,26 @@ public class MethodRefTest {
     // Get a reference to an instance reference and use that
     @Test
     public void unboundInstanceMethodTest() {
-        TestClass t = new TestClass();
+        TestClass t1 = new TestClass();
+        TestClass t2 = new TestClass();
 
         Function<TestClass, String> f = TestClass::getString;
 
-        assertEquals(TestClass.HI, f.apply(t));
+        assertEquals(TestClass.HI, f.apply(t1));
+        assertEquals(TestClass.HI, f.apply(t2));
     }
 
     // Get a reference to an instance reference and use that
     @Test
     public void boundInstanceMethodTest() {
-        TestClass t = new TestClass();
+        TestClass t1 = new TestClass();
+        TestClass t2 = new TestClass();
 
-        Supplier<String> f = t::getString;
+        Supplier<String> f1 = t1::getString;
+        Supplier<String> f2 = t2::getString;
 
-        assertEquals(TestClass.HI, f.get());
+        assertEquals(TestClass.HI, f1.get());
+        assertEquals(TestClass.HI, f2.get());
     }
 
     // Get a reference to an instance reference and use that
