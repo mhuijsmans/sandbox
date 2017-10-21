@@ -45,6 +45,37 @@ public class GuiceProviderBindingTest {
 
     }
 
+    static interface IData {
+
+    }
+
+    static interface IDataPlus {
+
+    }
+
+    static class Data implements IData, IDataPlus {
+
+    }
+
+    static class DataProvider implements Provider<Data> {
+
+        private final ThreadLocal<Data> slideScanContext = new ThreadLocal<Data>();
+
+        @Override
+        public Data get() {
+            // New is applied here, so no injection for RequestData
+            return getData();
+        }
+
+        private Data getData() {
+            if (slideScanContext.get() == null) {
+                slideScanContext.set(new Data());
+            }
+            return slideScanContext.get();
+        }
+
+    }
+
     @Test
     public void requestScope() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule());

@@ -34,7 +34,7 @@ public class GuiceFactoryModuleBuilderBindingTest {
     }
 
     public interface PaymentFactory2 {
-        // different methods must have difference names
+        // Different methods must have difference names
         Payment createWithMoney(Money money);
 
         Payment createWithMoneyAndDate(Money money, Date date);

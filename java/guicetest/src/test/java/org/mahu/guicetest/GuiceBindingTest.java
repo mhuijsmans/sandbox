@@ -20,6 +20,7 @@ public class GuiceBindingTest {
             // Data 4 (@Inject members) is not bound, but is/can be injected
             bind(TestObject.class);
             bind(IData5.class).to(Data5.class);
+            bind(IData6.class).to(Data6.class);
         }
     }
 
@@ -31,7 +32,7 @@ public class GuiceBindingTest {
 
     static class Data3 {
         @Inject
-        Data3(Data1 data1) {
+        Data3(Data1 data1, IData6 data6) {
 
         }
     }
@@ -45,6 +46,17 @@ public class GuiceBindingTest {
     }
 
     static class Data5 implements IData5 {
+
+        @Inject
+        Data5(IData6 data6) {
+
+        }
+    }
+
+    static interface IData6 {
+    }
+
+    static class Data6 implements IData6 {
     }
 
     static class TestObject {
