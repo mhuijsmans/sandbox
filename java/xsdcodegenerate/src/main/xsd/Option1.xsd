@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Option1" type="OptionValueType1" />
+  
+  <xs:simpleType name="OptionValueType1">
+    <xs:restriction base="xs:unsignedShort">
+      <xs:minInclusive value="62" />
+      <xs:maxInclusive value="65" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+</xs:schema>
