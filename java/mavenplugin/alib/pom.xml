@@ -3,37 +3,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mahu.proto.mavenplugin</groupId>
-	<artifactId>mavenpluginuser</artifactId>
+	<artifactId>alib</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>mavenplugin-user</name>
+	<name>alib</name>
 	<url>http://maven.apache.org</url>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	
 	<build>
 		<plugins>
-		
-			<plugin>
-			    <groupId>${project.groupId}</groupId>
-				<artifactId>mavenplugin</artifactId>
-			    <version>${project.version}</version>
-				<executions>
-					<execution>				
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-					
+							
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

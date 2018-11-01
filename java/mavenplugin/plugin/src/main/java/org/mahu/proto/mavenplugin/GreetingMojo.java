@@ -8,6 +8,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.mahu.proto.lib.Aclass;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 
 /**
@@ -24,6 +25,8 @@ public class GreetingMojo extends AbstractMojo {
 	
 	public void execute() throws MojoExecutionException {
 		final Log log = getLog();
+		
+		new Aclass().hello(s -> log.info(s));
 
         if (isParametersAreNotNull(log)) {
     			

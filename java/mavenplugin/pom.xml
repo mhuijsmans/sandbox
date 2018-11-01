@@ -8,6 +8,7 @@
     <version>1.0-SNAPSHOT</version>    
 
     <modules>
+        <module>alib</module>    	
         <module>plugin</module>
         <module>pluginuser</module>
     </modules>
