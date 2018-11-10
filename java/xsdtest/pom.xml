@@ -47,16 +47,35 @@
 						<goals>
 							<goal>xjc</goal>
 						</goals>
+						<configuration>
+							<!-- The name of your generated source package -->
+							<packageName>org.mahu.proto.xsdtest.schema</packageName>
+							<!-- target is JAXB 2.2 -->
+							<target>2.2</target>
+							<!-- default location: src/main/xsd, from where all *.xsd will be matched -->
+              <xjcSourceExcludeFilters>
+                 <filter implementation="org.codehaus.mojo.jaxb2.shared.filters.pattern.PatternFileFilter">
+                    <patterns>
+                    	  <!-- there can be one or more rows -->
+                        <pattern>PowerState4.xsd</pattern>
+                    </patterns>
+                 </filter>
+              </xjcSourceExcludeFilters>					
+						</configuration>						
 					</execution>
-				</executions>
-				<configuration>
-					<!-- The name of your generated source package -->
-					<packageName>org.mahu.proto.xsdtest.schema</packageName>
-					<!-- target is JAXB 2.1 -->
-					<target>2.2</target>
-					<!-- default location: src/main/xsd -->
-					<schemaFiles>*.xsd</schemaFiles>
-				</configuration>
+					
+					<execution>
+						<id>test-xjc</id>
+						<goals>
+							<goal>testXjc</goal>
+						</goals>
+						<configuration>
+							<!-- The name of your generated source package -->
+							<packageName>org.mahu.proto.xsdtest.test.schema</packageName>
+							<!-- default location: src/main/xsd, from where all *.xsd will be matched -->				            
+						</configuration>						
+					</execution>
+				</executions>				
 			</plugin>
 		</plugins>
 

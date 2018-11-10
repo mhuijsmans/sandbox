@@ -2,6 +2,18 @@ This project
 - generates Java code from XSD
 - contains XSD related information
 - explored validation (un)marshalling and comparing java xml objects
+- generating code for XSD and test-xsd.
+- excluding a file from code generation
+
+XSD included in jar
+-------------------
+I observed that target/classes/xsd contains the XSD (also the excluded).
+I observed that target/test-classes contains no XSD.
+
+Documentation jaxb2-maven-plugin
+--------------------------------
+I used the test cases for documentation
+https://github.com/mojohaus/jaxb2-maven-plugin/tree/master/src/it   
 
 XSD: restrictions on SimpleType
 ------------------------------- 
@@ -37,8 +49,8 @@ Latest version
 --------------
 http://mvnrepository.com/artifact/org.codehaus.mojo/jaxb2-maven-plugin/
  
-Which maven-plugin
-------------------
+Which maven-plugin?
+-------------------
 I have found different maven-jaxb2-plugin 
 		<plugin>
 			<groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -50,4 +62,6 @@ I have found different maven-jaxb2-plugin
                 <artifactId>jaxb2-maven-plugin</artifactId>
                 <version>1.6</version>
         </plugin>
+There is also a plugin from apache.
+        
 Choose: http://mojo.codehaus.org/jaxb2-maven-plugin/usage.html

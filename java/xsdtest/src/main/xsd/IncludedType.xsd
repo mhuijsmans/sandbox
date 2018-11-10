@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:simpleType name="IncludedType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="On" />
+			<xs:enumeration value="Standby" />
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>
