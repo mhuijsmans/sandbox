@@ -19,7 +19,7 @@ import com.google.inject.Injector;
 
 /**
  * 2 implementations for dynamic
-
+ * 
  */
 public class GuiceRequestPreProcessor {
 
@@ -29,25 +29,14 @@ public class GuiceRequestPreProcessor {
 		ONE, TWO
 	}
 
-	static class EmptyModule extends AbstractModule {
-
-		@Override
-		protected void configure() {
-			// empty
-		}
-
-	}
-
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
 	public @interface RequestProperties {
-		Class<? extends AbstractModule> module() default EmptyModule.class;
+		Class<? extends AbstractModule> module();
 
 		TAG tag();
 	}
 
-	// with annotation ?
-	// Annotation: binding Module?
 	static class MyRequestWithArg implements IRequestWithArguments {
 
 		@Override
@@ -70,6 +59,13 @@ public class GuiceRequestPreProcessor {
 		}
 	}
 
+	static class MyGlobalModule extends AbstractModule {
+		@Override
+		protected void configure() {
+			bind(IRequestWithoutArguments.class).to(MyRequestWitNoArg.class);
+		}
+	}
+
 	static class MyRequestWitNoArg implements IRequestWithoutArguments {
 
 		@Override
@@ -86,149 +82,20 @@ public class GuiceRequestPreProcessor {
 	interface IRequest {
 	}
 
-	abstract class IRequestModule<T> extends AbstractModule {
-
-	}
-
-	public interface IRequestPreProcessor {
-
-		/**
-		 * Resolve the requestInterface via the provide module and execute it with the
-		 * provided arguments. The requestInterface shall have a single method with the
-		 * provided arguments.
-		 * 
-		 * @param childModule
-		 * @param requestInterface
-		 * @param arguments
-		 * @return
-		 */
-		String execute(AbstractModule childModule, Class<?> requestInterface, Object... arguments);
-
-		String execute(Class<?> requestInterface, Object... arguments);
-	}
-
 	static interface InstanceProvider {
 		Object getInstance();
 	}
 
-	static class RequestPreProcessor implements IRequestPreProcessor {
-
-		private final Injector injector;
-		private String blo = null;
-		private RuntimeException e = null;
-
-		RequestPreProcessor(final Injector injector) {
-			this.injector = injector;
-		}
-
-		@Override
-		public String execute(Class<?> requestInterface, Object... arguments) {
-			InstanceProvider instanceProvider = () -> injector.getInstance(requestInterface);
-			return execute(instanceProvider, requestInterface, arguments);
-		}
-
-		@Override
-		public String execute(AbstractModule childModule, Class<?> requestInterface, Object... arguments) {
-			InstanceProvider instanceProvider = () -> {
-				System.out.println(" getInstance(injector, childModule, requestInterface)");
-				return getInstance(injector, childModule, requestInterface);
-			};
-			return execute(instanceProvider, requestInterface, arguments);
-		}
-
-		private String execute(InstanceProvider instanceProvider, Class<?> requestInterface, Object... arguments) {
-			return callStatemachine(() -> {
-				final Object obj = instanceProvider.getInstance();
-				final Class<?>[] argClasses = new Class<?>[arguments.length];
-				for (int i = 0; i < arguments.length; i++) {
-					argClasses[i] = arguments[i].getClass();
-				}
-				try {
-					final Method method = requestInterface.getMethods()[0];
-					System.out.println("  execute(..) method=" + method.toString());
-					return (String) method.invoke(obj, arguments);
-				} catch (SecurityException | IllegalAccessException | IllegalArgumentException
-						| InvocationTargetException e) {
-					throw new RuntimeException(e);
-				}
-			});
-		}
-
-		public static Object getInstance(final Injector injector, final AbstractModule childModule,
-				Class<?> interfaceClass) {
-			return injector.createChildInjector(childModule).getInstance(interfaceClass);
-		}
-
-		private String callStatemachine(final IRequestWithoutArguments request) {
-			System.out.println("callStatemachine(..)");
-			if (blo == null && e == null) {
-				return request.executeNoArg();
-			} else {
-				if (e == null) {
-					return blo;
-				} else {
-					throw e;
-				}
-			}
-		}
-
-	}
-	
-
-	@Test
-	public void execute_methodWithArguments() {
-		Injector injector = Guice.createInjector();
-		String data = "hi";
-		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
-		String response = requestPreProcessor.execute(new MyRequestWithArgModule(), IRequestWithArguments.class, data);
-
-		assertEquals(data, response);
-	}
-
-	@Test
-	public void execute_methodWithoutArguments() {
-		Injector injector = Guice.createInjector();
-		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
-		String response = requestPreProcessor.execute(new MyRequestWithArgModule(), IRequestWithoutArguments.class);
-
-		assertEquals(NOARG_RESPONSE, response);
-	}
-
-	@Test
-	public void executeMethodWithArguments_argumentMissing_exception() {
-		Injector injector = Guice.createInjector();
-		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
-		try {
-			requestPreProcessor.execute(new MyRequestWithArgModule(), IRequestWithArguments.class);
-			fail("Argument missing, so exception expected");
-		} catch (RuntimeException e) {
-			//
-		}
-	}
-
-	@Test
-	public void executeMethodWithArguments_tooManyArguments_exception() {
-		Injector injector = Guice.createInjector();
-		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
-		try {
-			String data = "hi";
-			requestPreProcessor.execute(new MyRequestWithArgModule(), IRequestWithArguments.class, data, data);
-			fail("Argument missing, so exception expected");
-		} catch (RuntimeException e) {
-			//
-		}
-	}
-	
 	// ==================================================
 	// ============= using dynamic proxy ================
 	// ==================================================
-	
+
 	static class RequestId<T> {
-		
+
 		private final Class<T> clazz;
-		
+
 		public static final RequestId<IRequestWithArguments> ONE = new RequestId<>(IRequestWithArguments.class);
-		
+
 		private RequestId(Class<T> clazz) {
 			this.clazz = clazz;
 		}
@@ -236,22 +103,24 @@ public class GuiceRequestPreProcessor {
 		public Class<T> getClazz() {
 			return clazz;
 		}
-		
+
 	}
-	
-	public interface IRequestPreProcessor2 {
+
+	public interface IRequestPreProcessor {
 
 		public <T> T with(AbstractModule childModule, Class<T> requestInterface);
-		
-		public <T> T with(AbstractModule childModule, final RequestId<T> requestId);
-	}	
-	
+
+		public <T> T with(Class<T> requestInterface);
+
+		public <T> T with(final RequestId<T> requestId);
+	}
+
 	static class Handler implements InvocationHandler {
 
 		private final InstanceProvider instanceProvider;
-		private final RequestPreProcessor2 requestPreProcessor;
+		private final RequestPreProcessor requestPreProcessor;
 
-		Handler(final InstanceProvider instanceProvider, final RequestPreProcessor2 requestPreProcessor) {
+		Handler(final InstanceProvider instanceProvider, final RequestPreProcessor requestPreProcessor) {
 			this.instanceProvider = instanceProvider;
 			this.requestPreProcessor = requestPreProcessor;
 		}
@@ -263,13 +132,13 @@ public class GuiceRequestPreProcessor {
 		}
 	}
 
-	static class RequestPreProcessor2 implements IRequestPreProcessor2 {
+	static class RequestPreProcessor implements IRequestPreProcessor {
 
 		private final Injector injector;
 		private String blo = null;
 		private RuntimeException e = null;
 
-		RequestPreProcessor2(final Injector injector) {
+		RequestPreProcessor(final Injector injector) {
 			this.injector = injector;
 		}
 
@@ -287,11 +156,26 @@ public class GuiceRequestPreProcessor {
 					handler);
 			return f;
 		}
-		
+
 		@Override
-		public <T> T with(AbstractModule childModule, RequestId<T> requestId) {
-			return with(childModule, requestId.clazz);
-		}		
+		public <T> T with(Class<T> requestInterface) {
+			InstanceProvider instanceProvider = () -> {
+				System.out.println(" with(only interface)");
+				return getInstance(injector, requestInterface);
+			};
+
+			Handler handler = new Handler(instanceProvider, this);
+
+			@SuppressWarnings("unchecked")
+			T f = (T) Proxy.newProxyInstance(requestInterface.getClassLoader(), new Class[] { requestInterface },
+					handler);
+			return f;
+		}
+
+		@Override
+		public <T> T with(RequestId<T> requestId) {
+			return with(requestId.clazz);
+		}
 
 		private String execute(InstanceProvider instanceProvider, Method method, Object... arguments) {
 			return callStatemachine(() -> {
@@ -306,7 +190,21 @@ public class GuiceRequestPreProcessor {
 			});
 		}
 
-		public static Object getInstance(final Injector injector, final AbstractModule childModule,
+		private static Object getInstance(final Injector injector, Class<?> interfaceClass) {
+			RequestProperties requestProperties = interfaceClass.getAnnotation(RequestProperties.class);
+			if (requestProperties != null) {
+				try {
+					AbstractModule childModule = requestProperties.module().newInstance();
+					return injector.createChildInjector(childModule).getInstance(interfaceClass);
+				} catch (InstantiationException | IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			} else {
+				return injector.getInstance(interfaceClass);
+			}
+		}
+
+		private static Object getInstance(final Injector injector, final AbstractModule childModule,
 				Class<?> interfaceClass) {
 			return injector.createChildInjector(childModule).getInstance(interfaceClass);
 		}
@@ -333,11 +231,11 @@ public class GuiceRequestPreProcessor {
 		}
 
 	}
-	
+
 	@Test
-	public void dynamicProxy_interfaceWithArgument_correctResponse() {
+	public void dynamicProxy_interfaceWithModuleWithArguments_correctResponse() {
 		Injector injector = Guice.createInjector();
-		RequestPreProcessor2 requestPreProcessor = new RequestPreProcessor2(injector);
+		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
 
 		String dynamicData = "bla";
 		String response = requestPreProcessor.with(new MyRequestWithArgModule(), IRequestWithArguments.class)
@@ -345,40 +243,59 @@ public class GuiceRequestPreProcessor {
 
 		assertEquals(dynamicData, response);
 	}
-	
+
 	@Test
-	public void dynamicProxy_requestIdWithArgument_correctResponse() {
+	public void dynamicProxy_requestIdWithArguments_correctResponse() {
 		Injector injector = Guice.createInjector();
-		RequestPreProcessor2 requestPreProcessor = new RequestPreProcessor2(injector);
+		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
 
 		String dynamicData = "bla";
-		String response = requestPreProcessor.with(new MyRequestWithArgModule(), RequestId.ONE)
-				.executeWithString(dynamicData);
+		String response = requestPreProcessor.with(RequestId.ONE).executeWithString(dynamicData);
 
 		assertEquals(dynamicData, response);
-	}	
-	
+	}
+
+	@Test
+	public void dynamicProxy_interfaceWithAnnotatedModuleWithArguments_correctResponse() {
+		Injector injector = Guice.createInjector();
+		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
+
+		String dynamicData = "bla";
+		String response = requestPreProcessor.with(IRequestWithArguments.class).executeWithString(dynamicData);
+
+		assertEquals(dynamicData, response);
+	}
+
 	@Test
 	public void dynamicProxy_noArgument_correctResponse() {
 		Injector injector = Guice.createInjector();
-		RequestPreProcessor2 requestPreProcessor = new RequestPreProcessor2(injector);
+		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
 
 		String response = requestPreProcessor.with(new MyRequestWithArgModule(), IRequestWithoutArguments.class)
 				.executeNoArg();
 
 		assertEquals(NOARG_RESPONSE, response);
-	}	
+	}
+
+	@Test
+	public void dynamicProxy_noArgumentNoModule_correctResponse() {
+		Injector injector = Guice.createInjector(new MyGlobalModule());
+		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
+
+		String response = requestPreProcessor.with(IRequestWithoutArguments.class).executeNoArg();
+
+		assertEquals(NOARG_RESPONSE, response);
+	}
 
 	@Test
 	public void dynamicProxy_otherResponse() {
 		Injector injector = Guice.createInjector();
-		RequestPreProcessor2 requestPreProcessor = new RequestPreProcessor2(injector);
+		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
 		String blo = "blo";
 		requestPreProcessor.setResponse(blo);
 
 		String dynamicData = "bla";
-		String response = requestPreProcessor.with(new MyRequestWithArgModule(), IRequestWithArguments.class)
-				.executeWithString(dynamicData);
+		String response = requestPreProcessor.with(IRequestWithArguments.class).executeWithString(dynamicData);
 
 		assertEquals(blo, response);
 	}
@@ -386,15 +303,14 @@ public class GuiceRequestPreProcessor {
 	@Test
 	public void dynamicProxy_exception() {
 		Injector injector = Guice.createInjector();
-		RequestPreProcessor2 requestPreProcessor = new RequestPreProcessor2(injector);
+		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
 		String help = "help";
 		RuntimeException ee = new RuntimeException(help);
 		requestPreProcessor.setException(ee);
 
 		String dynamicData = "bla";
 		try {
-			requestPreProcessor.with(new MyRequestWithArgModule(), IRequestWithArguments.class)
-					.executeWithString(dynamicData);
+			requestPreProcessor.with(IRequestWithArguments.class).executeWithString(dynamicData);
 			fail("Exception thrown");
 		} catch (RuntimeException e) {
 			assertEquals(ee, e);
