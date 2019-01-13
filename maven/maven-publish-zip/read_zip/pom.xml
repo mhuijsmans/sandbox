@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.mahu.proto.maven</groupId>
+	<artifactId>read-zip</artifactId>
+	<packaging>jar</packaging>
+	<version>0.1.0-SNAPSHOT</version>
+	<name>Exploring reading zip deployed in maven-repo</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<unzip.directory>${project.build.directory}/zip-resources-flattended</unzip.directory>
+		<xsd.directory>${project.build.directory}/zip-resources-flattended</xsd.directory>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.mahu.proto.maven</groupId>
+			<artifactId>mahu-zip</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<type>zip</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>copy-all-files-from-zip-to-outputDirectory</id>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<outputDirectory>${unzip.directory}</outputDirectory>
+							<excludeTransitive>true</excludeTransitive>
+							<excludeTypes>pom</excludeTypes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>copy-selected-files-to-directory</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${xsd.directory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${unzip.directory}/folder1</directory>
+									<includes>
+										<include>doc1.txt</include>
+										<include>Example.xsd</include>
+									</includes>
+								</resource>
+								<resource>
+									<directory>${unzip.directory}/folder1/folder2</directory>
+									<includes>
+										<include>doc2.txt</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>1.6</version>
+				<configuration>
+					<verbose>false</verbose>
+					<clearOutputDir>false</clearOutputDir>
+					<arguments>-mark-generated</arguments>
+				</configuration>
+
+				<executions>
+					<!-- multiple executions, with own packages Source: http://rostislav-matl.blogspot.nl/2010/11/maven-generating-code-with-jaxb-maven.html -->
+					<execution>
+						<id>AdssXsds</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+						<configuration>
+							<packageName>org.mahu.gencode</packageName>
+							<schemaDirectory>${xsd.directory}</schemaDirectory>
+							<schemaFiles>*.xsd</schemaFiles>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+
+			<plugin>
+				<!--Required for jaxb2-maven-plugin. See adss-maven-setup/pom.xml for 
+					details. -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<id>set-additional-system-properties</id>
+						<goals>
+							<goal>set-system-properties</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<properties>
+						<property>
+							<name>javax.xml.accessExternalSchema</name>
+							<value>all</value>
+						</property>
+					</properties>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
+		<resources>
+			<resource>
+				<directory>${xsd.directory}</directory>
+				<includes>
+					<include>*.xsd</include>
+				</includes>
+			</resource>
+		</resources>
+
+	</build>
+
+</project>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="Example">
+    <xs:complexType>
+      <xs:sequence> 
+        <xs:element name="Element1" type="Element1Type" />
+        <xs:element name="Element2" type="Element2Type" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:simpleType name="Element1Type">
+    <xs:restriction base="xs:double">
+      <xs:minInclusive value="-10.0e-03" />
+      <xs:maxInclusive value="10.0e-03" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="Element2Type">
+    <xs:restriction base="xs:double">
+      <xs:minInclusive value="25.0e-06" />
+      <xs:maxInclusive value="29.0e-06" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+</xs:schema>
