@@ -115,28 +115,57 @@ public class GuiceRequestPreProcessor {
 		public <T> T with(final RequestId<T> requestId);
 	}
 
-	static class Handler implements InvocationHandler {
+	static class HandlerCallProcessor implements InvocationHandler {
 
 		private final InstanceProvider instanceProvider;
 		private final RequestPreProcessor requestPreProcessor;
 
-		Handler(final InstanceProvider instanceProvider, final RequestPreProcessor requestPreProcessor) {
+		HandlerCallProcessor(final InstanceProvider instanceProvider, final RequestPreProcessor requestPreProcessor) {
 			this.instanceProvider = instanceProvider;
 			this.requestPreProcessor = requestPreProcessor;
 		}
 
 		public Object invoke(Object proxy, Method method, Object[] arguments)
 				throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-			System.out.println(" Handler, method=" + method.getName());
+			System.out.println(" HandlerCallProcessor, method=" + method.getName());
 			return requestPreProcessor.execute(instanceProvider, method, arguments);
 		}
 	}
+	
+	static class HandlerSaveMethodAndArguments implements InvocationHandler {
+
+		private final InstanceProvider instanceProvider;
+		private final RequestPreProcessor requestPreProcessor;
+		private Method method;
+		private Object[] arguments;
+
+		HandlerSaveMethodAndArguments(final InstanceProvider instanceProvider, final RequestPreProcessor requestPreProcessor) {
+			this.instanceProvider = instanceProvider;
+			this.requestPreProcessor = requestPreProcessor;
+		}
+		
+		public Object invoke(Object proxy, Method method, Object[] arguments)
+				throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+			this.method = method;
+			this.arguments = arguments;
+			requestPreProcessor.handlerSaveMethodAndArguments.set(this);
+			return null;
+		}	
+		
+		public Object delayedInvoke() {
+			System.out.println(" HandlerSaveMethodAndArguments, method=" + method.getName());
+			return requestPreProcessor.execute(instanceProvider, method, arguments);
+		}
+		
+	}	
 
 	static class RequestPreProcessor implements IRequestPreProcessor {
 
 		private final Injector injector;
 		private String blo = null;
 		private RuntimeException e = null;
+		
+		private ThreadLocal<HandlerSaveMethodAndArguments> handlerSaveMethodAndArguments = new ThreadLocal<>();
 
 		RequestPreProcessor(final Injector injector) {
 			this.injector = injector;
@@ -149,13 +178,42 @@ public class GuiceRequestPreProcessor {
 				return getInstance(injector, childModule, requestInterface);
 			};
 
-			Handler handler = new Handler(instanceProvider, this);
+			HandlerCallProcessor handler = new HandlerCallProcessor(instanceProvider, this);
 
 			@SuppressWarnings("unchecked")
 			T f = (T) Proxy.newProxyInstance(requestInterface.getClassLoader(), new Class[] { requestInterface },
 					handler);
 			return f;
 		}
+		
+		public <T> T create(Class<T> requestInterface) {
+			InstanceProvider instanceProvider = () -> {
+				System.out.println(" with(only interface)");
+				return getInstance(injector, requestInterface);
+			};
+
+			HandlerSaveMethodAndArguments handler = new HandlerSaveMethodAndArguments(instanceProvider, this);
+
+			@SuppressWarnings("unchecked")
+			T f = (T) Proxy.newProxyInstance(requestInterface.getClassLoader(), new Class[] { requestInterface },
+					handler);
+			return f;
+		}
+		
+		public StringBuilder execute(Object proxy) {
+			HandlerSaveMethodAndArguments handler  = handlerSaveMethodAndArguments.get();
+			handlerSaveMethodAndArguments.remove();
+			if (handler!= null) {
+				final String result = (String) handler.delayedInvoke();
+				return new StringBuilder(result);
+			}
+			return null;
+		}	
+		
+		@Override
+		public <T> T with(RequestId<T> requestId) {
+			return with(requestId.clazz);
+		}		
 
 		@Override
 		public <T> T with(Class<T> requestInterface) {
@@ -164,17 +222,12 @@ public class GuiceRequestPreProcessor {
 				return getInstance(injector, requestInterface);
 			};
 
-			Handler handler = new Handler(instanceProvider, this);
+			HandlerCallProcessor handler = new HandlerCallProcessor(instanceProvider, this);
 
 			@SuppressWarnings("unchecked")
 			T f = (T) Proxy.newProxyInstance(requestInterface.getClassLoader(), new Class[] { requestInterface },
 					handler);
 			return f;
-		}
-
-		@Override
-		public <T> T with(RequestId<T> requestId) {
-			return with(requestId.clazz);
 		}
 
 		private String execute(InstanceProvider instanceProvider, Method method, Object... arguments) {
@@ -316,6 +369,20 @@ public class GuiceRequestPreProcessor {
 			assertEquals(ee, e);
 			assertEquals(help, e.getMessage());
 		}
+	}
+	
+	@Test
+	public void execute_otherResponse() {
+		Injector injector = Guice.createInjector();
+		RequestPreProcessor requestPreProcessor = new RequestPreProcessor(injector);
+		String blo = "blo";
+		requestPreProcessor.setResponse(blo);
+
+		String dynamicData = "bla";
+		IRequestWithArguments request = requestPreProcessor.create(IRequestWithArguments.class);
+		StringBuilder response = requestPreProcessor.execute(request.executeWithString(dynamicData));
+
+		assertEquals(blo, response.toString());
 	}
 
 }

@@ -11,3 +11,12 @@ Interesting statements.
 - Modules are evaluated once per injector.
   Guice will provide the same singleton across threads for the same injector,
   but Guice can only provide the same singleton across threads if you use toInstance.
+  
+  todo
+  ----    
+  Article for my requestScope implementation with seedMap
+  https://stackoverflow.com/questions/8402012/how-to-use-servletscopes-scoperequest-and-servletscopes-continuerequest
+  Article that I found (interesting) but not tried
+  https://mhaligowski.github.io/blog/2017/03/15/intro-to-guice-scopes.html. 
+  
+  

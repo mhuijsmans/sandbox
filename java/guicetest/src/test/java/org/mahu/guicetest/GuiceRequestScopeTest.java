@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -29,9 +30,19 @@ public class GuiceRequestScopeTest {
             // RequestScope.
             bind(RequestData.class).in(ServletScopes.REQUEST);
         }
-    }
+    }    
 
     public static class RequestData {
+    	private static final long TWO_MS = 2;
+		final long now = System.currentTimeMillis();
+    	
+    	RequestData() {
+    		try {
+				Thread.sleep(TWO_MS);
+			} catch (InterruptedException e) {
+				// ignore
+			}
+    	}
     }
 
     static class TestObject {
@@ -51,7 +62,15 @@ public class GuiceRequestScopeTest {
 
     static class ExecutorUsingRequestScope {
 
-        private static final Map<Key<?>, Object> IMMUTABLE_EMPTYMAP = Collections.emptyMap();
+        private  final Map<Key<?>, Object> seedMap;
+        
+        ExecutorUsingRequestScope() {
+        	this(Collections.emptyMap());
+        }
+        
+        ExecutorUsingRequestScope(Map<Key<?>, Object> seedMap) { 
+        	this.seedMap = seedMap;
+        }
 
         public <T> T execute(RequestScopeRunnable<T> r) {
             try {
@@ -59,7 +78,7 @@ public class GuiceRequestScopeTest {
                     public T call() throws Exception {
                         return r.run();
                     }
-                }, IMMUTABLE_EMPTYMAP).call();
+                }, seedMap).call();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -68,7 +87,7 @@ public class GuiceRequestScopeTest {
     }
 
     @Test
-    public void requestScope() throws Exception {
+    public void requestScope_emptySeedMap_guiceCreatesOneObject() throws Exception {
         Injector injector = Guice.createInjector(new BindingModule());
         final ExecutorUsingRequestScope executorUsingRequestScope = new ExecutorUsingRequestScope();
 
@@ -79,7 +98,7 @@ public class GuiceRequestScopeTest {
                 assertNotNull(testObject1.requestData);
 
                 TestObject testObject2 = injector.getInstance(TestObject.class);
-                assertEquals(testObject1.requestData, testObject2.requestData);
+                assertEquals(testObject1.requestData.now, testObject2.requestData.now);
 
                 return testObject1;
             }
@@ -93,5 +112,35 @@ public class GuiceRequestScopeTest {
 
         assertNotEquals(testObject1.requestData, testObject2.requestData);
     }
+    
+    @Test
+    public void requestScope_seedMapWithData_guiceUsesProviderInstance() throws Exception {
+        Injector injector = Guice.createInjector(new BindingModule());
+        RequestData requestData = new RequestData();
+        Map<Key<?>, Object> seedMap = new HashMap<>();
+        seedMap.put(Key.get(RequestData.class), requestData);
+        
+        final ExecutorUsingRequestScope executorUsingRequestScope = new ExecutorUsingRequestScope(seedMap);
+
+        TestObject testObject1 = executorUsingRequestScope.execute(new RequestScopeRunnable<TestObject>() {
+            public TestObject run() {
+                return injector.getInstance(TestObject.class);
+            }
+        });
+        
+        assertNotNull(testObject1);
+        assertNotNull(testObject1.requestData);
+        assertEquals(requestData.now, testObject1.requestData.now);
+        
+        TestObject testObject2 = executorUsingRequestScope.execute(new RequestScopeRunnable<TestObject>() {
+            public TestObject run() {
+                return injector.getInstance(TestObject.class);
+            }
+        });
+        
+        assertNotNull(testObject2);
+        assertNotNull(testObject2.requestData);
+        assertEquals(requestData.now, testObject2.requestData.now);        
+    }    
 
 }
