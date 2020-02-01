@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.junit.Test;
-import org.mahu.guicetest.GuiceRequestScopeTest.RequestData;
+import org.mahu.guicetest.GuiceRequestScopeTest.RequestData1;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -19,7 +19,7 @@ public class GuiceInjectingProvidersTest {
     static class BindingModule extends AbstractModule {
         @Override
         protected void configure() {
-            bind(RequestData.class);
+            bind(RequestData1.class);
         }
     }
 
@@ -28,10 +28,10 @@ public class GuiceInjectingProvidersTest {
         // possible to define a binding here.
         // That means for me that injection of the object created by the
         // provider is also delayed. Feels like lazy
-        final Provider<RequestData> requestDataProvider;
+        final Provider<RequestData1> requestDataProvider;
 
         @Inject
-        TestObject(final Provider<RequestData> requestDataProvider) {
+        TestObject(final Provider<RequestData1> requestDataProvider) {
             this.requestDataProvider = requestDataProvider;
         }
 
