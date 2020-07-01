@@ -97,7 +97,7 @@
 	</build>
 
 	<properties>
-		<log4j.version>2.3</log4j.version>
+		<log4j.version>2.13.3</log4j.version>
 	</properties>
 
 </project>
